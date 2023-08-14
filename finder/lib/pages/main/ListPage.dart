@@ -1,3 +1,4 @@
+import 'package:finder/components/HospitalCard.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import '../../components/componentsExport.dart' as components;
@@ -111,7 +112,7 @@ class _ListPageState extends State<ListPage> {
                           )
                         );
                       },
-                      child: InfoCard(
+                      child: HospitalCard(
                         name: datas[index].name,
                         distance: datas[index].distance,
                         address: datas[index].address,
