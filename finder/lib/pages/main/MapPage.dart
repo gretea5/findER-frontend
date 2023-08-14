@@ -51,7 +51,7 @@ class _MapPageState extends State<MapPage> {
           elevation: 0,
           centerTitle: true,
           title: Text("병원 찾기"),
-          backgroundColor: Color(0xFF3469F0),
+          backgroundColor: Color.fromARGB(255, 79, 112, 229),
           leading: DrawerButton(),
           actions: [ 
             IconButton(
@@ -132,20 +132,20 @@ class _MapPageState extends State<MapPage> {
                             fillColor: Colors.white,
                             filled: true,
                             suffixIcon: IconButton(
-                              color: Color(0xFF3469F0),
+                              color: Color.fromARGB(255, 79, 112, 229),
                               icon: Icon(Icons.search),
                               onPressed: () {},
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.all(Radius.circular(20)),
                               borderSide: BorderSide(
-                                color: Color(0xFF3469F0),
+                                color: Color.fromARGB(255, 79, 112, 229),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.all(Radius.circular(20)),
                               borderSide: BorderSide(
-                                color: Color(0xFF3469F0),
+                                color: Color.fromARGB(255, 79, 112, 229),
                               ),
                             ),
                           ),

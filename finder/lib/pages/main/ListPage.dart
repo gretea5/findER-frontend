@@ -33,14 +33,14 @@ class _ListPageState extends State<ListPage> {
   var vh = 0.0;
   var vw = 0.0;
   final List<EmergencyInfo> datas = [
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원0" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원1" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원2" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원3" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원4" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원5" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원6" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
+    EmergencyInfo(name: "세브란스병원7" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
     EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
     EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
     EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
@@ -67,7 +67,7 @@ class _ListPageState extends State<ListPage> {
           elevation: 0,
           centerTitle: true,
           title: Text("병원 찾기"),
-          backgroundColor: Color(0xFF3469F0),
+          backgroundColor: Color.fromARGB(255, 79, 112, 229),
           leading: DrawerButton(),
           actions: [ 
             Switch(
@@ -83,7 +83,7 @@ class _ListPageState extends State<ListPage> {
         floatingActionButton: FloatingActionButton(
           onPressed: (){},
           tooltip: 'Reset Counter',
-          backgroundColor: Color(0xFF3469F0),
+          backgroundColor: Color.fromARGB(255, 79, 112, 229),
           child: Icon(
             Icons.refresh,
             color: Colors.white,
