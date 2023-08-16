@@ -239,12 +239,24 @@ class _DetailPageState extends State<DetailPage> {
                       },
                       groupValue: segmentedControlValue,
                       ),
-                    )
+                    ),
+                    segmentedControlValue == 1 ? 
+                      Container(
+                        height: vh * 0.3,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                        ),
+                      )
+                    :
+                      Container(
+                        height: vh * 0.3,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                        ),
+                      )
                   ],
                 ),
               ),
-              
-              
             ],
           ),
         ),
