@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 class DetailPage extends StatefulWidget {
@@ -83,7 +84,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 child: Column(
                   children: [
                     Row(
@@ -240,11 +241,155 @@ class _DetailPageState extends State<DetailPage> {
                       groupValue: segmentedControlValue,
                       ),
                     ),
-                    segmentedControlValue == 1 ? 
+                    segmentedControlValue == 0 ? 
                       Container(
-                        height: vh * 0.3,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [               
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              child: Text(
+                                "당직의 직통 연락처",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 7, top: 10),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.call,
+                                    size: 20,
+                                    color: Color(0xFF787878),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    "02-0000-0000",
+                                    style: TextStyle(
+                                      color: Color(0xFF787878),
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              child: Text(
+                                "소아당직의 직통 연락처",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 7, top: 10),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.call,
+                                    size: 20,
+                                    color: Color(0xFF787878),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    "02-0000-0000",
+                                    style: TextStyle(
+                                      color: Color(0xFF787878),
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              child: Text(
+                                "구급차 가용 여부",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 7, top: 10),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/icons/ambulance.svg',
+                                    width: 20,
+                                    height: 20,
+                                    colorFilter: ColorFilter.mode(Color(0xFF3469F0), BlendMode.srcIn),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    "구급차 가용 가능",
+                                    style: TextStyle(
+                                      color: Color(0xFF3469F0),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              child: Text(
+                                "CT, MRI 가용 여부",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 10, top: 10),
+                              child: Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "CT",
+                                        style: TextStyle(
+                                          color: Color(0xFF3469F0),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        "MRI",
+                                        style: TextStyle(
+                                          color: Color(0xFFFF0000),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(width: 15),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "O",
+                                        style: TextStyle(
+                                          color: Color(0xFF3469F0),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        "X",
+                                        style: TextStyle(
+                                          color: Color(0xFFFF0000),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     :
