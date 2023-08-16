@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
       key: GlobalKey(),
-      initialRoute: '/map',
+      initialRoute: '/list',
       routes: {
         '/': (context) => userExport.UserListPage(),
         '/map': (context) => mainExport.MapPage(),
