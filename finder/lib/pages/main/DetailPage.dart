@@ -394,11 +394,97 @@ class _DetailPageState extends State<DetailPage> {
                       )
                     :
                       Container(
-                        height: vh * 0.3,
+                        margin: EdgeInsets.only(top: 20),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: Colors.blue,
                         ),
-                      )
+                        child: Column(
+                          children: [
+                            Container(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "최근",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        "4",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF3469F0),
+                                        ),
+                                      ),
+                                      Text(
+                                        "시간 중 병상을 이용 가능했던 시간은",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "3시간 30분",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF3469F0),
+                                        ),
+                                      ),
+                                      Text(
+                                        " 입니다.",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              height: 0.4 * vh,
+                              width: 0.9 * vw,
+                              margin: EdgeInsets.only(top: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                              ),
+                              child: Center(
+                                child: Text("시간 그래프 부분"),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 40),
+                              child: Text(
+                                "최근 일주일간 평균 병상 추이",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: 0.4 * vh,
+                              width: 0.9 * vw,
+                              margin: EdgeInsets.only(top: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                              ),
+                              child: Center(
+                                child: Text("최근 일주일간 평균 병상 추이 부분"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
