@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HospitalCard extends StatelessWidget {
+  final Color elementColor = Color(0xFF787878);
+  final Color bedColor = Color(0xFFFF0000);
   String name;
   String distance;
   String address;
@@ -18,6 +22,19 @@ class HospitalCard extends StatelessWidget {
     required this.numberOfBeds,
     required this.vh,
   });
+
+  String convertPhoneNumber(String phoneNumber) {
+    return phoneNumber.replaceAll('-', '');
+  }
+
+  void launchCaller(String phoneNumber) async {
+    String url = 'tel:$phoneNumber';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   final double vh;
 
@@ -54,7 +71,7 @@ class HospitalCard extends StatelessWidget {
                   Text(
                     "$distance",
                     style: TextStyle(
-                      color: Color(0xFF787878),
+                      color: elementColor,
                     ),
                   ),
                 ],
@@ -67,13 +84,13 @@ class HospitalCard extends StatelessWidget {
                     Text(
                       "자세히 보기",
                       style: TextStyle(
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                     ),
                     Icon(
                       Icons.chevron_right,
                       size: 18,
-                      color: Color(0xFF787878),
+                      color: elementColor,
                     )
                   ],
                 ),
@@ -89,7 +106,7 @@ class HospitalCard extends StatelessWidget {
                     Icon(
                       Icons.location_on,
                       size: 20,
-                      color: Color(0xFF787878),
+                      color: elementColor,
                     ),
                     SizedBox(
                       width: 5,
@@ -97,7 +114,7 @@ class HospitalCard extends StatelessWidget {
                     Text(
                       "$address",
                       style: TextStyle(
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                     )
                   ],
@@ -111,13 +128,17 @@ class HospitalCard extends StatelessWidget {
                       Icon(
                         Icons.call,
                         size: 20,
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                       SizedBox(width: 5,),
-                      Text(
-                        "$tel",
-                        style: TextStyle(
-                          color: Color(0xFF787878),
+                      InkWell(
+                        onTap: () => launchCaller(convertPhoneNumber(tel)),
+                        child: Text(
+                          "$tel",
+                          style: TextStyle(
+                            color: elementColor,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ],
@@ -135,7 +156,7 @@ class HospitalCard extends StatelessWidget {
                     Icon(
                       Icons.alarm,
                       size: 20,
-                      color: Color(0xFF787878),
+                      color: elementColor,
                     ),
                     SizedBox(
                       width: 5,
@@ -143,7 +164,7 @@ class HospitalCard extends StatelessWidget {
                     Text(
                       "예상 도착 시간",
                       style: TextStyle(
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                     ),
                     SizedBox(
@@ -152,7 +173,7 @@ class HospitalCard extends StatelessWidget {
                     Text(
                       "$arriveTime",
                       style: TextStyle(
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                     )
                   ],
@@ -167,7 +188,7 @@ class HospitalCard extends StatelessWidget {
                       Icon(
                         Icons.call,
                         size: 20,
-                        color: Color(0xFF787878),
+                        color: elementColor,
                       ),
                       SizedBox(
                         width: 5,
@@ -175,7 +196,7 @@ class HospitalCard extends StatelessWidget {
                       Text(
                         "잔여 병상 수",
                         style: TextStyle(
-                          color: Color(0xFF787878),
+                          color: elementColor,
                         ),
                       ),
                       SizedBox(
@@ -184,7 +205,7 @@ class HospitalCard extends StatelessWidget {
                       Text(
                         "$numberOfBeds",
                         style: TextStyle(
-                          color: Colors.red,
+                          color: bedColor,
                         ),
                       ),
                     ],

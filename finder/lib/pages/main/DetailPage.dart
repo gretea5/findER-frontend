@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailPage extends StatefulWidget {
   String name;
@@ -28,6 +29,8 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  final Color elementColor = Color(0xFF787878);
+  final Color bedColor = Color(0xFFFF0000);
   int segmentedControlValue = 0;
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
@@ -51,6 +54,19 @@ class _DetailPageState extends State<DetailPage> {
     Uri url = Uri.parse(_url);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
+    }
+  }
+
+  String convertPhoneNumber(String phoneNumber) {
+    return phoneNumber.replaceAll('-', '');
+  }
+
+  void launchCaller(String phoneNumber) async {
+    String url = 'tel:$phoneNumber';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -112,11 +128,17 @@ class _DetailPageState extends State<DetailPage> {
                             Icon(
                               Icons.location_on,
                               size: 20,
+                              color: elementColor,
                             ),
                             SizedBox(
                               width: 5,
                             ),
-                            Text("${widget.address}"),
+                            Text(
+                              "${widget.address}",
+                              style: TextStyle(
+                                color: elementColor,
+                              ),
+                            ),
                           ],
                         ),
                         InkWell(
@@ -147,11 +169,17 @@ class _DetailPageState extends State<DetailPage> {
                         Icon(
                           Icons.info_outline_rounded,
                           size: 20,
+                          color: elementColor,
                         ),
                         SizedBox(
                           width: 5,
                         ),
-                        Text("신촌역 인근"),
+                        Text(
+                          "신촌역 인근",
+                          style: TextStyle(
+                            color: elementColor,
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -162,11 +190,21 @@ class _DetailPageState extends State<DetailPage> {
                         Icon(
                           Icons.call,
                           size: 20,
+                          color: elementColor,
                         ),
                         SizedBox(
                           width: 5,
                         ),
-                        Text("${widget.tel}"),
+                        InkWell(
+                          onTap: () => launchCaller(convertPhoneNumber(widget.tel)),
+                          child: Text(
+                            "${widget.tel}",
+                            style: TextStyle(
+                              color: elementColor,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -177,18 +215,24 @@ class _DetailPageState extends State<DetailPage> {
                         Icon(
                           Icons.call,
                           size: 20,
+                          color: elementColor,
                         ),
                         SizedBox(
                           width: 5,
                         ),
-                        Text("잔여 병상 수"),
+                        Text(
+                          "잔여 병상 수",
+                          style: TextStyle(
+                            color: elementColor,
+                          ),
+                        ),
                         SizedBox(
                           width: 9,
                         ),
                         Text(
                           "${widget.numberOfBeds}",
                           style: TextStyle(
-                            color: Colors.red,
+                            color: bedColor,
                           ),
                         ),
                       ],
@@ -285,13 +329,13 @@ class _DetailPageState extends State<DetailPage> {
                                   Icon(
                                     Icons.call,
                                     size: 20,
-                                    color: Color(0xFF787878),
+                                    color: elementColor,
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     "02-0000-0000",
                                     style: TextStyle(
-                                      color: Color(0xFF787878),
+                                      color: elementColor,
                                       decoration: TextDecoration.underline,
                                     ),
                                   ),
@@ -314,13 +358,13 @@ class _DetailPageState extends State<DetailPage> {
                                   Icon(
                                     Icons.call,
                                     size: 20,
-                                    color: Color(0xFF787878),
+                                    color: elementColor,
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     "02-0000-0000",
                                     style: TextStyle(
-                                      color: Color(0xFF787878),
+                                      color: elementColor,
                                       decoration: TextDecoration.underline,
                                     ),
                                   ),
