@@ -64,10 +64,16 @@ class HospitalCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("자세히 보기"),
+                    Text(
+                      "자세히 보기",
+                      style: TextStyle(
+                        color: Color(0xFF787878),
+                      ),
+                    ),
                     Icon(
                       Icons.chevron_right,
                       size: 18,
+                      color: Color(0xFF787878),
                     )
                   ],
                 ),
@@ -83,11 +89,17 @@ class HospitalCard extends StatelessWidget {
                     Icon(
                       Icons.location_on,
                       size: 20,
+                      color: Color(0xFF787878),
                     ),
                     SizedBox(
                       width: 5,
                     ),
-                    Text("$address")
+                    Text(
+                      "$address",
+                      style: TextStyle(
+                        color: Color(0xFF787878),
+                      ),
+                    )
                   ],
                 ),
                 InkWell(
@@ -99,9 +111,15 @@ class HospitalCard extends StatelessWidget {
                       Icon(
                         Icons.call,
                         size: 20,
+                        color: Color(0xFF787878),
                       ),
                       SizedBox(width: 5,),
-                      Text("$tel"),
+                      Text(
+                        "$tel",
+                        style: TextStyle(
+                          color: Color(0xFF787878),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -117,15 +135,26 @@ class HospitalCard extends StatelessWidget {
                     Icon(
                       Icons.alarm,
                       size: 20,
+                      color: Color(0xFF787878),
                     ),
                     SizedBox(
                       width: 5,
                     ),
-                    Text("예상 도착 시간"),
+                    Text(
+                      "예상 도착 시간",
+                      style: TextStyle(
+                        color: Color(0xFF787878),
+                      ),
+                    ),
                     SizedBox(
                       width: 5,
                     ),
-                    Text("$arriveTime")
+                    Text(
+                      "$arriveTime",
+                      style: TextStyle(
+                        color: Color(0xFF787878),
+                      ),
+                    )
                   ],
                 ),
                 InkWell(
@@ -138,11 +167,17 @@ class HospitalCard extends StatelessWidget {
                       Icon(
                         Icons.call,
                         size: 20,
+                        color: Color(0xFF787878),
                       ),
                       SizedBox(
                         width: 5,
                       ),
-                      Text("잔여 병상 수"),
+                      Text(
+                        "잔여 병상 수",
+                        style: TextStyle(
+                          color: Color(0xFF787878),
+                        ),
+                      ),
                       SizedBox(
                         width: 9,
                       ),
