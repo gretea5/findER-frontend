@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -29,6 +31,7 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
   int segmentedControlValue = 0;
@@ -56,7 +59,7 @@ class _DetailPageState extends State<DetailPage> {
       throw Exception('Could not launch $url');
     }
   }
-
+  
   String convertPhoneNumber(String phoneNumber) {
     return phoneNumber.replaceAll('-', '');
   }
@@ -68,6 +71,15 @@ class _DetailPageState extends State<DetailPage> {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        textColor: Colors.white,
+        backgroundColor: themeColor,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM);
   }
 
   @override
@@ -124,6 +136,7 @@ class _DetailPageState extends State<DetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Icon(
                               Icons.location_on,
@@ -137,6 +150,23 @@ class _DetailPageState extends State<DetailPage> {
                               "${widget.address}",
                               style: TextStyle(
                                 color: elementColor,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: widget.address));
+                                showToast("주소 복사 완료!");
+                              },
+                              child: Text(
+                                "주소복사",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: elementColor,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
                           ],
@@ -294,7 +324,7 @@ class _DetailPageState extends State<DetailPage> {
                     Container(
                       width: vw * 0.6,
                       child: CupertinoSegmentedControl<int>(
-                      selectedColor: Color(0xFF3469F0),
+                      selectedColor: themeColor,
                       borderColor: Colors.white,
                       children: {
                         0: Text('병원 정보'),
@@ -388,13 +418,13 @@ class _DetailPageState extends State<DetailPage> {
                                     'assets/icons/ambulance.svg',
                                     width: 20,
                                     height: 20,
-                                    colorFilter: ColorFilter.mode(Color(0xFF3469F0), BlendMode.srcIn),
+                                    colorFilter: ColorFilter.mode(themeColor, BlendMode.srcIn),
                                   ),
                                   SizedBox(width: 5),
                                   Text(
                                     "구급차 가용 가능",
                                     style: TextStyle(
-                                      color: Color(0xFF3469F0),
+                                      color: themeColor,
                                     ),
                                   ),
                                 ],
