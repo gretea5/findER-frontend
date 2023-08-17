@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailPage extends StatefulWidget {
   String name;
@@ -31,12 +32,28 @@ class _DetailPageState extends State<DetailPage> {
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
+  var name = "한성대학교";
+  var lat = 37.582620285171856;
+  var lon = 127.00819672835458;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     vh = MediaQuery.of(context).size.height;
     vw = MediaQuery.of(context).size.width;
   }
+
+  Future<void> openKaKaoMap({
+    required String name,
+    required double lat,
+    required double lon
+    }) async {
+    var _url = 'https://map.kakao.com/link/to/$name,$lat,$lon';
+    Uri url = Uri.parse(_url);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -112,7 +129,13 @@ class _DetailPageState extends State<DetailPage> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          onTap: (){},
+                          onTap: (){
+                            openKaKaoMap(
+                              name: name,
+                              lat: lat,
+                              lon: lon
+                            );
+                          },
                         )
                       ],
                     ),
