@@ -119,30 +119,25 @@ class HospitalCard extends StatelessWidget {
                     )
                   ],
                 ),
-                InkWell(
-                  onTap: () {
-                    print("전화번호 클릭");
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.call,
-                        size: 20,
-                        color: elementColor,
-                      ),
-                      SizedBox(width: 5,),
-                      InkWell(
-                        onTap: () => launchCaller(convertPhoneNumber(tel)),
-                        child: Text(
-                          "$tel",
-                          style: TextStyle(
-                            color: elementColor,
-                            decoration: TextDecoration.underline,
-                          ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.call,
+                      size: 20,
+                      color: elementColor,
+                    ),
+                    SizedBox(width: 5,),
+                    InkWell(
+                      onTap: () => launchCaller(convertPhoneNumber(tel)),
+                      child: Text(
+                        "$tel",
+                        style: TextStyle(
+                          color: elementColor,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
