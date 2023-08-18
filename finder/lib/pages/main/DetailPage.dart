@@ -117,15 +117,16 @@ class _DetailPageState extends State<DetailPage> {
                 child: KakaoMap(
                   onMapCreated: ((controller) async {
                     KakaoMapController mapController = controller;
-                    mapController.setCenter(LatLng(37.3608681, 126.9306506));
+                    mapController.setCenter(LatLng(lat, lon));
                     markers.add(
                       Marker(
                         markerId: UniqueKey().toString(),
-                        latLng: LatLng(37.3608681, 126.9306506),                          
+                        latLng: LatLng(lat, lon),                          
                       )
                     );
                     setState(() {});
                   }),
+                  markers: markers.toList(),
                 ),
               ),
               Padding(
