@@ -41,191 +41,183 @@ class HospitalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      height: 0.15 * vh,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "$name", 
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "$distance",
+                  style: TextStyle(
+                    color: elementColor,
+                  ),
+                ),
+              ],
+            ),
+            InkWell(
+              onTap: () { 
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      name: "세브란스병원0",
+                      distance: "1.4km",
+                      address: "서울시 서대문구 연세로 50-1",
+                      tel: "02-0000-0000",
+                      arriveTime: "오후 01시 30분",
+                      numberOfBeds: 8,
+                    ),
+                    fullscreenDialog: true,
+                  )
+                );
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "자세히 보기",
+                    style: TextStyle(
+                      color: elementColor,
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                    color: elementColor,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        Container(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    "$name", 
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                  Icon(
+                    Icons.location_on,
+                    size: 20,
+                    color: elementColor,
                   ),
                   SizedBox(
                     width: 5,
                   ),
                   Text(
-                    "$distance",
+                    "$address",
                     style: TextStyle(
                       color: elementColor,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.call,
+                    size: 20,
+                    color: elementColor,
+                  ),
+                  SizedBox(width: 5,),
+                  InkWell(
+                    onTap: () => launchCaller(convertPhoneNumber(tel)),
+                    child: Text(
+                      "$tel",
+                      style: TextStyle(
+                        color: elementColor,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.alarm,
+                    size: 20,
+                    color: elementColor,
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "예상 도착 시간",
+                    style: TextStyle(
+                      color: elementColor,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "$arriveTime",
+                    style: TextStyle(
+                      color: elementColor,
+                    ),
+                  )
+                ],
+              ),
               InkWell(
-                onTap: () { 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => DetailPage(
-                        name: "세브란스병원0",
-                        distance: "1.4km",
-                        address: "서울시 서대문구 연세로 50-1",
-                        tel: "02-0000-0000",
-                        arriveTime: "오후 01시 30분",
-                        numberOfBeds: 8,
-                      ),
-                      fullscreenDialog: true,
-                    )
-                  );
+                onTap: () {
+                  print("전화번호 클릭");
                 },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "자세히 보기",
-                      style: TextStyle(
-                        color: elementColor,
-                      ),
-                    ),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 18,
-                      color: elementColor,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 20,
-                      color: elementColor,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "$address",
-                      style: TextStyle(
-                        color: elementColor,
-                      ),
-                    )
-                  ],
-                ),
-                Row(
                   children: [
                     Icon(
                       Icons.call,
                       size: 20,
                       color: elementColor,
                     ),
-                    SizedBox(width: 5,),
-                    InkWell(
-                      onTap: () => launchCaller(convertPhoneNumber(tel)),
-                      child: Text(
-                        "$tel",
-                        style: TextStyle(
-                          color: elementColor,
-                          decoration: TextDecoration.underline,
-                        ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "잔여 병상 수",
+                      style: TextStyle(
+                        color: elementColor,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),
+                    Text(
+                      "$numberOfBeds",
+                      style: TextStyle(
+                        color: bedColor,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.alarm,
-                      size: 20,
-                      color: elementColor,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "예상 도착 시간",
-                      style: TextStyle(
-                        color: elementColor,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "$arriveTime",
-                      style: TextStyle(
-                        color: elementColor,
-                      ),
-                    )
-                  ],
-                ),
-                InkWell(
-                  onTap: () {
-                    print("전화번호 클릭");
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.call,
-                        size: 20,
-                        color: elementColor,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "잔여 병상 수",
-                        style: TextStyle(
-                          color: elementColor,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 9,
-                      ),
-                      Text(
-                        "$numberOfBeds",
-                        style: TextStyle(
-                          color: bedColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 }

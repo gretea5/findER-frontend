@@ -112,14 +112,22 @@ class _ListPageState extends State<ListPage> {
                           )
                         );
                       },
-                      child: HospitalCard(
-                        name: datas[index].name,
-                        distance: datas[index].distance,
-                        address: datas[index].address,
-                        tel: datas[index].tel,
-                        arriveTime: datas[index].arriveTime,
-                        numberOfBeds: datas[index].numberOfBeds,
-                        vh: vh,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        height: 0.15 * vh,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: HospitalCard(
+                          name: datas[index].name,
+                          distance: datas[index].distance,
+                          address: datas[index].address,
+                          tel: datas[index].tel,
+                          arriveTime: datas[index].arriveTime,
+                          numberOfBeds: datas[index].numberOfBeds,
+                          vh: vh,
+                        ),
                       ),
                     );
                   },
