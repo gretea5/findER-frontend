@@ -181,13 +181,38 @@ class _DetailPageState extends State<DetailPage> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          onTap: (){
-                            openKaKaoMap(
-                              name: name,
-                              lat: lat,
-                              lon: lon
-                            );
-                          },
+                          onTap: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              title: const Text('카카오맵 이동'),
+                              content: const Text('카카오맵 앱으로 이동하시겠습니까?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    openKaKaoMap(
+                                      name: name,
+                                      lat: lat,
+                                      lon: lon
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: themeColor,
+                                  ),
+                                  child: const Text('OK'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: themeColor,
+                                  ),
+                                  child: const Text('Cancel'),
+                                ),
+                              ],
+                            ),
+                          ),
                         )
                       ],
                     ),
