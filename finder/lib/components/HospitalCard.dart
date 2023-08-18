@@ -1,3 +1,4 @@
+import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -77,7 +78,21 @@ class HospitalCard extends StatelessWidget {
                 ],
               ),
               InkWell(
-                onTap: () { print("자세히 보기 클릭");},
+                onTap: () { 
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        name: "세브란스병원0",
+                        distance: "1.4km",
+                        address: "서울시 서대문구 연세로 50-1",
+                        tel: "02-0000-0000",
+                        arriveTime: "오후 01시 30분",
+                        numberOfBeds: 8,
+                      ),
+                      fullscreenDialog: true,
+                    )
+                  );
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
