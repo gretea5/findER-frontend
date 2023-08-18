@@ -100,7 +100,7 @@ class _MapPageState extends State<MapPage> {
                           setState(() {
                             markerClicked = true;
                           });
-                          mapController!.setCenter(latLng);
+                          mapController!.panTo(latLng);
                         }
                       },
                       onDragChangeCallback: (latLng, zoomLevel, dragType) {
