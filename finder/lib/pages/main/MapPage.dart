@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:finder/components/HospitalCard.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
+import 'package:http/http.dart' as http;
 
 class MapPage extends StatefulWidget {
   MapPage({super.key});
@@ -11,13 +13,41 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
+  final searchTextController = TextEditingController();
+  KakaoMapController? mapController;
+  final String apiUrl =
+      "https://dapi.kakao.com/v2/local/search/keyword.json";
+  final String restApiKey = "f5ab79d5d376224730ecd3b214369a8c";
+  final String query = "한성대학교"; 
   bool light = true;
   bool markerClicked = false;
   bool cardVisible = false;
-  KakaoMapController? mapController;
-  Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
+  Set<Marker> markers = {}; 
+  Map<String, dynamic> responseData = {};
+
+  Future<void> searchkeyword(String query, BuildContext context) async {
+    final response = await http.get(
+      Uri.parse("$apiUrl?query=${Uri.encodeComponent(query)}"),
+      headers: {"Authorization": "KakaoAK $restApiKey"},
+    );
+    if (response.statusCode == 200) {
+      responseData = jsonDecode(response.body);
+      if(responseData["documents"].length == 0) {
+        showSearchErrorDialog(context);
+      }
+      else {
+        double searchLat = double.parse(responseData["documents"][0]['y']);
+        double searchLon = double.parse(responseData["documents"][0]['x']);
+        mapController!.setCenter(LatLng(searchLat, searchLon));
+      }
+    } else {
+      showSearchErrorDialog(context);
+    }
+  }
+
   Future<LatLng> getUserLocation() async {
     final status = await Geolocator.checkPermission();
     if (status == LocationPermission.denied) {
@@ -42,6 +72,35 @@ class _MapPageState extends State<MapPage> {
     vw = MediaQuery.of(context).size.width;
   }
 
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    super.dispose();
+  }
+
+  void showSearchErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('검색 오류'),
+          content: Text('입력하신 검색어를 찾을 수 없습니다.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('닫기'),
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: themeColor
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +121,6 @@ class _MapPageState extends State<MapPage> {
               IconButton(
                 onPressed: () async {
                   LatLng curPos = await getUserLocation();
-                  print("${curPos.latitude}");
                   mapController!.setCenter(curPos);
                 },
                 icon: Icon(Icons.my_location),
@@ -133,6 +191,7 @@ class _MapPageState extends State<MapPage> {
                           //height: vh * 0.1,
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: TextField(
+                            controller: searchTextController,
                             textAlignVertical: TextAlignVertical.center,
                             decoration: InputDecoration(
                               hintText: '지명을 검색하세요.',
@@ -141,7 +200,9 @@ class _MapPageState extends State<MapPage> {
                               suffixIcon: IconButton(
                                 color: Color.fromARGB(255, 79, 112, 229),
                                 icon: Icon(Icons.search),
-                                onPressed: () {
+                                onPressed: () async {
+                                  await searchkeyword(searchTextController.text, context);
+                                  searchTextController.text = "";
                                   FocusScope.of(context).unfocus();
                                 },
                               ),
