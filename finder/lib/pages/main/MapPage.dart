@@ -47,144 +47,153 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          title: Text("병원 찾기"),
-          backgroundColor: Color.fromARGB(255, 79, 112, 229),
-          leading: DrawerButton(),
-          actions: [ 
-            IconButton(
-              onPressed: () async {
-                LatLng curPos = await getUserLocation();
-                print("${curPos.latitude}");
-                mapController!.setCenter(curPos);
-              },
-              icon: Icon(Icons.my_location),
-            ),
-            Switch(
-              value: light,
-              activeColor: Colors.black,
-              onChanged: (bool value) {
-                if(value == false) {
-                  Navigator.pushNamed(context, '/list');
-                }
-              },
-            ),
-          ],
-        ),
-        
-        body: SafeArea(
-          child: FutureBuilder(
-            future: getUserLocation(),
-            builder: (context, snapshot) {
-              if(snapshot.hasData) {
-                return Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: [
-                    KakaoMap(
-                      onMapCreated: ((controller) async {
-                        mapController = controller;
-                        mapController!.setCenter(LatLng(snapshot.data!.latitude, snapshot.data!.longitude));
-                        markers.add(
-                          Marker(
-                            markerId: UniqueKey().toString(),
-                            latLng: LatLng(snapshot.data!.latitude, snapshot.data!.longitude),                          
-                          )
-                        );
-                        setState(() {});
-                      }),
-                      onMarkerTap: (markerId, latLng, zoomLevel) {
-                        if(!markerClicked) {
-                          setState(() {
-                            markerClicked = true;
-                          });
-                          mapController!.panTo(latLng);
-                        }
-                      },
-                      onDragChangeCallback: (latLng, zoomLevel, dragType) {
-                        if(markerClicked) {
-                          setState(() {
-                            markerClicked = false;
-                          });
-                        }
-                      },
-                      onMapTap: (latLng) {
-                        if(markerClicked) {
-                          setState(() {
-                            markerClicked = false;
-                          });
-                        }
-                      },
-                      markers: markers.toList(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Container(
-                        color: Colors.transparent,
-                        width: vw * 0.95,
-                        //height: vh * 0.1,
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: TextField(
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            hintText: '지명을 검색하세요.',
-                            fillColor: Colors.white,
-                            filled: true,
-                            suffixIcon: IconButton(
-                              color: Color.fromARGB(255, 79, 112, 229),
-                              icon: Icon(Icons.search),
-                              onPressed: () {},
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
-                              borderSide: BorderSide(
+      home: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            title: Text("병원 찾기"),
+            backgroundColor: Color.fromARGB(255, 79, 112, 229),
+            leading: DrawerButton(),
+            actions: [ 
+              IconButton(
+                onPressed: () async {
+                  LatLng curPos = await getUserLocation();
+                  print("${curPos.latitude}");
+                  mapController!.setCenter(curPos);
+                },
+                icon: Icon(Icons.my_location),
+              ),
+              Switch(
+                value: light,
+                activeColor: Colors.black,
+                onChanged: (bool value) {
+                  if(value == false) {
+                    Navigator.pushNamed(context, '/list');
+                  }
+                },
+              ),
+            ],
+          ),
+          
+          body: SafeArea(
+            child: FutureBuilder(
+              future: getUserLocation(),
+              builder: (context, snapshot) {
+                if(snapshot.hasData) {
+                  return Stack(
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      KakaoMap(
+                        onMapCreated: ((controller) async {
+                          mapController = controller;
+                          mapController!.setCenter(LatLng(snapshot.data!.latitude, snapshot.data!.longitude));
+                          markers.add(
+                            Marker(
+                              markerId: UniqueKey().toString(),
+                              latLng: LatLng(snapshot.data!.latitude, snapshot.data!.longitude),                          
+                            )
+                          );
+                          setState(() {});
+                        }),
+                        onMarkerTap: (markerId, latLng, zoomLevel) {
+                          if(!markerClicked) {
+                            setState(() {
+                              markerClicked = true;
+                            });
+                            mapController!.panTo(latLng);
+                          }
+                        },
+                        onDragChangeCallback: (latLng, zoomLevel, dragType) {
+                          FocusScope.of(context).unfocus();
+                          if(markerClicked) {
+                            setState(() {
+                              markerClicked = false;
+                            });
+                          }
+                        },
+                        onMapTap: (latLng) {
+                          FocusScope.of(context).unfocus();
+                          if(markerClicked) {
+                            setState(() {
+                              markerClicked = false;
+                            });
+                          }
+                        },
+                        markers: markers.toList(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Container(
+                          color: Colors.transparent,
+                          width: vw * 0.95,
+                          //height: vh * 0.1,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextField(
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: InputDecoration(
+                              hintText: '지명을 검색하세요.',
+                              fillColor: Colors.white,
+                              filled: true,
+                              suffixIcon: IconButton(
                                 color: Color.fromARGB(255, 79, 112, 229),
+                                icon: Icon(Icons.search),
+                                onPressed: () {
+                                  FocusScope.of(context).unfocus();
+                                },
                               ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 79, 112, 229),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(255, 79, 112, 229),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(255, 79, 112, 229),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    markerClicked ?
-                    Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.fromLTRB(0,0,0, vh * 0.095),
-                    child: Container(
+                      markerClicked ?
+                      Container(
                       padding: EdgeInsets.all(8),
-                      height: 0.15 * vh,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black, width: 1),
+                      margin: EdgeInsets.fromLTRB(0,0,0, vh * 0.095),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        height: 0.15 * vh,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black, width: 1),
+                        ),
+                        child: HospitalCard(
+                          name: "세브란스병원",
+                          distance:"1.4km",
+                          address: "서울시 서대문구 연세로 50-1",
+                          tel: "02-0000-0000",
+                          arriveTime: "오후 01시 30분",
+                          numberOfBeds : 8,
+                          vh: vh
+                        ),
                       ),
-                      child: HospitalCard(
-                        name: "세브란스병원",
-                        distance:"1.4km",
-                        address: "서울시 서대문구 연세로 50-1",
-                        tel: "02-0000-0000",
-                        arriveTime: "오후 01시 30분",
-                        numberOfBeds : 8,
-                        vh: vh
-                      ),
-                    ),
-                    )
-                    : const SizedBox()
-                  ]
-                );
-              }
-              return Center(child: CircularProgressIndicator());
-            },
+                      )
+                      : const SizedBox()
+                    ]
+                  );
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
+          drawer: components.CustomDrawer(currentPage: 'map').build(context)
         ),
-        drawer: components.CustomDrawer(currentPage: 'map').build(context)
       ),
     );
   }
