@@ -12,7 +12,11 @@ class UserAddPage extends StatefulWidget {
 
 class _UserAddPageState extends State<UserAddPage> {
 
-  int currentStep = 2;
+  final bodyScrollController = ScrollController();
+
+  double offset = 0;
+
+  int currentStep = 0;
 
   var vw = 0.0;
   var vh = 0.0;
@@ -20,13 +24,24 @@ class _UserAddPageState extends State<UserAddPage> {
   @override
   void initState() {
     super.initState();
+
+    bodyScrollController.addListener(() {
+      setState(() {
+        offset = bodyScrollController.offset;
+      });
+    });
+    
     nameTextEditController.addListener(checkNameField);
     ageTextEditController.addListener(checkAgeField);
     telTextEditController.addListener(checkTelField);
     addressTextEditController.addListener(checkAddressField);
     detailAddressTextEditController.addListener(checkDetailAddressField);
 
-    allergyTextEditController.addListener(allergyCheck);
+    allergyTextEditController.addListener(checkAllergy);
+
+    drugsTextEditController.addListener(checkDrugs);
+    
+    etcTextEditController.addListener(checkEtc);
   }
 
   @override
@@ -41,59 +56,199 @@ class _UserAddPageState extends State<UserAddPage> {
       return FirstStep(context);
     else if (currentStep == 1) 
       return SecondStep(context);
-    return ThirdStep(context);
+    else if (currentStep == 2)
+      return ThirdStep(context);
+    else if (currentStep == 3)
+      return FourthStep(context);
+    return FifthStep(context);
   }
 
   Widget getCurrentStep(int currentStep) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        currentStep == 0 ? SvgPicture.asset(
-          'assets/icons/counter_1.svg',
-          width: 20, height: 20,
-          colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-        ) :
-        Icon(Icons.check_circle, size: 20, color: Colors.green),
-        currentStep > 0 ?
-          currentStep == 1 ?
-            SvgPicture.asset(
-              'assets/icons/counter_2.svg',
+        currentStep == 0 
+        ? checkFirstStep() 
+          ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+          : SvgPicture.asset(
+              'assets/icons/counter_1.svg',
               width: 20, height: 20,
               colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            ) :
-            Icon(Icons.check_circle, size: 20, color: Colors.green) :
-          Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 1 ?
-          currentStep == 2 ?
-            SvgPicture.asset(
-              'assets/icons/counter_3.svg',
-              width: 20, height: 20,
-              colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            ) :
-            Icon(Icons.check_circle, size: 20, color: Colors.green) :
-          Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 2 ?
-          currentStep == 3 ?
-            SvgPicture.asset(
+            ) 
+        : Icon(Icons.check_circle, size: 20, color: Colors.green),
+        currentStep > 0 
+        ? currentStep == 1
+          ? checkSecondStep()
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+                'assets/icons/counter_2.svg',
+                width: 20, height: 20,
+                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+              )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey),
+        currentStep > 1 
+        ? currentStep == 2
+          ? checkThirdStep()
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+                'assets/icons/counter_3.svg',
+                width: 20, height: 20,
+                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+              )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey),
+        currentStep > 2 
+        ? currentStep == 3 
+          ? checkFourthStep() 
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
               'assets/icons/counter_4.svg',
               width: 20, height: 20,
               colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            ) :
-            Icon(Icons.check_circle, size: 20, color: Colors.green) :
-          Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 3 ?
-          SvgPicture.asset(
-            'assets/icons/counter_5.svg',
-            width: 20, height: 20,
-            colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-          ) :
-          Icon(Icons.circle, size: 20, color: Colors.grey),
+            )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey),
+        currentStep > 3
+          ? checkFifthStep()
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+                'assets/icons/counter_5.svg',
+                width: 20, height: 20,
+                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+            )
+        : Icon(Icons.circle, size: 20, color: Colors.grey)
       ]
     );
   }
 
+  /** 직접 입력 or 아이디 입력 구분 단계 */
+
+  bool? addDirectly = null;
+
+  bool checkFirstStep() {
+    return addDirectly != null ? true : false;
+  }
+
+  Widget FirstStep(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: vh * 0.7,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      addDirectly = true;
+                    });
+                  },
+                  child: Container(
+                    width: vw * 0.7,
+                    height: vh * 0.15,
+                    decoration: BoxDecoration(
+                      color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.white,
+                      border: Border.all(
+                        color: addDirectly == true 
+                          ? Color.fromARGB(255, 79, 112, 229)
+                          : Color.fromARGB(255, 139, 139, 139),
+                        width: 4.0
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: vw * 0.05),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        addDirectly == true
+                          ? Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 25
+                          )
+                          : Icon(
+                            Icons.circle_outlined,
+                            color: Color.fromARGB(255, 139, 139, 139),
+                            size: 25
+                          ),
+                        Text(
+                          '직접 추가하기',
+                          style: TextStyle(
+                            color: addDirectly == true ? Colors.white : Color.fromARGB(255, 139, 139, 139),
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      ]
+                    )
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      addDirectly = false;
+                    });
+                  },
+                  child: Container(
+                    width: vw * 0.7,
+                    height: vh * 0.15,
+                    margin: EdgeInsets.only(top: 50.0),
+                    decoration: BoxDecoration(
+                      color: addDirectly == false ? Color.fromARGB(255, 79, 112, 229) : Colors.white,
+                      border: Border.all(
+                        color: addDirectly == false 
+                          ? Color.fromARGB(255, 79, 112, 229)
+                          : Color.fromARGB(255, 139, 139, 139),
+                        width: 4.0
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: vw * 0.05),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        addDirectly == false
+                          ? Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 25
+                          )
+                          : Icon(
+                            Icons.circle_outlined,
+                            color: Color.fromARGB(255, 139, 139, 139),
+                            size: 25
+                          ),
+                        Text(
+                          '검색하여 추가',
+                          style: TextStyle(
+                            color: addDirectly == false ? Colors.white : Color.fromARGB(255, 139, 139, 139),
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      ]
+                    )
+                  ),
+                )
+              ]
+            ),
+          ),
+        ]
+      ),
+    );
+  }
+
+  /** 직접 입력 or 아이디 입력 구분 단계 끝 */
+
   /** 건강 상태 입력 첫번째 단계 */
 
+  /** 건강 정보 직접 입력시 위젯 */
   TextEditingController nameTextEditController = TextEditingController();
   TextEditingController ageTextEditController = TextEditingController();
   TextEditingController telTextEditController = TextEditingController();
@@ -179,16 +334,29 @@ class _UserAddPageState extends State<UserAddPage> {
     });
   }
 
-  bool checkFirstStep() {
-    return !nameIsEmpty && relationChecked && !ageIsEmpty &&  !telIsEmpty && !addressIsEmpty && !detailAddressIsEmpty && sexChecked;
+  /** 건강 정보 직접 입력시 위젯 끝 */
+
+  /** 검색 후 추가시 위젯 */
+
+  TextEditingController otherIdTextEditController = TextEditingController();
+
+  final otherIdNode = FocusNode();
+
+  /** 검색 후 추가시 위젯 끝 */
+
+  bool checkSecondStep() {
+    if (addDirectly == true)
+      return !nameIsEmpty && relationChecked && !ageIsEmpty &&  !telIsEmpty && !addressIsEmpty && !detailAddressIsEmpty && sexChecked;
+    else
+      return true;
   }
 
-  Widget FirstStep(BuildContext context) {
-    return Column(
+  Widget SecondStep(BuildContext context) {
+    return addDirectly == true
+    ? Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        getCurrentStep(0),
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
@@ -451,6 +619,25 @@ class _UserAddPageState extends State<UserAddPage> {
           )
         )
       ]
+    )
+    : Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          child: Row(
+            children: [
+              Text('상대방의 ID를 입력하십시오.'),
+              Icon(
+                Icons.check_circle,
+                color: Colors.grey,
+                size: 14
+              )
+            ]
+          )
+        )
+      ]
     );
   }
 
@@ -516,7 +703,7 @@ class _UserAddPageState extends State<UserAddPage> {
   bool bloodCheckedAll() {
     return rhChecked && bloodTypeChecked ? true : false;
   }
-  void allergyCheck() {
+  void checkAllergy() {
     setState(() {
       if (allergyExists == false)
         allergyChecked = true;
@@ -527,8 +714,11 @@ class _UserAddPageState extends State<UserAddPage> {
       }
     });
   }
-  bool checkSecondStep() {
-    return rhChecked && bloodTypeChecked && allergyChecked ? true : false;
+  bool checkThirdStep() {
+    if (addDirectly == true)
+      return rhChecked && bloodTypeChecked && allergyChecked ? true : false;
+    else
+      return true;
   }
 
   Widget allergyField() {
@@ -547,19 +737,30 @@ class _UserAddPageState extends State<UserAddPage> {
         maxLines: 10,
         controller: allergyTextEditController,
         focusNode: allergyNode,
+        onTap: () {
+          offset = 1;
+        },
         onTapOutside: (event) {
           allergyNode.unfocus();
+          bodyScrollController.animateTo(
+            0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut
+          );
+          setState(() {
+            offset = 0;
+          });
         }
       )
     );
   }
 
-  Widget SecondStep(BuildContext context) {
-    return Column(
+  Widget ThirdStep(BuildContext context) {
+    return addDirectly == true
+      ? Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        getCurrentStep(1),
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Column(
@@ -622,7 +823,8 @@ class _UserAddPageState extends State<UserAddPage> {
                                         selectedBloodType = value!;
                                         bloodTypeChecked = true;
                                       });
-                                    }
+                                    },
+                                    activeColor: Color.fromARGB(255, 79, 112, 229)
                                   ),
                                   Text(bloodType)
                                 ]
@@ -664,9 +866,10 @@ class _UserAddPageState extends State<UserAddPage> {
                           onChanged: (value) {
                             setState(() {
                               allergyExists = value!;
-                              allergyCheck();
+                              checkAllergy();
                             });
-                          }
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
                         ),
                         Text('해당 없음')
                       ]
@@ -679,9 +882,10 @@ class _UserAddPageState extends State<UserAddPage> {
                           onChanged: (value) {
                             setState(() {
                               allergyExists = value!;
-                              allergyCheck();
+                              checkAllergy();
                             });
-                          }
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
                         ),
                         Text('해당 있음')
                       ]
@@ -694,6 +898,9 @@ class _UserAddPageState extends State<UserAddPage> {
         ),
         allergyExists == true ? allergyField() : Container()
       ]
+    )
+    : Column(
+
     );
   }
   /** 건강 상태 입력 두번째 단계 끝 */
@@ -701,60 +908,171 @@ class _UserAddPageState extends State<UserAddPage> {
   /** 건강 상태 입력 세번째 단계 */
   TextEditingController drugsTextEditController = TextEditingController();
   List<TextEditingController> surgeryControllerList = [];
-
   final drugsNode = FocusNode();
   final List<FocusNode>surgeryNodeList = [];
+  List<TextField> surgeryTextFieldList = [];
+  List<DateTime> surgeryDateList = [];
+  List<String> surgeryDateStringList = [];
 
   bool? drugsExists = null;
-  bool drugChecked = false;
+  bool drugsChecked = false;
   bool? surgeryExists = null;
   bool surgeryChecked = false;
 
+  void checkDrugs() {
+    setState(() {
+      if (drugsExists == false)
+        drugsChecked = true;
+      else if (drugsExists == true) {
+        if (drugsTextEditController.text.isEmpty) 
+          drugsChecked = false;
+        else
+          drugsChecked = true;
+      }
+    });
+  }
+
+  void checkSurgery() {
+    setState(() {
+      if (surgeryExists == false)
+        surgeryChecked = true;
+      else if (surgeryExists == true) {
+        surgeryChecked = true;
+        if (surgeryControllerList.length == 0) {
+          surgeryChecked = false;
+        }
+        for (TextEditingController controller in surgeryControllerList) {
+          if (controller.text.isEmpty) {
+            surgeryChecked = false;
+          }
+        }
+      }
+    });
+  }
+
+  bool checkFourthStep() {
+    if (addDirectly == true)
+      return drugsChecked && surgeryChecked ? true : false;
+    else
+      return true;
+  }
+
   Widget DrugsField() {
-    return Container(
+    return drugsExists == true ? Container(
       margin: EdgeInsets.only(top: vh * 0.01),
       child: TextField(
         controller: drugsTextEditController,
         focusNode: drugsNode,
-        enabled: drugsExists == true ? true : false,
         maxLines: 6,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(10),
-          border: drugsExists == true ? OutlineInputBorder(
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
               color: Colors.grey,
               width: 1.0
             )
-          ) : InputBorder.none
+          )
         ),
         onTapOutside: (event) {
           drugsNode.unfocus();
         }
       )
-    );
+    ) : Container();
   }
 
-  List<TextField> surgeryTextFieldList = [];
+  double getSurgeryFieldHeight() {
+    if (drugsExists == true) {
+      if (surgeryTextFieldList.length > 3)
+        return vh * 0.18;
+      else 
+        return 40.0 * surgeryTextFieldList.length;
+    } else {
+      if (surgeryTextFieldList.length > 8)
+        return vh * 0.39;
+      else
+        return 40.0 * surgeryTextFieldList.length;
+    }
+  }
 
   Widget SurgeryAllField() {
     return surgeryTextFieldList.length > 0 ?
       Container(
-        child: Column(
-          children: surgeryTextFieldList.map((item) {
-            return Container(
-              height: 30.0,
-              margin: EdgeInsets.only(top: vh * 0.01),
-              child: Row(
-                children: [
-                  Container(
-                    width: vw * 0.5,
-                    child: item,
+        height: getSurgeryFieldHeight(),
+        width: vw * 0.9,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              for (int i = 0; i < surgeryTextFieldList.length; i++) 
+                Container(
+                  height: 30.0,
+                  margin: EdgeInsets.only(top: vh * 0.01),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: vw * 0.4,
+                        child: surgeryTextFieldList[i]
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.0
+                          ),
+                          borderRadius: BorderRadius.circular(6.0)
+                        ),
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0)
+                            ),
+                          ),
+                          child: Text(surgeryDateStringList[i]),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: surgeryDateList[i],
+                              firstDate: DateTime(DateTime.now().year - 1),
+                              lastDate: DateTime.now()
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                surgeryDateList[i] = selectedDate;
+                                surgeryDateStringList[i] = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+                              });
+                            }
+                          }
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: InkWell(
+                          child: Icon(
+                            Icons.remove_circle,
+                            color: Colors.redAccent,
+                            size: 20
+                          ),
+                          onTap: () {
+                            setState(() {
+                              TextEditingController removeController = surgeryControllerList.removeAt(i);
+                              FocusNode removeNode = surgeryNodeList.removeAt(i);
+                              surgeryDateList.removeAt(i);
+                              surgeryDateStringList.removeAt(i);
+                              surgeryTextFieldList.removeAt(i);
+                              removeController.dispose();
+                              removeNode.dispose();
+                            });
+                          }
+                        )
+                      )
+                    ]
                   )
-                ]
-              )
-            );
-          }).toList()
+                )
+            ]
+          )
         )
       )
       : Container();
@@ -763,17 +1081,34 @@ class _UserAddPageState extends State<UserAddPage> {
   void addSurgeryTextField() {
     setState(() {
       surgeryControllerList.add(
-        TextEditingController()
+        new TextEditingController()
       );
+      checkSurgery();
+      surgeryControllerList[surgeryControllerList.length - 1].addListener(checkSurgery);
       surgeryNodeList.add(
-        FocusNode()
+        new FocusNode()
       );
       surgeryTextFieldList.add(
-        TextField(
+        new TextField(
           controller: surgeryControllerList[surgeryControllerList.length - 1],
           focusNode: surgeryNodeList[surgeryNodeList.length - 1],
+          onTap: () {
+            setState(() {
+              offset = 1;
+            });
+          },
           onTapOutside: (event) {
-            surgeryNodeList[surgeryNodeList.length - 1].unfocus();
+            for (int i = 0; i < surgeryNodeList.length; i++) {
+              surgeryNodeList[i].unfocus();
+              bodyScrollController.animateTo(
+                0,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut
+              );
+              setState(() {
+                offset = 0;
+              });
+            }
           },
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -788,13 +1123,20 @@ class _UserAddPageState extends State<UserAddPage> {
           )
         )
       );
+      surgeryDateList.add(
+        new DateTime.now()
+      );
+      DateTime lastSurgery = surgeryDateList[surgeryDateList.length - 1];
+      surgeryDateStringList.add(
+        '${lastSurgery.year}-${lastSurgery.month.toString().padLeft(2, '0')}-${lastSurgery.day.toString().padLeft(2, '0')}'
+      );
     });
   }
 
-  Widget ThirdStep(BuildContext context) {
-    return Column(
+  Widget FourthStep(BuildContext context) {
+    return addDirectly == true
+    ? Column(
       children: [
-        getCurrentStep(2),
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
@@ -802,7 +1144,7 @@ class _UserAddPageState extends State<UserAddPage> {
               Text('복용중인 약'),
               Icon(
                 Icons.check_circle,
-                color: Colors.grey,
+                color: drugsChecked ? Colors.green : Colors.grey,
                 size: 14
               )
             ]
@@ -823,9 +1165,10 @@ class _UserAddPageState extends State<UserAddPage> {
                           onChanged: (value) {
                             setState(() {
                               drugsExists = value!;
-                              drugChecked = true;
+                              checkDrugs();
                             });
-                          }
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
                         ),
                         Text('해당 없음')
                       ]
@@ -838,8 +1181,10 @@ class _UserAddPageState extends State<UserAddPage> {
                           onChanged: (value) {
                             setState(() {
                               drugsExists = value!;
+                              checkDrugs();
                             });
-                          }
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
                         ),
                         Text('해당 있음')
                       ],
@@ -858,7 +1203,7 @@ class _UserAddPageState extends State<UserAddPage> {
               Text('수술 이력 (최근 1년 이내)'),
               Icon(
                 Icons.check_circle,
-                color: Colors.grey,
+                color: surgeryChecked == true ? Colors.green : Colors.grey,
                 size: 14
               )
             ]
@@ -878,7 +1223,8 @@ class _UserAddPageState extends State<UserAddPage> {
                         surgeryExists = value!;
                         surgeryChecked = true;
                       });
-                    }
+                    },
+                    activeColor: Color.fromARGB(255, 79, 112, 229)
                   ),
                   Text('해당 없음')
                 ]
@@ -891,63 +1237,644 @@ class _UserAddPageState extends State<UserAddPage> {
                     onChanged: (value) {
                       setState(() {
                         surgeryExists = value!;
+                        checkSurgery();
+                      });
+                    },
+                    activeColor: Color.fromARGB(255, 79, 112, 229)
+                  ),
+                  Text('해당 있음')
+                ]
+              ),
+            ]
+          )
+        ),
+        surgeryExists == true ?
+          Container(
+            child: SurgeryAllField()
+          ) :
+          Container(),
+        surgeryExists == true ?
+          Container(
+            margin: EdgeInsets.only(top: 15.0),
+            height: 35.0,
+            width: vw * 0.812,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.all(Radius.elliptical(7.5,7.5)),
+              border: Border.all(
+                color: Color.fromARGB(255, 79, 112, 229),
+                width: 2.0,
+              )
+            ),
+            child: InkWell(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add,
+                    weight: 1000,
+                    size: 25,
+                    color: Color.fromARGB(255, 79, 112, 229)
+                  )
+                ]
+              ),
+              onTap: addSurgeryTextField
+            )
+          ) :
+          Container()
+      ]
+    )
+    : Column(
+
+    );
+  }
+  /** 건강 상태 입력 세번째 단계 끝 */
+
+  /** 건강 상태 입력 네번째 단계 */
+  
+  List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 달'];
+  List<String> smokingAmountList = [
+    '선택안함',
+    '0.5 갑 이상 1 갑 미만',
+    '1 갑 이상 1.5 갑 미만',
+    '1.5 갑 이상 2 갑 미만',
+    '2 갑 이상 2.5 갑 미만',
+    '2.5 갑 이상 3 갑 미만',
+    '3 갑 이상'
+  ];
+
+  String smokingDuration = '';
+  String smokingAmount = '';
+
+  bool? isSmoker = null;
+  bool smokingChecked = false;
+
+  List<String> drinkingDurationList = ['선택안함', '하루', '일주일', '한 달'];
+  List<String> drinkingAmountList = [
+    '선택안함',
+    '0.5 병 이상 1 병 미만',
+    '1 병 이상 1.5 병 미만',
+    '1.5 병 이상 2 병 미만',
+    '2 병 이상 2.5 병 미만',
+    '2.5 병 이상 3 병 미만',
+    '3 병 이상'
+  ];
+
+  String drinkingDuration = '';
+  String drinkingAmount = '';
+
+  bool? isDrinker = null;
+  bool drinkingChecked = false;
+
+  TextEditingController etcTextEditController = TextEditingController();
+  final etcNode = FocusNode();
+
+  bool? etcExists = null;
+  bool etcChecked = false;
+  int restSpace = 2;
+
+  GlobalKey smokingFieldKey = GlobalKey();
+  GlobalKey drinkingFieldKey = GlobalKey();
+
+  Widget SmokingField() {
+    return Container(
+      key: smokingFieldKey,
+      margin: EdgeInsets.symmetric(horizontal: vw * 0.02),
+      child: Row(
+        children: [
+          DropdownButton<String> (
+            padding: EdgeInsets.zero,
+            value: smokingDuration == '' ? smokingDurationList[0] : smokingDuration,
+            icon: Icon(
+              null
+            ),
+            onChanged: (value) {
+              setState(() {
+                smokingDuration = value!;
+                checkSmoker();
+              });
+            },
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black
+            ),
+            items: smokingDurationList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value)
+              );
+            }).toList()
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 16.0, right: 25.0),
+            child: Text(
+              '동안 ',
+              style: TextStyle(
+                fontSize: 16
+              )
+            )
+          ),
+          DropdownButton<String> (
+            padding: EdgeInsets.zero,
+            value: smokingAmount == '' ? smokingAmountList[0] : smokingAmount,
+            icon: Icon(
+              null
+            ),
+            onChanged: (value) {
+              setState(() {
+                smokingAmount = value!;
+                checkSmoker();
+              });
+            },
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black
+            ),
+            items: smokingAmountList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value)
+              );
+            }).toList()
+          )
+        ]
+      )
+    );
+  }
+
+  Widget DrinkingField() {
+    return Container(
+      key: drinkingFieldKey,
+      margin: EdgeInsets.symmetric(horizontal: vw * 0.02),
+      child: Row(
+        children: [
+          DropdownButton<String> (
+            padding: EdgeInsets.zero,
+            value: drinkingDuration == '' ? drinkingDurationList[0] : drinkingDuration,
+            icon: Icon(
+              null
+            ),
+            onChanged: (value) {
+              setState(() {
+                drinkingDuration = value!;
+                checkDrinker();
+              });
+            },
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black
+            ),
+            items: smokingDurationList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value)
+              );
+            }).toList()
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 16.0, right: 25.0),
+            child: Text(
+              '동안 ',
+              style: TextStyle(
+                fontSize: 16
+              )
+            )
+          ),
+          DropdownButton<String> (
+            padding: EdgeInsets.zero,
+            value: drinkingAmount == '' ? drinkingAmountList[0] : drinkingAmount,
+            icon: Icon(
+              null
+            ),
+            onChanged: (value) {
+              setState(() {
+                drinkingAmount = value!;
+                checkDrinker();
+              });
+            },
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black
+            ),
+            items: drinkingAmountList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value)
+              );
+            }).toList()
+          )
+        ]
+      )
+    );
+  }
+
+  double getRestSpace() {
+    // setState(() {
+    //   if (isSmoker == true)
+    //     restSpace--;
+    //   if (isDrinker == true)
+    //     restSpace--;
+    // });
+    // return restSpace;
+    double restSpace = vh * 0.25;
+    setState(() {
+      if (smokingFieldKey.currentContext != null) {
+        RenderBox smokingRenderBox = smokingFieldKey.currentContext!.findRenderObject() as RenderBox;
+        restSpace = restSpace - smokingRenderBox.size.height;
+      }
+      if (drinkingFieldKey.currentContext != null) {
+        RenderBox drinkingRenderBox = drinkingFieldKey.currentContext!.findRenderObject() as RenderBox;
+        restSpace = restSpace - drinkingRenderBox.size.height;
+      }
+    });
+    return restSpace;
+  }
+
+  Widget EtcField() {
+    return Container(
+      height: getRestSpace(),
+      child: TextField(
+        minLines: null,
+        maxLines: null,
+        controller: etcTextEditController,
+        focusNode: etcNode,
+        onTap: () {
+          setState(() {
+            offset = 1;
+          });
+        },
+        onTapOutside: (event) {
+          etcNode.unfocus();
+          bodyScrollController.animateTo(
+            0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut
+          );
+          setState(() {
+            offset = 0;
+          });
+        },
+        expands: true
+      )
+    );
+  }
+
+  void checkSmoker() {
+    setState(() {
+      if (isSmoker == false)
+        smokingChecked = true;
+      else if (isSmoker == true) {
+        if (smokingDuration == '' || smokingDuration == '선택안함' || smokingAmount == '' || smokingAmount == '선택안함')
+          smokingChecked = false;
+        else
+          smokingChecked = true;
+      }
+    });
+  }
+
+  void checkDrinker() {
+    setState(() {
+      if (isDrinker == false)
+        drinkingChecked = true;
+      else if (isDrinker == true) {
+        if (drinkingDuration == '' || drinkingDuration == '선택안함' || drinkingAmount == '' || drinkingAmount == '선택안함')
+          drinkingChecked = false;
+        else
+          drinkingChecked = true;
+      }
+    });
+  }
+
+  void checkEtc() {
+    setState(() {
+      if (etcExists == false) 
+        etcChecked = true;
+      else if (etcExists == true) {
+        if (etcTextEditController.text.isEmpty)
+          etcChecked = false;
+        else
+          etcChecked = true;
+      }
+    });
+  }
+
+  bool checkFifthStep() {
+    if (addDirectly == true)
+      return smokingChecked && drinkingChecked && etcChecked ? true : false;
+    else
+      return true;
+  }
+
+  Widget FifthStep(BuildContext context) {
+    return addDirectly == true
+    ? Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          child: Row(
+            children: [
+              Text('흡연 여부'),
+              Icon(
+                Icons.check_circle,
+                color: smokingChecked ? Colors.green : Colors.grey,
+                size: 14
+              )
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: false,
+                    groupValue: isSmoker,
+                    onChanged: (value) {
+                      setState(() {
+                        isSmoker = value!;
+                        checkSmoker();
+                      });
+                    }
+                  ),
+                  Text('비흡연')
+                ]
+              ),
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: true,
+                    groupValue: isSmoker,
+                    onChanged: (value) {
+                      setState(() {
+                        isSmoker = value!;
+                        checkSmoker();
+                      });
+                    }
+                  ),
+                  Text('흡연중')
+                ]
+              )
+            ]
+          )
+        ),
+        isSmoker == true ? SmokingField() : Container(),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Row(
+            children: [
+              Text('음주 여부'),
+              Icon(
+                Icons.check_circle,
+                color: drinkingChecked ? Colors.green : Colors.grey,
+                size: 14
+              )
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: false,
+                    groupValue: isDrinker,
+                    onChanged: (value) {
+                      setState(() {
+                        isDrinker = value!;
+                        checkDrinker();
+                      });
+                    }
+                  ),
+                  Text('해당 없음')
+                ]
+              ),
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: true,
+                    groupValue: isDrinker,
+                    onChanged: (value) {
+                      setState(() {
+                        isDrinker = value!;
+                        checkDrinker();
                       });
                     }
                   ),
                   Text('해당 있음')
                 ]
-              ),
-              SurgeryAllField(),
-              Container(
-                width: vw * 0.6,
-                height: 40,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 2.0
-                  ),
-                  borderRadius: BorderRadius.circular(12.0)
-                ),
-                child: InkWell(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        weight: 700,
-                        size: 35,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 15.0),
-                        child: Text(
-                          '추가',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20
-                          )
-                        )
-                      )
-                    ]
-                  ),
-                  onTap: addSurgeryTextField
-                )
               )
             ]
           )
-        )
+        ),
+        isDrinker == true ? DrinkingField() : Container(),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          child: Row(
+            children: [
+              Text('기타 특이사항'),
+              Icon(
+                Icons.check_circle,
+                color: etcChecked ? Colors.green : Colors.grey,
+                size: 14
+              )
+            ]
+          )
+        ),
+        Container(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: false,
+                    groupValue: etcExists,
+                    onChanged: (value) {
+                      setState(() {
+                        etcExists = value!;
+                        checkEtc();
+                      });
+                    }
+                  ),
+                  Text('특이사항 없음')
+                ]
+              ),
+              Row(
+                children: [
+                  Radio<bool> (
+                    value: true,
+                    groupValue: etcExists,
+                    onChanged: (value) {
+                      setState(() {
+                        setState(() {
+                          etcExists = value!;
+                          checkEtc();
+                        });
+                      });
+                    }
+                  ),
+                  Text('특이사항 있음')
+                ]
+              )
+            ]
+          )
+        ),
+        etcExists == true ? EtcField() : Container()
       ]
+    )
+    : Column(
+
     );
   }
-  /** 건강 상태 입력 세번째 단계 끝 */
+
+  /** 건강 상태 입력 네번째 단계 끝 */
 
   /** 현재 단계에 따라 완성도 체크해서 다음 버튼 활성 or 비활성 함수 */
   bool checkCurrentStep() {
-    if (currentStep == 0) {
+    if (currentStep == 0)
       return checkFirstStep();
-    } else if (currentStep == 1) {
+    else if (currentStep == 1)
       return checkSecondStep();
-    }
-    return checkSecondStep();
+    else if (currentStep == 2)
+      return checkThirdStep();
+    else if (currentStep == 3)
+      return checkFourthStep();
+    else 
+      return checkFifthStep();
+  }
+
+  /** 이전 버튼 or 취소 버튼 구분 함수 */
+  void cancleAddAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.zero,
+          ),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero
+            ),
+            actionsPadding: EdgeInsets.only(bottom: 5.0),
+            title: Text('건강 정보 입력 취소'),
+            content: Text('건강 정보 입력을 취소하시겠습니까?'),
+            actions: [
+              TextButton(
+                child: Text(
+                  '취소',
+                  style: TextStyle(
+                    color: Colors.red
+                  )
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }
+              ),
+              TextButton(
+                child: Text(
+                  '확인',
+                  style: TextStyle(
+                    color: Colors.blueAccent
+                  )
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              )
+            ]
+          )
+        );
+      }
+    );
+  }
+
+  /** 다음 버튼 or 제출 버튼 구분 함수 */
+  void completeAddAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.zero,
+          ),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero
+            ),
+            actionsPadding: EdgeInsets.only(bottom: 5.0),
+            title: Text('건강 정보 제출'),
+            content: Text('건강 정보를 제출하시겠습니까?'),
+            actions: [
+              TextButton(
+                child: Text(
+                  '취소',
+                  style: TextStyle(
+                    color: Colors.red
+                  )
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }
+              ),
+              TextButton(
+                child: Text(
+                  '확인',
+                  style: TextStyle(
+                    color: Colors.blueAccent
+                  )
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              )
+            ]
+          )
+        );
+      }
+    );
+  }
+
+  /** 건강 정보 직접 추가시 위젯 */
+  Widget BodyWidget() {
+    return GestureDetector(
+      onTap: () {
+        bodyScrollController.animateTo(
+          0,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut
+        );
+      },
+      child: SingleChildScrollView(
+        physics: offset != 0
+          ? AlwaysScrollableScrollPhysics()
+          : NeverScrollableScrollPhysics(),
+        controller: bodyScrollController,
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            vertical: 5.0, horizontal: vw * 0.05
+          ),
+          width: vw,
+          height: vh,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              getCurrentStep(currentStep),
+              getStepWidget(currentStep),
+            ]
+          )
+        ),
+      ),
+    );
+  }
+
+  Widget AddSearchWidget() {
+    return GestureDetector();
   }
 
   /** 앱 UI */
@@ -972,42 +1899,7 @@ class _UserAddPageState extends State<UserAddPage> {
               setState(() {
                 currentStep--;
               });
-            } : () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('건강 정보 입력 취소'),
-                    content: Text('건강 정보 입력을 취소하시겠습니까?'),
-                    actions: [
-                      TextButton(
-                        child: Text(
-                          '취소',
-                          style: TextStyle(
-                            color: Colors.red
-                          )
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }
-                      ),
-                      TextButton(
-                        child: Text(
-                          '확인',
-                          style: TextStyle(
-                            color: Colors.blueAccent
-                          )
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        }
-                      )
-                    ]
-                  );
-                }
-              );
-            }
+            } : cancleAddAlert
           ),
           title: Text(
             '건강 정보 입력',
@@ -1018,43 +1910,34 @@ class _UserAddPageState extends State<UserAddPage> {
           actions: [
             TextButton(
               child: Text(
-                '다음',
+                currentStep == 4 ? '제출' : '다음',
                 style: TextStyle(
                   color: checkCurrentStep() ? Colors.blueAccent : Colors.grey,
                   fontSize: 15,
                   fontWeight: FontWeight.bold
                 )
               ),
-              onPressed: checkCurrentStep() ? () {
-                setState(() {
-                  currentStep++;
-                });
-              } : null
+              onPressed: checkCurrentStep() ? 
+                currentStep == 4 ? completeAddAlert
+                  : () {
+                    setState(() {
+                      currentStep++;
+                    });
+                  } 
+                : null
             )
           ],
           bottom: PreferredSize(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(width: 0.3, color: Colors.black)
+                color: Colors.grey,
+                border: Border.all(width: 0.3, color: Colors.grey)
               )
             ),
             preferredSize: Size.fromHeight(0.3),
           )
         ),
-        body: Container(
-          margin: EdgeInsets.symmetric(
-            vertical: 1.0, horizontal: 25.0
-          ),
-          width: vw,
-          height: vh,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              getStepWidget(currentStep),
-            ]
-          )
-        )
+        body: BodyWidget()
       )
     );
   }
