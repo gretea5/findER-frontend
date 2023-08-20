@@ -1,3 +1,4 @@
+import 'package:d_chart/d_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -518,9 +519,6 @@ class _DetailPageState extends State<DetailPage> {
                     :
                       Container(
                         margin: EdgeInsets.only(top: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                        ),
                         child: Column(
                           children: [
                             Container(
@@ -578,19 +576,45 @@ class _DetailPageState extends State<DetailPage> {
                               height: 0.4 * vh,
                               width: 0.9 * vw,
                               margin: EdgeInsets.only(top: 20),
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                              ),
-                              child: Center(
-                                child: Text("시간 그래프 부분"),
-                              ),
+                              child: AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Stack(
+                                  children: [
+                                    DChartPie(
+                                      data: [
+                                        {'domain': 'OnTime', 'measure': 85},
+                                        {'domain': 'OffTime', 'measure': 15},
+                                      ],
+                                      donutWidth: 50,
+                                      fillColor: (pieData, index) {
+                                        switch(pieData['domain']) {
+                                          case 'OnTime':
+                                            return Colors.green;
+                                          default:
+                                            return Colors.white;
+                                        }
+                                      },
+                                      labelColor: Colors.transparent,
+                                    ),
+                                    Align(
+                                      child: Text(
+                                        '87.5%',
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ]
+                                ),
+                              )
                             ),
                             Container(
                               margin: EdgeInsets.only(top: 40),
                               child: Text(
                                 "최근 일주일간 평균 병상 추이",
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -598,11 +622,52 @@ class _DetailPageState extends State<DetailPage> {
                               height: 0.4 * vh,
                               width: 0.9 * vw,
                               margin: EdgeInsets.only(top: 20),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                              ),
-                              child: Center(
-                                child: Text("최근 일주일간 평균 병상 추이 부분"),
+                              child: Row(
+                                children: [
+                                  RotatedBox(quarterTurns: 3, child: Text('Quantity')),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        AspectRatio(
+                                          aspectRatio: 16 / 10,
+                                          child: DChartLine(
+                                            lineColor: (lineData, index, id) {
+                                              return id == 'Line 1'
+                                                  ? Colors.blue
+                                                  : Colors.amber;
+                                            },
+                                            data: [
+                                              {
+                                                'id': 'Line 1',
+                                                'data': [
+                                                  {'domain': 1, 'measure': 3},
+                                                  {'domain': 2, 'measure': 3},
+                                                  {'domain': 3, 'measure': 4},
+                                                  {'domain': 4, 'measure': 6},
+                                                  {'domain': 6, 'measure': 0.3},
+                                                ],
+                                              },
+                                              {
+                                                'id': 'Line 2',
+                                                'data': [
+                                                  {'domain': 1, 'measure': 4},
+                                                  {'domain': 2, 'measure': 5},
+                                                  {'domain': 3, 'measure': 2},
+                                                  {'domain': 4, 'measure': 1},
+                                                  {'domain': 5, 'measure': 2.5},
+                                                ],
+                                              },
+                                            ],
+                                            includePoints: true,
+                                          ),
+                                        ),
+                                        Text('Day'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
