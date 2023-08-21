@@ -615,6 +615,7 @@ class _DetailPageState extends State<DetailPage> {
                                 "최근 일주일간 평균 병상 추이",
                                 style: TextStyle(
                                   fontSize: 18,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
@@ -630,6 +631,42 @@ class _DetailPageState extends State<DetailPage> {
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                ClipRRect(
+                                                  child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.amber,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 5),
+                                                Text('1시간'),
+                                              ],
+                                            ),
+                                            SizedBox(width: 5),
+                                            Row(
+                                              children: [
+                                                ClipRRect(
+                                                  child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 5),
+                                                Text('2시간'),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                         AspectRatio(
                                           aspectRatio: 16 / 10,
                                           child: DChartLine(
@@ -642,21 +679,21 @@ class _DetailPageState extends State<DetailPage> {
                                               {
                                                 'id': 'Line 1',
                                                 'data': [
-                                                  {'domain': 1, 'measure': 3},
-                                                  {'domain': 2, 'measure': 3},
-                                                  {'domain': 3, 'measure': 4},
-                                                  {'domain': 4, 'measure': 6},
-                                                  {'domain': 6, 'measure': 0.3},
+                                                  {'domain': 0, 'measure': 14},
+                                                  {'domain': 20, 'measure': 11},
+                                                  {'domain': 40, 'measure': 8},
+                                                  {'domain': 60, 'measure': 5},
+                                                  {'domain': 80, 'measure': 18},
                                                 ],
                                               },
                                               {
                                                 'id': 'Line 2',
                                                 'data': [
-                                                  {'domain': 1, 'measure': 4},
-                                                  {'domain': 2, 'measure': 5},
-                                                  {'domain': 3, 'measure': 2},
-                                                  {'domain': 4, 'measure': 1},
-                                                  {'domain': 5, 'measure': 2.5},
+                                                  {'domain': 0, 'measure': 20},
+                                                  {'domain': 20, 'measure': 5},
+                                                  {'domain': 40, 'measure': 13},
+                                                  {'domain': 60, 'measure': 1},
+                                                  {'domain': 80, 'measure': 15},
                                                 ],
                                               },
                                             ],
