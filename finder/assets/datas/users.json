@@ -1,0 +1,32 @@
+[
+    {
+        "id": "rrrrrr@naver.com",
+        "name": "박옥순",
+        "tel": "01011111111",
+        "address": "서울특별시 성북구 보문로 29가길 9(02692) 204호",
+        "age": 69,
+        "sex": "여",
+        "bloodType": "RH+ O",
+        "allergy": true,
+        "drugs": true,
+        "smoking": true,
+        "drinking": true,
+        "surgery": true,
+        "relation": "본인"
+    },
+    {
+        "id": "dddddd@gmail.com",
+        "name": "김춘수",
+        "tel": "01022222222",
+        "address":"서울특별시 성북구 보문로 29가길 9(02692) 204호",
+        "age": 74,
+        "sex": "남",
+        "bloodType": "RH+ A",
+        "allergy": false,
+        "drugs": true,
+        "smoking": false,
+        "drinking": true,
+        "surgery": false,
+        "relation": "배우자"
+    }
+]

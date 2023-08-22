@@ -9,19 +9,23 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
 
-  final nameTextEditController = TextEditingController();
-  final idTextEditController = TextEditingController();
-  final pwTextEditController = TextEditingController();
+  TextEditingController nameTextEditController = TextEditingController();
+  TextEditingController emailTextEditController = TextEditingController();
+  TextEditingController pwTextEditController = TextEditingController();
+
+  final nameNode = FocusNode();
+  final emailNode = FocusNode();
+  final pwNode = FocusNode();
 
   bool nameIsEmpty = true;
-  bool idIsEmpty = true;
+  bool emailIsEmpty = true;
   bool pwIsEmpty = true;
 
   @override
   void initState() {
     super.initState();
     nameTextEditController.addListener(checkName);
-    idTextEditController.addListener(checkId);
+    emailTextEditController.addListener(checkEmail);
     pwTextEditController.addListener(checkPw);
   }
 
@@ -31,9 +35,15 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void checkId() {
+  void checkEmail() {
     setState(() {
-      idIsEmpty = !idTextEditController.text.isEmpty && idTextEditController.text.length > 5 ? false : true;
+      // emailIsEmpty = !emailTextEditController.text.isEmpty && emailTextEditController.text.length > 5 ? false : true;
+      if (emailTextEditController.text.isEmpty && emailTextEditController.text.length < 4)
+        emailIsEmpty = true;
+      else
+        emailIsEmpty = !RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+        ).hasMatch(emailTextEditController.text);
     });
   }
 
@@ -44,7 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool checkAll() {
-    return !nameIsEmpty && !idIsEmpty && !pwIsEmpty;
+    return !nameIsEmpty && !emailIsEmpty && !pwIsEmpty;
   }
 
   @override
@@ -68,7 +78,12 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0.3),
-            child: Divider(color: Colors.black)
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                border: Border.all(width: 0.3, color: Colors.grey)
+              )
+            )
           )
         ),
         body: SafeArea(
@@ -110,9 +125,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         )
                       ),
                       Container(
-                        height: 30,
+                        height: 40,
                         margin: EdgeInsets.only(top: 5.0),
                         child: TextField(
+                          focusNode: nameNode,
                           controller: nameTextEditController,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0),
@@ -130,7 +146,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               borderRadius: BorderRadius.circular(5),
                             )
-                          )
+                          ),
+                          onTapOutside: (event) {
+                            nameNode.unfocus();
+                          }
                         )
                       ),
                       Container(
@@ -139,7 +158,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "아이디",
+                              "이메일",
                               style: TextStyle(
                                 color: Color.fromARGB(255, 51, 24, 249),
                                 fontWeight: FontWeight.bold
@@ -151,16 +170,17 @@ class _SignUpPageState extends State<SignUpPage> {
                               weight: 400,
                               grade: 0,
                               opticalSize: 14,
-                              color: idIsEmpty ? Colors.grey : Colors.green
+                              color: emailIsEmpty ? Colors.grey : Colors.green
                             )
                           ]
                         )
                       ),
                       Container(
-                        height: 30,
+                        height: 40,
                         margin: EdgeInsets.only(top: 5.0),
                         child: TextField(
-                          controller: idTextEditController,
+                          controller: emailTextEditController,
+                          focusNode: emailNode,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 0.0,
@@ -180,7 +200,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               borderRadius: BorderRadius.circular(5),
                             )
-                          )
+                          ),
+                          onTapOutside: (event) {
+                            emailNode.unfocus();
+                          }
                         )
                       ),
                       Container(
@@ -207,10 +230,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         )
                       ),
                       Container(
-                        height: 30,
+                        height: 40,
                         margin: EdgeInsets.only(top: 5.0),
                         child: TextField(
                           controller: pwTextEditController,
+                          focusNode: pwNode,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 0.0,
@@ -230,7 +254,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               borderRadius: BorderRadius.circular(5),
                             )
-                          )
+                          ),
+                          onTapOutside: (event) {
+                            pwNode.unfocus();
+                          }
                         )
                       ),
                     ]
@@ -239,7 +266,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Container(
                   width: 277,
                   height: 50,
-                  margin: EdgeInsets.only(top: 50),
+                  margin: EdgeInsets.only(top: 70),
                   child: TextButton(
                     child: Text(
                       "회원가입",

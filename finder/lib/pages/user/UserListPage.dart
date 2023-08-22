@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../components/componentsExport.dart' as components;
+import './UserDetailPage.dart';
+import '../../components/InformationCard.dart';
+import 'dart:convert';
+import '../../models/User.dart';
 
 class UserListPage extends StatefulWidget {
   UserListPage({super.key});
@@ -10,8 +14,44 @@ class UserListPage extends StatefulWidget {
 }
 
 class _UserListPageState extends State<UserListPage> {
+  List<User> users = [];
+
+  Future<void> getUsers() async {
+    setState(() {
+      users = [];
+    });
+
+    String jsonString = await rootBundle.loadString('assets/datas/users.json');
+
+    List<dynamic> jsonList = jsonDecode(jsonString);
+
+
+    setState(() {
+      for (dynamic json in jsonList) {
+        print(json);
+        users.add(User.fromJson(json));
+      }
+    });
+  }
+
+  void showDetail(User user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserDetailPage(user: user)
+      )
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -44,8 +84,31 @@ class _UserListPageState extends State<UserListPage> {
           ),
         ),
         body: Container(
-          child: Container(
-          
+          child: ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  print(users[index].name);
+                  showDetail(users[index]);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.6
+                      )
+                    )
+                  ),
+                  child: InformationCard(
+                    showArrow: true,
+                    user: users[index]
+                  ),
+                ),
+              );
+            },
           )
         ),
         drawer: components.CustomDrawer(currentPage: 'user').build(context),

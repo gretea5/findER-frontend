@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
+import '../../components/InformationCard.dart';
+import '../../models/User.dart';
+import 'dart:convert';
 
 class UserAddPage extends StatefulWidget {
   UserAddPage({super.key});
@@ -31,6 +34,8 @@ class _UserAddPageState extends State<UserAddPage> {
       });
     });
     
+    /** 건강 정보 직접 입력시 이벤트 리스너 */
+
     nameTextEditController.addListener(checkNameField);
     ageTextEditController.addListener(checkAgeField);
     telTextEditController.addListener(checkTelField);
@@ -42,6 +47,14 @@ class _UserAddPageState extends State<UserAddPage> {
     drugsTextEditController.addListener(checkDrugs);
     
     etcTextEditController.addListener(checkEtc);
+
+    /** 건강 정보 직접 입력시 이벤트 리스너 끝 */
+
+    /** 건강 정보 간접 입력시 이벤트 리스너 */
+
+    otherEmailTextEditController.addListener(checkOtherEmailField);
+
+    /** 건강 정보 간접 입력시 이벤트 리스너 끝 */
   }
 
   @override
@@ -122,7 +135,7 @@ class _UserAddPageState extends State<UserAddPage> {
     );
   }
 
-  /** 직접 입력 or 아이디 입력 구분 단계 */
+  /** 건강 정보 입력 첫번째 단계 */
 
   bool? addDirectly = null;
 
@@ -244,9 +257,9 @@ class _UserAddPageState extends State<UserAddPage> {
     );
   }
 
-  /** 직접 입력 or 아이디 입력 구분 단계 끝 */
+  /** 건강 상태 입력 첫번째 단계 끝 */
 
-  /** 건강 상태 입력 첫번째 단계 */
+  /** 건강 상태 입력 두번째 단계 */
 
   /** 건강 정보 직접 입력시 위젯 */
   TextEditingController nameTextEditController = TextEditingController();
@@ -338,9 +351,52 @@ class _UserAddPageState extends State<UserAddPage> {
 
   /** 검색 후 추가시 위젯 */
 
-  TextEditingController otherIdTextEditController = TextEditingController();
+  TextEditingController otherEmailTextEditController = TextEditingController();
 
-  final otherIdNode = FocusNode();
+  final otherEmailNode = FocusNode();
+
+  bool otherEmailIsEmpty = true;
+
+  User? foundUser;
+  bool? userFindingSuccess;
+  bool resultCorrect = false;
+
+  void checkOtherEmailField() {
+    setState(() {
+      // otherEmailIsEmpty = !otherEmailTextEditController.text.isEmpty && otherEmailTextEditController.text.length > 5 ? false : true;
+      if (otherEmailTextEditController.text.isEmpty && otherEmailTextEditController.text.length < 4)
+        otherEmailIsEmpty = true;
+      else
+        otherEmailIsEmpty = !RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+        ).hasMatch(otherEmailTextEditController.text);
+    });
+  }
+
+  Future<void> findUser() async {
+    setState(() {
+      foundUser = null;
+      userFindingSuccess = null;
+    });
+    String jsonString = await rootBundle.loadString('assets/datas/users.json');
+    List<dynamic> jsonList = jsonDecode(jsonString);
+
+    for (var jsonUser in jsonList) {
+      if (jsonUser['id'] == otherEmailTextEditController.text) {
+        setState(() {
+          foundUser = User.fromJson(jsonUser);
+          userFindingSuccess = true;
+        });
+        break;
+      }
+    }
+    if (foundUser == null) {
+      setState(() {
+        userFindingSuccess = false;
+      });
+    }
+    print(foundUser?.name);
+  }
 
   /** 검색 후 추가시 위젯 끝 */
 
@@ -348,7 +404,7 @@ class _UserAddPageState extends State<UserAddPage> {
     if (addDirectly == true)
       return !nameIsEmpty && relationChecked && !ageIsEmpty &&  !telIsEmpty && !addressIsEmpty && !detailAddressIsEmpty && sexChecked;
     else
-      return true;
+      return !otherEmailIsEmpty && foundUser != null && resultCorrect;
   }
 
   Widget SecondStep(BuildContext context) {
@@ -628,22 +684,143 @@ class _UserAddPageState extends State<UserAddPage> {
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
             children: [
-              Text('상대방의 ID를 입력하십시오.'),
+              Text('상대방의 ID 입력'),
               Icon(
                 Icons.check_circle,
-                color: Colors.grey,
+                color: checkSecondStep() ? Colors.green : Colors.grey,
                 size: 14
               )
             ]
           )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: TextField(
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  width: 1.0,
+                  color: Colors.grey,
+                )
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  width: 1.0,
+                  color: Color.fromARGB(255, 79, 112, 229)
+                )
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                size: 16,
+                color: otherEmailNode.hasFocus ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+              ),
+              prefixIconConstraints: BoxConstraints(minWidth: 20, maxWidth: 40),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+              hintText: '상대방의 ID를 입력하십시오',
+              hintStyle: TextStyle(
+                color: Colors.grey
+              )
+            ),
+            focusNode: otherEmailNode,
+            controller: otherEmailTextEditController,
+            onTapOutside: (event) {
+              otherEmailNode.unfocus();
+            }
+          )
+        ),
+        Container(
+          width: double.infinity,
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                child: TextButton(
+                  child: Text('검색'),
+                  
+                  onPressed: otherEmailIsEmpty
+                  ? null
+                  : findUser,
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(otherEmailIsEmpty ? Colors.grey : Color.fromARGB(255, 79, 112, 229)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    )
+                  ),
+                )
+              )
+            ]
+          )
+        ),
+        foundUser != null
+        ? Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1.0,
+              color: Colors.grey
+            ),
+            borderRadius: BorderRadius.circular(12.0)
+          ),
+          child: InformationCard(user: foundUser!, showArrow: false)
         )
+        : userFindingSuccess == false
+          ? Container(
+            margin: EdgeInsets.only(top: vh * 0.1),
+            child: Text(
+              '검색 결과가 없습니다',
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontSize: 30
+              )
+            )
+          )
+          : Container(),
+        userFindingSuccess == true
+        ? Container(
+          margin: EdgeInsets.only(top: vh * 0.05),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                resultCorrect = !resultCorrect;
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  resultCorrect ? Icons.check_box_rounded : Icons.check_box_outline_blank_outlined,
+                  size: 25,
+                  color: resultCorrect ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 15.0),
+                  child: Text(
+                    '해당 사용자의 정보를 추가합니다',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black
+                    )
+                  )
+                )
+              ]
+            ),
+          )
+        )
+        : Container()
       ]
     );
   }
 
-  /** 건강 상태 입력 첫번째 단게 끝 */
+  /** 건강 상태 입력 두번째 단게 끝 */
 
-  /** 건강 상태 입력 두번째 단계 */
+  /** 건강 상태 입력 세번째 단계 */
+
+  /** 건강 상태 직접 입력시 위젯 */
 
   TextEditingController allergyTextEditController = TextEditingController();
 
@@ -714,12 +891,6 @@ class _UserAddPageState extends State<UserAddPage> {
       }
     });
   }
-  bool checkThirdStep() {
-    if (addDirectly == true)
-      return rhChecked && bloodTypeChecked && allergyChecked ? true : false;
-    else
-      return true;
-  }
 
   Widget allergyField() {
     return Container(
@@ -753,6 +924,33 @@ class _UserAddPageState extends State<UserAddPage> {
         }
       )
     );
+  }
+
+  /** 건강 상태 직접 입력시 위젯 끝 */
+
+  /** 검색 후 추가시 위젯 */
+
+  bool otherRelationChecked = false;
+  List<String> otherRelationList = ['선택안함', '배우자', '자녀', '부', '모'];
+  String myPosition = '';
+  String otherPosition = '';
+
+  void checkOtherRelation() {
+    setState(() {
+      if (myPosition != '' && myPosition != '선택안함' && otherPosition != '' && otherPosition != '선택안함')
+        otherRelationChecked = true;
+      else
+        otherRelationChecked = false;
+    });
+  }
+
+  /** 검색 후 추가시 위젯 끝 */
+
+  bool checkThirdStep() {
+    if (addDirectly == true)
+      return rhChecked && bloodTypeChecked && allergyChecked ? true : false;
+    else
+      return otherRelationChecked;
   }
 
   Widget ThirdStep(BuildContext context) {
@@ -900,12 +1098,122 @@ class _UserAddPageState extends State<UserAddPage> {
       ]
     )
     : Column(
-
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          child: Row(
+            children: [
+              Text('${foundUser!.name} 님과의 관계를 입력하십시오'),
+              Icon(
+                Icons.check_circle,
+                color: otherRelationChecked ? Colors.green : Colors.grey,
+                size: 14,
+              )
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.04),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 5.0),
+                child: Text(
+                  '(본인)',
+                  style: TextStyle(
+                    fontSize: 16
+                  )
+                ),
+              ),
+              DropdownButton(
+                alignment: Alignment.center,
+                value: myPosition == '' ? otherRelationList[0] : myPosition,
+                items: otherRelationList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value)
+                  );
+                }).toList(),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+                ),
+                icon: Icon(
+                  null,
+                  size: 0
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    myPosition = value!;
+                    checkOtherRelation();
+                  });
+                },
+                selectedItemBuilder: (context) {
+                  return otherRelationList.map((String value) {
+                    return Center(
+                      child: Text(
+                        value,
+                        textAlign: TextAlign.center
+                      )
+                    );
+                  }).toList();
+                }
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Icon(
+                  Icons.horizontal_rule,
+                  size: 15,
+                  color: Colors.black
+                )
+              ),
+              DropdownButton(
+                alignment: Alignment.center,
+                value: otherPosition == '' ? otherRelationList[0] : otherPosition,
+                items: otherRelationList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value)
+                  );
+                }).toList(),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+                ),
+                icon: Icon(
+                  null,
+                  size: 0
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    otherPosition = value!;
+                    checkOtherRelation();
+                  });
+                },
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 5.0),
+                child: Text(
+                  '(${foundUser!.name})',
+                  style: TextStyle(
+                    fontSize: 16
+                  )
+                )
+              )
+            ]
+          )
+        )
+      ]
     );
   }
-  /** 건강 상태 입력 두번째 단계 끝 */
+  /** 건강 상태 입력 세번째 단계 끝 */
 
-  /** 건강 상태 입력 세번째 단계 */
+  /** 건강 상태 입력 네번째 단계 */
+
+  /** 건강 상태 직접 입력시 위젯 */
   TextEditingController drugsTextEditController = TextEditingController();
   List<TextEditingController> surgeryControllerList = [];
   final drugsNode = FocusNode();
@@ -1133,6 +1441,14 @@ class _UserAddPageState extends State<UserAddPage> {
     });
   }
 
+  /** 건강 상태 직접 입력시 위젯 끝 */
+
+  /** 검색 후 추가시 위젯 */
+
+
+  
+  /** 검색 후 추가시 위젯 끝 */
+
   Widget FourthStep(BuildContext context) {
     return addDirectly == true
     ? Column(
@@ -1288,9 +1604,9 @@ class _UserAddPageState extends State<UserAddPage> {
 
     );
   }
-  /** 건강 상태 입력 세번째 단계 끝 */
+  /** 건강 상태 입력 네번째 단계 끝 */
 
-  /** 건강 상태 입력 네번째 단계 */
+  /** 건강 상태 입력 다섯번째 단계 */
   
   List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 달'];
   List<String> smokingAmountList = [
@@ -1730,7 +2046,7 @@ class _UserAddPageState extends State<UserAddPage> {
     );
   }
 
-  /** 건강 상태 입력 네번째 단계 끝 */
+  /** 건강 상태 입력 다섯번째 단계 끝 */
 
   /** 현재 단계에 따라 완성도 체크해서 다음 버튼 활성 or 비활성 함수 */
   bool checkCurrentStep() {

@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
       key: GlobalKey(),
-      initialRoute: '/user/list',
+      initialRoute: '/users/list',
       routes: {
         '/': (context) => userExport.UserListPage(),
         '/map': (context) => mainExport.MapPage(),
@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
         '/auth/login': (context) => authExport.LoginPage(),
         '/auth/signup': (context) => authExport.SignUpPage(),
         '/user/list': (context) => userExport.UserListPage(),
-        '/user/detail': (context) => userExport.UserDetailPage(),
         '/user/add': (context) => userExport.UserAddPage(),
       },
     );

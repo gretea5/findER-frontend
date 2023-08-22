@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_octicons/flutter_octicons.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+  TextEditingController emailTextEditController = TextEditingController();
+  TextEditingController pwTextEditController = TextEditingController();
+
+  final idNode = FocusNode();
+  final pwNode = FocusNode();
+
+  bool? isEmailFormatCorrect;
+
+  void checkEmailFormat() {
+    setState(() {
+      if (emailTextEditController.text.isEmpty || emailTextEditController.text.length < 4)
+        isEmailFormatCorrect = false;
+      else
+        isEmailFormatCorrect = RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+        ).hasMatch(emailTextEditController.text);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var vh = MediaQuery.of(context).size.height;
     var vw = MediaQuery.of(context).size.width;
-
-    final _idNode = FocusNode();
-    final _pwNode = FocusNode();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -20,17 +42,23 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: double.infinity,
-                height: vh / 3.75,
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  'findER',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold
+              GestureDetector(
+                onTap: () {
+                  idNode.unfocus();
+                  pwNode.unfocus();
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: vh / 3.75,
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    'findER',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold
+                    )
                   )
-                )
+                ),
               ),
               Container(
                 child: null,
@@ -39,7 +67,7 @@ class LoginPage extends StatelessWidget {
               ),
               Container(
                 alignment: Alignment.topLeft,
-                margin: EdgeInsets.fromLTRB(22.5, 3.0, 0.0, 30.0),
+                margin: EdgeInsets.fromLTRB(22.5, 3.0, 0.0, 0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -54,14 +82,15 @@ class LoginPage extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(left: 5.0),
                       width: vw * 0.625,
-                      height: 30,
+                      height: 40,
                       child: TextField(
+                        controller: emailTextEditController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 0.0,
                             horizontal: 8.0
                           ),
-                          hintText: '아이디를 입력하십시오',
+                          hintText: '이메일을 입력하십시오',
                           hintStyle: TextStyle(
                             color: const Color.fromARGB(255, 182, 182, 182)
                           ),
@@ -82,19 +111,29 @@ class LoginPage extends StatelessWidget {
                         ),
                         style: TextStyle(fontSize: 14, color: Colors.black),
                         onTapOutside:(event) {
-                          _idNode.unfocus();
+                          idNode.unfocus();
                         },
-                        onTap: () {
-                          _pwNode.unfocus();
-                        },
-                        focusNode: _idNode
+                        focusNode: idNode
                       )
                     ),
                   ]
                 )
-              ),Container(
+              ),
+              Container(
+                child: Container(
+                  height: 20,
+                  child: Text(
+                    isEmailFormatCorrect == false ? '※ 이메일 형식이 올바르지 않습니다.' : ' ',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 13
+                    )
+                  )
+                ),
+              ),
+              Container(
                 alignment: Alignment.topLeft,
-                margin: EdgeInsets.fromLTRB(22.5, 3.0, 0.0, vh * 0.045),
+                margin: EdgeInsets.fromLTRB(22.5, 0.0, 0.0, vh * 0.045),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -109,9 +148,10 @@ class LoginPage extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(left: 5.0),
                       width: vw * 0.625,
-                      height: 30,
+                      height: 40,
                       child: TextField(
                         obscureText: true,
+                        controller: pwTextEditController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 0.0,
@@ -145,12 +185,9 @@ class LoginPage extends StatelessWidget {
                         ),
                         style: TextStyle(fontSize: 14, color: Colors.black),
                         onTapOutside: (event) {
-                          _pwNode.unfocus();
+                          pwNode.unfocus();
                         },
-                        onTap: () {
-                          _idNode.unfocus();
-                        },
-                        focusNode: _pwNode
+                        focusNode: pwNode
                       )
                     ),
                   ]
@@ -176,7 +213,7 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-
+                          checkEmailFormat();
                         },
                         
                       )
@@ -240,8 +277,7 @@ class LoginPage extends StatelessWidget {
                 )
               ),
               Container(
-                height: 100,
-                alignment: Alignment.bottomCenter,
+                margin: EdgeInsets.only(top: vh * 0.04),
                 child: InkWell(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -251,7 +287,6 @@ class LoginPage extends StatelessWidget {
                         '회원가입 없이 시작',
                         style: TextStyle(
                           color: Colors.grey,
-                          decoration: TextDecoration.underline
                           )
                         ),
                       Icon(
@@ -265,7 +300,6 @@ class LoginPage extends StatelessWidget {
                   },
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent
-                  
                 )
               )
             ],
