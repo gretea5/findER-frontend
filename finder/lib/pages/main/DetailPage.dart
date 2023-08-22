@@ -578,35 +578,27 @@ class _DetailPageState extends State<DetailPage> {
                               margin: EdgeInsets.only(top: 20),
                               child: AspectRatio(
                                 aspectRatio: 16 / 9,
-                                child: Stack(
-                                  children: [
-                                    DChartPie(
+                                child: DChartPie(
                                       data: [
                                         {'domain': 'OnTime', 'measure': 85},
                                         {'domain': 'OffTime', 'measure': 15},
                                       ],
-                                      donutWidth: 50,
                                       fillColor: (pieData, index) {
                                         switch(pieData['domain']) {
                                           case 'OnTime':
-                                            return Colors.green;
+                                            return Color(0xFF5CDC2F);
                                           default:
                                             return Colors.white;
                                         }
                                       },
-                                      labelColor: Colors.transparent,
+                                      pieLabel: (pieData, index) {
+                                        return "${pieData['measure']}%";
+                                      },
+                                      labelFontSize: 18,
+                                      labelColor: Colors.black,
+                                      labelLineColor: Colors.black,
                                     ),
-                                    Align(
-                                      child: Text(
-                                        '87.5%',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ]
-                                ),
+                                    
                               )
                             ),
                             Container(
@@ -689,11 +681,11 @@ class _DetailPageState extends State<DetailPage> {
                                               {
                                                 'id': 'Line 2',
                                                 'data': [
-                                                  {'domain': 0, 'measure': 20},
+                                                  {'domain': 0, 'measure': 2},
                                                   {'domain': 20, 'measure': 5},
-                                                  {'domain': 40, 'measure': 13},
+                                                  {'domain': 40, 'measure': 1},
                                                   {'domain': 60, 'measure': 1},
-                                                  {'domain': 80, 'measure': 15},
+                                                  {'domain': 80, 'measure': 5},
                                                 ],
                                               },
                                             ],
