@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:finder/pages/auth/authExport.dart' as authExport;
 import 'package:finder/pages/main/mainExport.dart' as mainExport;
 import 'package:finder/pages/user/userExport.dart' as userExport;
+import 'package:flutter/services.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 void main() {
@@ -15,6 +16,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //화면 회전 고정
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
