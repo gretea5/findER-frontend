@@ -20,7 +20,7 @@ class _MapPageState extends State<MapPage> {
       "https://dapi.kakao.com/v2/local/search/keyword.json";
   final String restApiKey = "f5ab79d5d376224730ecd3b214369a8c";
   final String query = "한성대학교"; 
-  bool light = true;
+  bool light = false;
   bool markerClicked = false;
   bool cardVisible = false;
   var vh = 0.0;
@@ -105,6 +105,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       home: GestureDetector(
         onTap: () {
@@ -114,9 +115,18 @@ class _MapPageState extends State<MapPage> {
           appBar: AppBar(
             elevation: 0,
             centerTitle: true,
-            title: Text("병원 찾기"),
+            title: Text(
+              "병원 찾기",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
             backgroundColor: Color.fromARGB(255, 79, 112, 229),
-            leading: DrawerButton(),
+            leading: DrawerButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+              ),
+            ),
             actions: [ 
               IconButton(
                 onPressed: () async {
@@ -124,15 +134,24 @@ class _MapPageState extends State<MapPage> {
                   mapController!.setCenter(curPos);
                 },
                 icon: Icon(Icons.my_location),
+                color: Colors.white,
               ),
               Switch(
                 value: light,
                 activeColor: Colors.black,
                 onChanged: (bool value) {
-                  if(value == false) {
+                  if(value == true) {
                     Navigator.pushNamed(context, '/list');
                   }
                 },
+                thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return const Icon(Icons.reorder);
+                  }
+                  return const Icon(Icons.map);
+                },
+              ),
               ),
             ],
           ),

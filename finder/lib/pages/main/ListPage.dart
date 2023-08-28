@@ -31,7 +31,7 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
   late AnimationController controller;
-  bool light = false;
+  bool light = true;
   var vh = 0.0;
   var vw = 0.0;
   bool isRotating = false;
@@ -88,22 +88,40 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
-          title: Text("병원 찾기"),
+          title: Text(
+            "병원 찾기",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           backgroundColor: Color.fromARGB(255, 79, 112, 229),
-          leading: DrawerButton(),
+          leading: DrawerButton(
+            style: ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+            ),
+          ),
           actions: [ 
             Switch(
               value: light,
               onChanged: (bool value) {
-                if(value == true) {
+                if(value == false) {
                   Navigator.pushNamed(context, '/map');
                 }
               },
+              thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return const Icon(Icons.reorder);
+                  }
+                  return const Icon(Icons.map);
+                },
+              ),
             ),
           ],
         ),
