@@ -269,22 +269,23 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     Row(
                       children: [
-                        Icon(
-                          Icons.call,
-                          size: 20,
-                          color: elementColor,
+                        SvgPicture.asset(
+                          'assets/icons/bed.svg',
+                          width: 20,
+                          height: 20,
+                          colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
                         ),
                         SizedBox(
                           width: 5,
                         ),
                         Text(
-                          "잔여 병상 수",
+                          "현재 잔여 병상 수",
                           style: TextStyle(
                             color: elementColor,
                           ),
                         ),
                         SizedBox(
-                          width: 9,
+                          width: 5,
                         ),
                         Text(
                           "${widget.numberOfBeds}",

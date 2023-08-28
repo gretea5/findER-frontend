@@ -1,5 +1,6 @@
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -188,10 +189,11 @@ class HospitalCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.call,
-                      size: 20,
-                      color: elementColor,
+                    SvgPicture.asset(
+                      'assets/icons/bed.svg',
+                      width: 20,
+                      height: 20,
+                      colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
                     ),
                     SizedBox(
                       width: 5,
@@ -203,7 +205,7 @@ class HospitalCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: 9,
+                      width: 5,
                     ),
                     Text(
                       "$numberOfBeds",
