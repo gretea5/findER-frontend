@@ -44,6 +44,7 @@ dependencies:
   url_launcher: ^6.1.12
   fluttertoast: ^8.2.2
   d_chart: ^2.3.0
+  shared_preferences: ^2.2.0
 
 
 dev_dependencies:
