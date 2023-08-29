@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/components/HospitalCard.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -19,7 +20,6 @@ class _MapPageState extends State<MapPage> {
   final String apiUrl =
       "https://dapi.kakao.com/v2/local/search/keyword.json";
   final String restApiKey = "f5ab79d5d376224730ecd3b214369a8c";
-  final String query = "한성대학교"; 
   bool light = false;
   bool markerClicked = false;
   bool cardVisible = false;
@@ -99,9 +99,6 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -130,8 +127,25 @@ class _MapPageState extends State<MapPage> {
             actions: [ 
               IconButton(
                 onPressed: () async {
+                  String responseBody = await SpringBootApiService.login(
+                    email: "park@naver.com",
+                    password: "1234"
+                  );
+                  print(responseBody);
+                },
+                icon: Icon(Icons.my_location),
+                color: Colors.white,
+              ),
+              IconButton(
+                onPressed: () async {
                   LatLng curPos = await getUserLocation();
                   mapController!.setCenter(curPos);
+                  String responseBody = await SpringBootApiService.makeUser(
+                    email: "park@naver.com",
+                    password: "1234",
+                    name: "park"
+                  );
+                  print(responseBody);
                 },
                 icon: Icon(Icons.my_location),
                 color: Colors.white,
