@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:finder/models/hospitalDetailModel.dart';
+import 'package:finder/models/hospitalMarkerModel.dart';
+import 'package:finder/models/hospitalPreviewModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SpringBootApiService {
@@ -62,12 +65,13 @@ class SpringBootApiService {
     return response.body;
   }
 
-  static Future<void> getLocationHospitals({
+  static Future<List<HospitalMarkerModel>> getLocationHospitals({
     required double swLat,
     required double swLon,
     required double neLat,
     required double neLon
   }) async{
+    final List<HospitalMarkerModel> HospitalMarkerInstances = [];
     final String apiUrl = 'http://${baseURL}:8080/api/hospitals/map';
     final Map<String, String> queryParams = {
       'swLat': swLat.toString(),
@@ -83,14 +87,19 @@ class SpringBootApiService {
       headers: {'Authorization': 'Bearer ${token}'},
     );
     if (response.statusCode == 200) {
-      print('getLocationHospitals Method Response data: ${response.body}');
-    } else {
-      // 응답이 실패했을 때 처리
+      final List<dynamic> list = jsonDecode(response.body);
+      for(var element in list) {
+        HospitalMarkerInstances.add(HospitalMarkerModel.fromJson(element));
+      }
+      return HospitalMarkerInstances;
+    } 
+    else {
       print('Request failed with status: ${response.statusCode}');
     }
+    throw Error();
   }
 
-  static Future<void> getHospitalById({
+  static Future<HospitalPreviewModel> getHospitalById({
     required int id,
     required double lat,
     required double lon
@@ -108,17 +117,19 @@ class SpringBootApiService {
       headers: {'Authorization': 'Bearer ${token}'},
     );
     if (response.statusCode == 200) {
-      print('getHospital Method Response data: ${response.body}');
+      final instance = jsonDecode(response.body);
+      return HospitalPreviewModel.fromJson(instance);
     } else {
-      // 응답이 실패했을 때 처리
       print('Request failed with status: ${response.statusCode}');
     }
+    throw Error();
   }
 
-  static Future<void> getHosipitalLikeList({
+  static Future<List<HospitalPreviewModel>> getHosipitalLikeList({
     required double lat,
     required double lon
   }) async {
+    final List<HospitalPreviewModel> HospitalListInstances = [];
     final String apiUrl = 'http://${baseURL}:8080/api/hospitals/list';
     final Map<String, String> queryParams = {
       'lat': lat.toString(),
@@ -132,14 +143,18 @@ class SpringBootApiService {
       headers: {'Authorization': 'Bearer ${token}'},
     );
     if (response.statusCode == 200) {
-      print('getHosipitalLikeList Method Response data: ${response.body}');
+      final List<dynamic> list = jsonDecode(response.body);
+      for(var element in list) {
+        HospitalListInstances.add(HospitalPreviewModel.fromJson(element));
+      }
+      return HospitalListInstances;
     } else {
-      // 응답이 실패했을 때 처리
       print('Request failed with status: ${response.statusCode}');
     }
+    throw Error();
   }
 
-  // static Future<void> getHospitalDetailById({
+  // static Future<HospitalDetailModel> getHospitalDetailById({
   //   required int id
   // }) async {
   //   final String apiUrl = 'http://${baseURL}:8080/api/hospitals/details/${id}';
@@ -151,11 +166,11 @@ class SpringBootApiService {
   //     headers: {'Authorization': 'Bearer ${token}'},
   //   );
   //   if (response.statusCode == 200) {
-  //     print('getHospitalDetailById Method Response data: ${response.body}');
+  //     final instance = jsonDecode(response.body);
+  //     return HospitalDetailModel.fromJson(instance);
   //   } else {
-  //     // 응답이 실패했을 때 처리
   //     print('Request failed with status: ${response.statusCode}');
   //   }
+  //   throw Error();
   // }
-
 }
