@@ -4,7 +4,7 @@ class HospitalPreviewModel  {
   final String address;
   final String representativeContact;
   final String emergencyContact;
-  final int hvec; 
+  final int? hvec; 
   final double distance;
   final String arrivalTime;
 
@@ -14,7 +14,7 @@ class HospitalPreviewModel  {
       address = json['address'] as String,
       representativeContact = json['representativeContact'] as String,
       emergencyContact = json['emergencyContact'] as String,
-      hvec = json['hvec'] as int,
+      hvec = json['hvec'] as int?,
       distance = json['distance'] as double,
       arrivalTime = json['arrivalTime'] as String;
 }

@@ -7,7 +7,7 @@ class HospitalDetailModel  {
   final bool ambulance;
   final bool ct;
   final bool mri;
-  final int hvec;
+  final int? hvec;
   final double distance;
   final String arrivalTime;
   final double lat;
@@ -23,7 +23,7 @@ class HospitalDetailModel  {
       ambulance =  json['ambulance'] as bool,
       ct = json['ct'] as bool,
       mri =  json['mri'] as bool,
-      hvec = json['hvec'] as int,
+      hvec = json['hvec'] as int?,
       distance = json['distance'] as double,
       arrivalTime = json['arrivalTime'] as String,
       lat = json['lat'] as double,
