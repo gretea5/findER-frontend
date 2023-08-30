@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});
@@ -233,6 +235,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: 40,
                         margin: EdgeInsets.only(top: 5.0),
                         child: TextField(
+                          obscureText: true,
                           controller: pwTextEditController,
                           focusNode: pwNode,
                           decoration: InputDecoration(
@@ -287,7 +290,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       )
                     ),
                     onPressed: checkAll() ? () {
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     } : null,
                   )
                 )

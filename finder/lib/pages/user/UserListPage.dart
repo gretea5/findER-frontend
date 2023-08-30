@@ -1,10 +1,11 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../components/componentsExport.dart' as components;
+import 'package:http/http.dart' as http;
 import './UserDetailPage.dart';
-import '../../components/InformationCard.dart';
-import 'dart:convert';
-import '../../models/User.dart';
+import '../../components/componentsExport.dart';
+import '../../models/modelsExport.dart';
 
 class UserListPage extends StatefulWidget {
   UserListPage({super.key});
@@ -21,17 +22,17 @@ class _UserListPageState extends State<UserListPage> {
       users = [];
     });
 
-    String jsonString = await rootBundle.loadString('assets/datas/users.json');
+    // String jsonString = await rootBundle.loadString('assets/datas/users.json');
 
-    List<dynamic> jsonList = jsonDecode(jsonString);
+    // List<dynamic> jsonList = jsonDecode(jsonString);
 
 
-    setState(() {
-      for (dynamic json in jsonList) {
-        print(json);
-        users.add(User.fromJson(json));
-      }
-    });
+    // setState(() {
+    //   for (dynamic json in jsonList) {
+    //     print(json);
+    //     users.add(User.fromJson(json));
+    //   }
+    // });
   }
 
   void showDetail(User user) {
@@ -51,7 +52,11 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    if (Platform.isAndroid) {
+      print('Android: ${MediaQuery.of(context).size.width.toString()}');
+    } else {
+      print('iOS: ${MediaQuery.of(context).size.width.toString()}');
+    }
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -103,7 +108,7 @@ class _UserListPageState extends State<UserListPage> {
                     )
                   ),
                   child: InformationCard(
-                    showArrow: true,
+                    inList: true,
                     user: users[index]
                   ),
                 ),
@@ -111,7 +116,7 @@ class _UserListPageState extends State<UserListPage> {
             },
           )
         ),
-        drawer: components.CustomDrawer(currentPage: 'user').build(context),
+        drawer: CustomDrawer(currentPage: 'user').build(context),
       ),
     );
   }

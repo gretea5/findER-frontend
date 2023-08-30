@@ -1,10 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
-import '../../components/InformationCard.dart';
-import '../../models/User.dart';
-import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../components/componentsExport.dart';
+import '../../models/modelsExport.dart';
+
 
 class UserAddPage extends StatefulWidget {
   UserAddPage({super.key});
@@ -13,7 +16,7 @@ class UserAddPage extends StatefulWidget {
   State<UserAddPage> createState() => _UserAddPageState();
 }
 
-class _UserAddPageState extends State<UserAddPage> {
+class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStateMixin{
 
   final bodyScrollController = ScrollController();
 
@@ -26,6 +29,15 @@ class _UserAddPageState extends State<UserAddPage> {
   
   @override
   void initState() {
+
+    rotationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1)
+    )..addListener(() {
+      setState(() {});
+    });
+    rotationController.repeat(reverse: false);
+
     super.initState();
 
     bodyScrollController.addListener(() {
@@ -58,6 +70,12 @@ class _UserAddPageState extends State<UserAddPage> {
   }
 
   @override
+  void dispose() {
+    rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     vw = MediaQuery.of(context).size.width;
@@ -77,18 +95,12 @@ class _UserAddPageState extends State<UserAddPage> {
   }
 
   Widget getCurrentStep(int currentStep) {
-    return Row(
+    return currentStep > 0
+    ? Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        currentStep == 0 
-        ? checkFirstStep() 
-          ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
-          : SvgPicture.asset(
-              'assets/icons/counter_1.svg',
-              width: 20, height: 20,
-              colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            ) 
-        : Icon(Icons.check_circle, size: 20, color: Colors.green),
+      children: addDirectly == true
+      ? [
+        Icon(Icons.check_circle, size: 20, color: Colors.green),
         currentStep > 0 
         ? currentStep == 1
           ? checkSecondStep()
@@ -132,6 +144,58 @@ class _UserAddPageState extends State<UserAddPage> {
             )
         : Icon(Icons.circle, size: 20, color: Colors.grey)
       ]
+      : [
+        Icon(Icons.check_circle, size: 20, color: Colors.green),
+        currentStep > 0 
+        ? currentStep == 1
+          ? checkSecondStep()
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+                'assets/icons/counter_2.svg',
+                width: 20, height: 20,
+                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+              )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey),
+        currentStep > 1 
+        ? currentStep == 2
+          ? checkThirdStep()
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+                'assets/icons/counter_3.svg',
+                width: 20, height: 20,
+                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+              )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey),
+        currentStep > 2 
+        ? currentStep == 3 
+          ? checkFourthStep() 
+            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            : SvgPicture.asset(
+              'assets/icons/counter_4.svg',
+              width: 20, height: 20,
+              colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+            )
+          : Icon(Icons.check_circle, size: 20, color: Colors.green)
+        : Icon(Icons.circle, size: 20, color: Colors.grey)
+      ]
+    )
+    : Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        checkFirstStep() 
+        ? Icon(
+          Icons.check_circle,
+          size: 20,
+          color: Color.fromARGB(255, 79, 112, 229)
+        )
+        : SvgPicture.asset(
+          'assets/icons/counter_1.svg',
+          width: 20, height: 20,
+          colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
+        ) 
+      ]
     );
   }
 
@@ -149,22 +213,26 @@ class _UserAddPageState extends State<UserAddPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: vh * 0.7,
+            height: vh * 0.5,
+            margin: EdgeInsets.only(top: vh * 0.12),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      addDirectly = true;
+                      if (addDirectly == null || addDirectly == false)
+                        addDirectly = true;
+                      else
+                        addDirectly = null;
                     });
                   },
                   child: Container(
-                    width: vw * 0.7,
+                    width: vw >= 400 ? vw * 0.6 : vw * 0.7,
                     height: vh * 0.15,
                     decoration: BoxDecoration(
-                      color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.white,
+                      color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
                       border: Border.all(
                         color: addDirectly == true 
                           ? Color.fromARGB(255, 79, 112, 229)
@@ -204,15 +272,18 @@ class _UserAddPageState extends State<UserAddPage> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      addDirectly = false;
+                      if (addDirectly == null || addDirectly == true)
+                        addDirectly = false;
+                      else
+                        addDirectly = null;
                     });
                   },
                   child: Container(
-                    width: vw * 0.7,
+                    width: vw >= 400 ? vw * 0.6 : vw * 0.7,
                     height: vh * 0.15,
-                    margin: EdgeInsets.only(top: 50.0),
+                    margin: EdgeInsets.only(top: 75.0),
                     decoration: BoxDecoration(
-                      color: addDirectly == false ? Color.fromARGB(255, 79, 112, 229) : Colors.white,
+                      color: addDirectly == false ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
                       border: Border.all(
                         color: addDirectly == false 
                           ? Color.fromARGB(255, 79, 112, 229)
@@ -382,7 +453,7 @@ class _UserAddPageState extends State<UserAddPage> {
     List<dynamic> jsonList = jsonDecode(jsonString);
 
     for (var jsonUser in jsonList) {
-      if (jsonUser['id'] == otherEmailTextEditController.text) {
+      if (jsonUser['email'] == otherEmailTextEditController.text) {
         setState(() {
           foundUser = User.fromJson(jsonUser);
           userFindingSuccess = true;
@@ -449,7 +520,7 @@ class _UserAddPageState extends State<UserAddPage> {
         Container(
           margin: EdgeInsets.only(top: vh * 0.03),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -684,7 +755,7 @@ class _UserAddPageState extends State<UserAddPage> {
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
             children: [
-              Text('상대방의 ID 입력'),
+              Text('상대방의 이메일 입력'),
               Icon(
                 Icons.check_circle,
                 color: checkSecondStep() ? Colors.green : Colors.grey,
@@ -716,7 +787,7 @@ class _UserAddPageState extends State<UserAddPage> {
               ),
               prefixIconConstraints: BoxConstraints(minWidth: 20, maxWidth: 40),
               contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
-              hintText: '상대방의 ID를 입력하십시오',
+              hintText: '상대방의 이메일을 입력하십시오',
               hintStyle: TextStyle(
                 color: Colors.grey
               )
@@ -765,7 +836,7 @@ class _UserAddPageState extends State<UserAddPage> {
             ),
             borderRadius: BorderRadius.circular(12.0)
           ),
-          child: InformationCard(user: foundUser!, showArrow: false)
+          child: InformationCard(user: foundUser!, inList: false)
         )
         : userFindingSuccess == false
           ? Container(
@@ -944,6 +1015,10 @@ class _UserAddPageState extends State<UserAddPage> {
     });
   }
 
+  String getFoundUserName() {
+    return foundUser!.name.replaceRange(1, 2, '*');
+  }
+
   /** 검색 후 추가시 위젯 끝 */
 
   bool checkThirdStep() {
@@ -1009,24 +1084,32 @@ class _UserAddPageState extends State<UserAddPage> {
                           for (String bloodType in bloodTypeList) 
                             Container(
                               margin: EdgeInsets.only(right: vw * 0.05),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Radio<String> (
-                                    value: bloodType,
-                                    groupValue: selectedBloodType,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedBloodType = value!;
-                                        bloodTypeChecked = true;
-                                      });
-                                    },
-                                    activeColor: Color.fromARGB(255, 79, 112, 229)
-                                  ),
-                                  Text(bloodType)
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedBloodType = bloodType;
+                                    bloodTypeChecked = true;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Radio<String> (
+                                      value: bloodType,
+                                      groupValue: selectedBloodType,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedBloodType = value!;
+                                          bloodTypeChecked = true;
+                                        });
+                                      },
+                                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                                    ),
+                                    Text(bloodType)
                                 ]
-                             )
+                              ),
+                            )
                           )
                         ]
                       )
@@ -1056,37 +1139,53 @@ class _UserAddPageState extends State<UserAddPage> {
                 margin: EdgeInsets.only(top: vh * 0.01),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Radio<bool>(
-                          value: false,
-                          groupValue: allergyExists,
-                          onChanged: (value) {
-                            setState(() {
-                              allergyExists = value!;
-                              checkAllergy();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 없음')
-                      ]
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          allergyExists = false;
+                          checkAllergy();  
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio<bool>(
+                            value: false,
+                            groupValue: allergyExists,
+                            onChanged: (value) {
+                              setState(() {
+                                allergyExists = value!;
+                                checkAllergy();
+                              });
+                            },
+                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                          ),
+                          Text('해당 없음')
+                        ]
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Radio<bool>(
-                          value: true,
-                          groupValue: allergyExists,
-                          onChanged: (value) {
-                            setState(() {
-                              allergyExists = value!;
-                              checkAllergy();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 있음')
-                      ]
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          allergyExists = true;
+                          checkAllergy();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio<bool>(
+                            value: true,
+                            groupValue: allergyExists,
+                            onChanged: (value) {
+                              setState(() {
+                                allergyExists = value!;
+                                checkAllergy();
+                              });
+                            },
+                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                          ),
+                          Text('해당 있음')
+                        ]
+                      ),
                     )
                   ]
                 )
@@ -1105,7 +1204,7 @@ class _UserAddPageState extends State<UserAddPage> {
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
             children: [
-              Text('${foundUser!.name} 님과의 관계를 입력하십시오'),
+              Text('${getFoundUserName()} 님과의 관계를 입력하십시오'),
               Icon(
                 Icons.check_circle,
                 color: otherRelationChecked ? Colors.green : Colors.grey,
@@ -1197,7 +1296,7 @@ class _UserAddPageState extends State<UserAddPage> {
               Container(
                 margin: EdgeInsets.only(left: 5.0),
                 child: Text(
-                  '(${foundUser!.name})',
+                  '(${getFoundUserName()})',
                   style: TextStyle(
                     fontSize: 16
                   )
@@ -1262,7 +1361,7 @@ class _UserAddPageState extends State<UserAddPage> {
     if (addDirectly == true)
       return drugsChecked && surgeryChecked ? true : false;
     else
-      return true;
+      return responseSuccessed != null ? true : false;
   }
 
   Widget DrugsField() {
@@ -1284,7 +1383,7 @@ class _UserAddPageState extends State<UserAddPage> {
         ),
         onTapOutside: (event) {
           drugsNode.unfocus();
-        }
+        },
       )
     ) : Container();
   }
@@ -1445,8 +1544,150 @@ class _UserAddPageState extends State<UserAddPage> {
 
   /** 검색 후 추가시 위젯 */
 
+  bool requestSent = false; //요청하기 버튼을 누르면 true로 바뀜
+  bool? responseSuccessed; //백에 요청 성공하면 true, 아니면 false
+  bool requestWaiting = false; //백에서 응답이 오면 true, 아니면 false
+  bool requestCanceled = false;
 
-  
+  late AnimationController rotationController;
+
+  late Timer countTimer;
+
+  int remainMinutes = 0;
+  int remainSeconds = 5;
+
+  void resetCount() {
+    setState(() {
+      remainMinutes = 0;
+      remainSeconds = 5;
+    });
+  }
+
+  void countResponse() {
+    setState(() {
+      if (remainSeconds > 0)
+        remainSeconds--;
+      else if (remainMinutes > 0) {
+        remainMinutes--;
+        remainSeconds = 59;
+      }
+    });
+  }
+
+  Widget getRequestStateIcon() {
+    if (requestWaiting)
+      return Container(
+        width: 150,
+        height: 150,
+        margin: EdgeInsets.only(top: vh * 0.07),
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                width: 150,
+                height: 150,
+                child: CircularProgressIndicator(
+                  value: rotationController.value,
+                  color: Color.fromARGB(255, 79, 112, 229),
+                  semanticsLabel: 'A',
+                  strokeWidth: 10.0
+                ),
+              ),
+            ),
+            Center(
+              child: Text(
+                '${remainMinutes}:${remainSeconds.toString().padLeft(2, '0')}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                )
+              )
+            )
+          ]
+        ),
+      );
+    if (requestSent == false) {
+      return Container(
+        width: 150,
+        height: 150,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            width: 1,
+            color: Color.fromARGB(255, 79, 112, 229)
+          ),
+          color: Color.fromARGB(255, 79, 112, 229)
+        ),
+        margin: EdgeInsets.only(top: vh * 0.07),
+        child: Icon(
+          Icons.group_add_outlined,
+          size: 100,
+          color: Colors.white
+        )
+      );
+    }
+    else {
+      if (responseSuccessed == true)
+        return Container(
+          width: 150,
+          height: 150,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width: 1,
+              color: Colors.green
+            ),
+            color: Colors.green
+          ),
+          margin: EdgeInsets.only(top: vh * 0.07),
+          child: Icon(
+            Icons.done_all_outlined,
+            size: 100,
+            color: Colors.white
+          )
+        );
+      else
+      return Container(
+        width: 150,
+          height: 150,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width: 1,
+              color: Colors.red
+            ),
+            color: Colors.red
+          ),
+          margin: EdgeInsets.only(top: vh * 0.07),
+          child: Icon(
+            Icons.priority_high_outlined,
+            size: 100,
+            color: Colors.white
+          )
+      );
+    }
+  }
+
+  String getRequestStateText() {
+    if (requestWaiting)
+      return '요청을 전송중입니다\n';
+    else {
+      if (!requestSent)
+        return '아래 버튼을 눌러 요청을 전송하십시오\n상대방도 요청하면 문진표가 연동됩니다';
+      if (requestCanceled)
+        return '요청을 취소하였습니다\n';
+      if (remainMinutes == 0 && remainSeconds == 0)
+        return '상대방의 요청이 없습니다\n확인 후 다시 시도하십시오';
+      if (responseSuccessed == true)
+        return '요청을 전송하였습니다\n';
+      else
+        return '요청을 실패하였습니다\n잠시 후 다시 시도하십시오';
+    }
+  }
+
   /** 검색 후 추가시 위젯 끝 */
 
   Widget FourthStep(BuildContext context) {
@@ -1601,7 +1842,67 @@ class _UserAddPageState extends State<UserAddPage> {
       ]
     )
     : Column(
-
+      children: [
+        getRequestStateIcon(),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.05),
+          child: Text(
+            getRequestStateText(),
+            style: TextStyle(
+              fontSize: vw >= 300 ? 20 : 17,
+              fontWeight: FontWeight.bold
+            )
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.05),
+          child: InkWell(
+            child: Container(
+              width: 100,
+              height: 45,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0)),
+                color: !requestWaiting ? Color.fromARGB(255, 79, 112, 229) : Colors.red
+              ),
+              child: Text(
+                !requestWaiting ? '요청하기' : '취소하기',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16
+                )
+              )
+            ),
+            onTap: !requestWaiting
+            ? () {
+              setState(() {
+                countTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+                  if (remainMinutes == 0 && remainSeconds == 0) {
+                    requestWaiting = false;
+                    responseSuccessed = false;
+                    countTimer.cancel();
+                    resetCount();
+                  } else {
+                    countResponse();
+                  }
+                });
+                requestWaiting = true;
+                requestCanceled = false;
+                requestSent = true;
+              });
+            }
+            : () {
+              setState(() {
+                countTimer.cancel();
+                resetCount();
+                requestWaiting = false;
+                requestCanceled = true;
+                responseSuccessed = false;
+              });
+            }
+          )
+        )
+      ]
     );
   }
   /** 건강 상태 입력 네번째 단계 끝 */
@@ -1810,6 +2111,25 @@ class _UserAddPageState extends State<UserAddPage> {
     return Container(
       height: getRestSpace(),
       child: TextField(
+        textAlignVertical: TextAlignVertical.top,
+        textAlign: TextAlign.start,
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              width: 1.0,
+              color: Colors.blue
+            ),
+            borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0))
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              width: 1.0,
+              color: Colors.grey
+            ),
+            borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0))
+          ),
+          contentPadding: EdgeInsets.all(7.5)
+        ),
         minLines: null,
         maxLines: null,
         controller: etcTextEditController,
@@ -1902,35 +2222,51 @@ class _UserAddPageState extends State<UserAddPage> {
           margin: EdgeInsets.only(top: vh * 0.01),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: false,
-                    groupValue: isSmoker,
-                    onChanged: (value) {
-                      setState(() {
-                        isSmoker = value!;
-                        checkSmoker();
-                      });
-                    }
-                  ),
-                  Text('비흡연')
-                ]
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isSmoker = false;
+                    checkSmoker();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: false,
+                      groupValue: isSmoker,
+                      onChanged: (value) {
+                        setState(() {
+                          isSmoker = value!;
+                          checkSmoker();
+                        });
+                      }
+                    ),
+                    Text('비흡연')
+                  ]
+                ),
               ),
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: true,
-                    groupValue: isSmoker,
-                    onChanged: (value) {
-                      setState(() {
-                        isSmoker = value!;
-                        checkSmoker();
-                      });
-                    }
-                  ),
-                  Text('흡연중')
-                ]
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isSmoker = true;
+                    checkSmoker();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: true,
+                      groupValue: isSmoker,
+                      onChanged: (value) {
+                        setState(() {
+                          isSmoker = value!;
+                          checkSmoker();
+                        });
+                      }
+                    ),
+                    Text('흡연중')
+                  ]
+                ),
               )
             ]
           )
@@ -1953,35 +2289,51 @@ class _UserAddPageState extends State<UserAddPage> {
           margin: EdgeInsets.only(top: vh * 0.01),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: false,
-                    groupValue: isDrinker,
-                    onChanged: (value) {
-                      setState(() {
-                        isDrinker = value!;
-                        checkDrinker();
-                      });
-                    }
-                  ),
-                  Text('해당 없음')
-                ]
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isDrinker = false;
+                    checkDrinker();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: false,
+                      groupValue: isDrinker,
+                      onChanged: (value) {
+                        setState(() {
+                          isDrinker = value!;
+                          checkDrinker();
+                        });
+                      }
+                    ),
+                    Text('해당 없음')
+                  ]
+                ),
               ),
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: true,
-                    groupValue: isDrinker,
-                    onChanged: (value) {
-                      setState(() {
-                        isDrinker = value!;
-                        checkDrinker();
-                      });
-                    }
-                  ),
-                  Text('해당 있음')
-                ]
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isDrinker = true;
+                    checkDrinker();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: true,
+                      groupValue: isDrinker,
+                      onChanged: (value) {
+                        setState(() {
+                          isDrinker = value!;
+                          checkDrinker();
+                        });
+                      }
+                    ),
+                    Text('해당 있음')
+                  ]
+                ),
               )
             ]
           )
@@ -2003,37 +2355,53 @@ class _UserAddPageState extends State<UserAddPage> {
         Container(
           child: Column(
             children: [
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: false,
-                    groupValue: etcExists,
-                    onChanged: (value) {
-                      setState(() {
-                        etcExists = value!;
-                        checkEtc();
-                      });
-                    }
-                  ),
-                  Text('특이사항 없음')
-                ]
-              ),
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: true,
-                    groupValue: etcExists,
-                    onChanged: (value) {
-                      setState(() {
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    etcExists = false;
+                    checkEtc();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: false,
+                      groupValue: etcExists,
+                      onChanged: (value) {
                         setState(() {
                           etcExists = value!;
                           checkEtc();
                         });
-                      });
-                    }
-                  ),
-                  Text('특이사항 있음')
-                ]
+                      }
+                    ),
+                    Text('특이사항 없음')
+                  ]
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    etcExists = true;
+                    checkEtc();
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio<bool> (
+                      value: true,
+                      groupValue: etcExists,
+                      onChanged: (value) {
+                        setState(() {
+                          setState(() {
+                            etcExists = value!;
+                            checkEtc();
+                          });
+                        });
+                      }
+                    ),
+                    Text('특이사항 있음')
+                  ]
+                ),
               )
             ]
           )
@@ -2156,6 +2524,15 @@ class _UserAddPageState extends State<UserAddPage> {
     );
   }
 
+  String getNextButtonText() {
+    if (currentStep == 4)
+      return '제출';
+    if (currentStep == 3 && addDirectly == false)
+      return '완료';
+    else
+      return '다음';
+  }
+
   /** 건강 정보 직접 추가시 위젯 */
   Widget BodyWidget() {
     return GestureDetector(
@@ -2226,7 +2603,7 @@ class _UserAddPageState extends State<UserAddPage> {
           actions: [
             TextButton(
               child: Text(
-                currentStep == 4 ? '제출' : '다음',
+                getNextButtonText(),
                 style: TextStyle(
                   color: checkCurrentStep() ? Colors.blueAccent : Colors.grey,
                   fontSize: 15,
@@ -2234,12 +2611,18 @@ class _UserAddPageState extends State<UserAddPage> {
                 )
               ),
               onPressed: checkCurrentStep() ? 
-                currentStep == 4 ? completeAddAlert
-                  : () {
+                () {
+                  if (addDirectly == true && currentStep == 4)
+                    completeAddAlert();
+                  else if (addDirectly == false && currentStep == 3) {
+                    Navigator.pop(context);
+                  }
+                  else {
                     setState(() {
                       currentStep++;
                     });
-                  } 
+                  }
+                }
                 : null
             )
           ],

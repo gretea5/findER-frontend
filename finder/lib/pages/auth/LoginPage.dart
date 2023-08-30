@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_octicons/flutter_octicons.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -13,12 +16,13 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailTextEditController = TextEditingController();
   TextEditingController pwTextEditController = TextEditingController();
 
-  final idNode = FocusNode();
+  final emailNode = FocusNode();
   final pwNode = FocusNode();
 
   bool? isEmailFormatCorrect;
+  bool isLoginFormatCorrect = false;
 
-  void checkEmailFormat() {
+  void checkLoginFormat() {
     setState(() {
       if (emailTextEditController.text.isEmpty || emailTextEditController.text.length < 4)
         isEmailFormatCorrect = false;
@@ -26,6 +30,12 @@ class _LoginPageState extends State<LoginPage> {
         isEmailFormatCorrect = RegExp(
           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
         ).hasMatch(emailTextEditController.text);
+    });
+    setState(() {
+      if (pwTextEditController.text.isEmpty || pwTextEditController.text.length < 8 || isEmailFormatCorrect != true)
+        isLoginFormatCorrect = false;
+      else
+        isLoginFormatCorrect = true;
     });
   }
 
@@ -44,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  idNode.unfocus();
+                  emailNode.unfocus();
                   pwNode.unfocus();
                 },
                 child: Container(
@@ -111,9 +121,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         style: TextStyle(fontSize: 14, color: Colors.black),
                         onTapOutside:(event) {
-                          idNode.unfocus();
+                          emailNode.unfocus();
                         },
-                        focusNode: idNode
+                        focusNode: emailNode
                       )
                     ),
                   ]
@@ -213,7 +223,20 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         onPressed: () {
-                          checkEmailFormat();
+                          checkLoginFormat();
+                          if (isLoginFormatCorrect) {
+                            
+                          }    
+                          else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                  decoration: BoxDecoration()
+                                );
+                              }
+                            );
+                          }
                         },
                         
                       )

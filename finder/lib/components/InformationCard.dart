@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import '../models/User.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../models/modelsExport.dart';
 
 class InformationCard extends StatelessWidget {
 
   final User user;
-  final bool showArrow;
+  final bool inList;
 
-  InformationCard({super.key, required this.user, required this.showArrow});
+  InformationCard({super.key, required this.user, required this.inList});
+
+  String showUserName() {
+    if (inList)
+      return user.name;
+    else
+      return user.name.replaceRange(1, 2, '*');
+  }
 
   @override
   Widget build(BuildContext context) {
     final vw = MediaQuery.of(context).size.width;
-    final vh = MediaQuery.of(context).size.height;
-
+    
     return Container(
       width: vw * 0.9,
       height: 90,
@@ -34,7 +40,7 @@ class InformationCard extends StatelessWidget {
                       children: [
                         Container(
                           child: Text(
-                            user.name,
+                            showUserName(),
                             style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
@@ -45,7 +51,9 @@ class InformationCard extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(left: vw * 0.02),
                           child: Text(
-                            '${user.age}세・(${user.sex})',
+                            inList
+                            ? '${user.age}세・(${user.gender})'
+                            : '${user.age}세',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 20,
@@ -54,7 +62,8 @@ class InformationCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Container(
+                    inList
+                    ? Container(
                       alignment: Alignment.center,
                       width: 45,
                       height: 20,
@@ -68,7 +77,7 @@ class InformationCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                       child: Text(
-                        user.relation,
+                        user.familyRelations,
                         style: TextStyle(
                           color: Color.fromARGB(255, 79, 112, 229),
                           fontSize: 12,
@@ -76,62 +85,116 @@ class InformationCard extends StatelessWidget {
                         )
                       )
                     )
+                    : Container()
                   ]
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Icon(
-                        Icons.liquor_outlined,
-                        size: 27,
-                        color: user.drinking ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                inList
+                ? Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: SvgPicture.asset(
+                          'assets/icons/allergy.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(user.allergy != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                        )
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0),
-                      child: Icon(
-                        Icons.smoking_rooms,
-                        size: 27,
-                        color: user.smoking ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: SvgPicture.asset(
+                          'assets/icons/pill.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(user.medicine != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                        )
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0),
-                      child: SvgPicture.asset(
-                        'assets/icons/pill.svg',
-                        width: 27,
-                        height: 27,
-                        colorFilter: ColorFilter.mode(user.drugs ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: SvgPicture.asset(
+                          'assets/icons/surgical.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(user.surgery != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                        )
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0),
-                      child: SvgPicture.asset(
-                        'assets/icons/allergy.svg',
-                        width: 27,
-                        height: 27,
-                        colorFilter: ColorFilter.mode(user.allergy ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: Icon(
+                          Icons.liquor_outlined,
+                          size: 27,
+                          color: user.drinkingCycle != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                        )
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0),
-                      child: SvgPicture.asset(
-                        'assets/icons/surgical.svg',
-                        width: 27,
-                        height: 27,
-                        colorFilter: ColorFilter.mode(user.surgery ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
-                      ),
-                    )
-                  ]
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: Icon(
+                          Icons.smoking_rooms,
+                          size: 27,
+                          color: user.smokingCycle != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                        )
+                      )
+                    ]
+                  ),
                 )
+                : Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: SvgPicture.asset(
+                          'assets/icons/allergy.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: SvgPicture.asset(
+                          'assets/icons/pill.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: SvgPicture.asset(
+                          'assets/icons/surgical.svg',
+                          width: 27,
+                          height: 27,
+                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: Icon(
+                          Icons.liquor_outlined,
+                          size: 27,
+                          color: Colors.grey
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 5.0),
+                        child: Icon(
+                          Icons.smoking_rooms,
+                          size: 27,
+                          color: Colors.grey
+                        )
+                      )
+                    ]
+                  ),
+                ),
               ]
             ),
             flex: 90
           ),
           Flexible(
-            child: showArrow 
+            child: inList 
             ? Container(
               alignment: Alignment.center,
               child: Icon(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:finder/pages/auth/authExport.dart' as authExport;
-import 'package:finder/pages/main/mainExport.dart' as mainExport;
-import 'package:finder/pages/user/userExport.dart' as userExport;
+import 'package:finder/pages/auth/authExport.dart';
+import 'package:finder/pages/main/mainExport.dart';
+import 'package:finder/pages/user/userExport.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 void main() {
@@ -19,17 +19,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
       key: GlobalKey(),
-      initialRoute: '/users/list',
+      initialRoute: '/auth/login',
       routes: {
-        '/': (context) => userExport.UserListPage(),
-        '/map': (context) => mainExport.MapPage(),
-        '/list': (context) => mainExport.ListPage(),
-        '/auth/login': (context) => authExport.LoginPage(),
-        '/auth/signup': (context) => authExport.SignUpPage(),
-        '/user/list': (context) => userExport.UserListPage(),
-        '/user/add': (context) => userExport.UserAddPage(),
+        '/': (context) => LoginPage(),
+        '/map': (context) => MapPage(),
+        '/list': (context) => ListPage(),
+        '/auth/login': (context) => LoginPage(),
+        '/auth/signup': (context) => SignUpPage(),
+        '/user/list': (context) => UserListPage(),
+        '/user/add': (context) => UserAddPage(),
       },
     );
   }
 }
-

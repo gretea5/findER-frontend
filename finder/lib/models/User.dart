@@ -1,49 +1,55 @@
 class User {
-  final String id;
+  final String email;
   final String name;
-  final String tel;
+  final String phoneNum;
   final String address;
   final int age;
-  final String sex;
+  final String gender;
   final String bloodType;
-  final String relation;
-  final bool allergy;
-  final bool drugs;
-  final bool smoking;
-  final bool drinking;
-  final bool surgery;
+  final String familyRelations;
+  final String allergy;
+  final String medicine;
+  final String smokingCycle;
+  final String drinkingCycle;
+  final String etc;
+  final String surgery;
+  final bool isLinked;
 
   User({
-    required this.id,
+    required this.email,
     required this.name,
-    required this.tel,
+    required this.phoneNum,
     required this.address,
     required this.age,
-    required this.sex,
+    required this.gender,
     required this.bloodType,
-    required this.relation,
+    required this.familyRelations,
     required this.allergy,
-    required this.drugs,
-    required this.smoking, 
-    required this.drinking,
-    required this.surgery
+    required this.medicine,
+    required this.smokingCycle, 
+    required this.drinkingCycle,
+    required this.etc,
+    required this.surgery,
+    required this.isLinked
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
+      email: json['email'],
       name: json['name'],
-      tel: json['tel'],
+      phoneNum: json['phoneNum'],
       address: json['address'],
       age: json['age'],
-      sex: json['sex'],
+      gender: json['gender'],
       bloodType: json['bloodType'],
-      relation: json['relation'],
+      familyRelations: json['familyRelations'],
       allergy: json['allergy'],
-      drugs: json['drugs'],
-      smoking: json['smoking'],
-      drinking: json['drinking'],
-      surgery: json['surgery']
+      medicine: json['medicine'],
+      smokingCycle: json['smokingCycle'],
+      drinkingCycle: json['drinkingCycle'],
+      etc: json['etc'],
+      surgery: json['surgery'],
+      isLinked: json['isLinked']
     );
   }
 }
