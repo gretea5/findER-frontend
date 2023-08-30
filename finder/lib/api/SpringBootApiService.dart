@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:finder/models/hospitalMarkerModel.dart';
 import 'package:finder/models/hospitalPreviewModel.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SpringBootApiService {
-  static const String baseURL = '192.168.0.8';
-
-  static Future<String> login({
+  final String baseURL = '192.168.0.8';
+  final BuildContext context;
+  SpringBootApiService({
+    required this.context
+  });
+  Future<String> login({
     required String email,
     required String password
   }) async{
@@ -28,7 +32,6 @@ class SpringBootApiService {
     );
     if(response.statusCode == 200) {
       Map<String, String> headers = response.headers;
-      print(headers);
       String token = headers['authorization']!;
       String refreshToken = headers['authorization-refresh']!;
       final SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -41,7 +44,7 @@ class SpringBootApiService {
     return response.body;
   }
 
-  static Future<String> makeUser({
+  Future<String> signUp({
     required String email,
     required String password,
     required String name
@@ -65,7 +68,31 @@ class SpringBootApiService {
     return response.body;
   }
 
-  static Future<List<HospitalMarkerModel>> getLocationHospitals({
+  Future<void> refreshToken() async{
+    final String apiUrl = 'http://${baseURL}:8080/api/refresh';
+    final uri = Uri.parse(apiUrl);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final refreshToken = preferences.getString("refreshToken");
+    final response = await http.get(
+      uri,
+      headers: {'Authorization-refresh': 'Bearer ${refreshToken}'},
+    );
+    if (response.statusCode == 200) {
+      Map<String, String> headers = response.headers;
+      String newToken = headers['authorization']!;
+      await preferences.remove("token");
+      await preferences.setString("token", newToken);
+    }
+    else if (response.statusCode == 401) {
+      preferences.clear();
+      //여기서 로그인 페이지로 이동
+    }
+    else {
+      
+    }
+  }
+
+  Future<List<HospitalMarkerModel>> getHospitalsByMap({
     required double swLat,
     required double swLon,
     required double neLat,
@@ -86,20 +113,23 @@ class SpringBootApiService {
       uri,
       headers: {'Authorization': 'Bearer ${token}'},
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode.toString().startsWith("2")) {
       final List<dynamic> list = jsonDecode(response.body);
       for(var element in list) {
         HospitalMarkerInstances.add(HospitalMarkerModel.fromJson(element));
       }
       return HospitalMarkerInstances;
     } 
+    else if (response.statusCode == 401) {
+
+    }
     else {
       print('Request failed with status: ${response.statusCode}');
     }
     throw Error();
   }
 
-  static Future<HospitalPreviewModel> getHospitalById({
+  Future<HospitalPreviewModel> getHospitalById({
     required int id,
     required double lat,
     required double lon
@@ -125,7 +155,7 @@ class SpringBootApiService {
     throw Error();
   }
 
-  static Future<List<HospitalPreviewModel>> getHosipitalLikeList({
+  Future<List<HospitalPreviewModel>> getHospitalsByList({
     required double lat,
     required double lon
   }) async {
@@ -154,23 +184,23 @@ class SpringBootApiService {
     throw Error();
   }
 
-  // static Future<HospitalDetailModel> getHospitalDetailById({
-  //   required int id
-  // }) async {
-  //   final String apiUrl = 'http://${baseURL}:8080/api/hospitals/details/${id}';
-  //   final uri = Uri.parse(apiUrl);
-  //   final SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   final token = preferences.getString("token");
-  //   final response = await http.get(
-  //     uri,
-  //     headers: {'Authorization': 'Bearer ${token}'},
-  //   );
-  //   if (response.statusCode == 200) {
-  //     final instance = jsonDecode(response.body);
-  //     return HospitalDetailModel.fromJson(instance);
-  //   } else {
-  //     print('Request failed with status: ${response.statusCode}');
-  //   }
-  //   throw Error();
-  // }
+  Future<HospitalDetailModel> getHospitalDetailById({
+    required int id
+  }) async {
+    final String apiUrl = 'http://${baseURL}:8080/api/hospitals/details/${id}';
+    final uri = Uri.parse(apiUrl);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("token");
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer ${token}'},
+    );
+    if (response.statusCode == 200) {
+      final instance = jsonDecode(response.body);
+      return HospitalDetailModel.fromJson(instance);
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+    throw Error();
+  }
 }

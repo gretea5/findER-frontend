@@ -27,6 +27,9 @@ class _MapPageState extends State<MapPage> {
   var vw = 0.0;
   Set<Marker> markers = {}; 
   Map<String, dynamic> responseData = {};
+  late SpringBootApiService api;
+  
+
 
   Future<void> searchkeyword(String query, BuildContext context) async {
     final response = await http.get(
@@ -70,6 +73,7 @@ class _MapPageState extends State<MapPage> {
     super.didChangeDependencies();
     vh = MediaQuery.of(context).size.height;
     vw = MediaQuery.of(context).size.width;
+    api = SpringBootApiService(context: context);
   }
 
   @override
@@ -127,24 +131,8 @@ class _MapPageState extends State<MapPage> {
             actions: [ 
               IconButton(
                 onPressed: () async {
-                  String responseBody = await SpringBootApiService.login(
-                    email: "park@naver.com",
-                    password: "1234"
-                  );
-                },
-                icon: Icon(Icons.my_location),
-                color: Colors.white,
-              ),
-              IconButton(
-                onPressed: () async {
                   LatLng curPos = await getUserLocation();
                   mapController!.setCenter(curPos);
-                  String responseBody = await SpringBootApiService.makeUser(
-                    email: "park@naver.com",
-                    password: "1234",
-                    name: "park"
-                  );
-                  print(responseBody);
                 },
                 icon: Icon(Icons.my_location),
                 color: Colors.white,
