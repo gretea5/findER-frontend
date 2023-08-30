@@ -1,0 +1,36 @@
+[
+    {
+        "email": "rrrrrr@naver.com",
+        "name": "박옥순",
+        "phoneNum": "01011111111",
+        "address": "서울특별시 성북구 보문로 29가길 9(02692) 204호",
+        "age": 69,
+        "gender": "여",
+        "bloodType": "RH+ O",
+        "allergy": "갑각류",
+        "medicine": "인슐린",
+        "smokingCycle": "한 달에 3갑 이상",
+        "drinkingCycle": "X",
+        "surgery": "X",
+        "etc": "대충 엄청나게 긴 장문 테스트\n대충 엄청나게 긴 장문 테스트\n대충 엄청나게 긴 장문 테스트\n대충 엄청나게 긴 장문 테스트",
+        "familyRelations": "본인",
+        "isLinked": false
+    },
+    {
+        "email": "dddddd@gmail.com",
+        "name": "김춘수",
+        "phoneNum": "01022222222",
+        "address":"서울특별시 성북구 보문로 29가길 9(02692) 204호",
+        "age": 74,
+        "gender": "남",
+        "bloodType": "RH+ A",
+        "allergy": "X",
+        "medicine": "X",
+        "smokingCycle": "X",
+        "drinkingCycle": "일주일에 두 병",
+        "surgery": "X",
+        "etc": "X",
+        "familyRelations": "배우자",
+        "isLinked": true
+    }
+]
