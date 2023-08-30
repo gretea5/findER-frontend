@@ -62,7 +62,7 @@ class SpringBootApiService {
     return response.body;
   }
 
-  static Future<void> getHospitals({
+  static Future<void> getLocationHospitals({
     required double swLat,
     required double swLon,
     required double neLat,
@@ -83,10 +83,79 @@ class SpringBootApiService {
       headers: {'Authorization': 'Bearer ${token}'},
     );
     if (response.statusCode == 200) {
-      print('Response data: ${response.body}');
+      print('getLocationHospitals Method Response data: ${response.body}');
     } else {
       // 응답이 실패했을 때 처리
       print('Request failed with status: ${response.statusCode}');
     }
   }
+
+  static Future<void> getHospitalById({
+    required int id,
+    required double lat,
+    required double lon
+  }) async {
+    final String apiUrl = 'http://${baseURL}:8080/api/hospitals/preview/${id}';
+    final Map<String, String> queryParams = {
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    };
+    final uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("token");
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer ${token}'},
+    );
+    if (response.statusCode == 200) {
+      print('getHospital Method Response data: ${response.body}');
+    } else {
+      // 응답이 실패했을 때 처리
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
+
+  static Future<void> getHosipitalLikeList({
+    required double lat,
+    required double lon
+  }) async {
+    final String apiUrl = 'http://${baseURL}:8080/api/hospitals/list';
+    final Map<String, String> queryParams = {
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    };
+    final uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("token");
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer ${token}'},
+    );
+    if (response.statusCode == 200) {
+      print('getHosipitalLikeList Method Response data: ${response.body}');
+    } else {
+      // 응답이 실패했을 때 처리
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
+
+  // static Future<void> getHospitalDetailById({
+  //   required int id
+  // }) async {
+  //   final String apiUrl = 'http://${baseURL}:8080/api/hospitals/details/${id}';
+  //   final uri = Uri.parse(apiUrl);
+  //   final SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   final token = preferences.getString("token");
+  //   final response = await http.get(
+  //     uri,
+  //     headers: {'Authorization': 'Bearer ${token}'},
+  //   );
+  //   if (response.statusCode == 200) {
+  //     print('getHospitalDetailById Method Response data: ${response.body}');
+  //   } else {
+  //     // 응답이 실패했을 때 처리
+  //     print('Request failed with status: ${response.statusCode}');
+  //   }
+  // }
+
 }

@@ -132,6 +132,18 @@ class _MapPageState extends State<MapPage> {
                     password: "1234"
                   );
                   print(responseBody);
+                  await SpringBootApiService.getHospitalById(
+                    id: 557,
+                    lat: 37.533441,
+                    lon: 126.901230
+                  );
+                  await SpringBootApiService.getHosipitalLikeList(
+                    lat: 37.533441,
+                    lon: 126.901230
+                  );
+                  // await SpringBootApiService.getHospitalDetailById(
+                  //   id: 407
+                  // );
                 },
                 icon: Icon(Icons.my_location),
                 color: Colors.white,
