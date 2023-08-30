@@ -76,10 +76,13 @@ class SpringBootApiService {
       'neLon': neLon.toString(),
     };
     final uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
-    final response = await http.get(uri);
-
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("token");
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer ${token}'},
+    );
     if (response.statusCode == 200) {
-      // 성공적으로 응답을 받았을 때 처리
       print('Response data: ${response.body}');
     } else {
       // 응답이 실패했을 때 처리
