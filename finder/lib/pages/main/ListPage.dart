@@ -1,6 +1,9 @@
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/components/HospitalCard.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
 
 class EmergencyInfo {
@@ -31,6 +34,7 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
   late AnimationController controller;
+  late SpringBootApiService api;
   bool light = true;
   var vh = 0.0;
   var vw = 0.0;
@@ -68,6 +72,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
     super.didChangeDependencies();
     vh = MediaQuery.of(context).size.height;
     vw = MediaQuery.of(context).size.width;
+    api = SpringBootApiService(context: context);
   }
 
   void rotateIcon() {
@@ -83,6 +88,23 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
         });
       });
     }
+  }
+
+  Future<LatLng> getUserLocation() async {
+    final status = await Geolocator.checkPermission();
+    if (status == LocationPermission.denied) {
+      final result = await Geolocator.requestPermission();
+      if (result == LocationPermission.denied) {
+        return LatLng(37.3608681, 126.9306506);
+      }
+    }
+    if (status == LocationPermission.deniedForever) {
+      return LatLng(37.3608681, 126.9306506);
+    }
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    return LatLng(position.latitude, position.longitude);
   }
 
   @override
@@ -140,50 +162,80 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
           )
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: 
-                ListView.separated(
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => DetailPage(
-                              name: datas[index].name,
-                              distance: datas[index].distance,
-                              address: datas[index].address,
-                              tel: datas[index].tel,
-                              arriveTime: datas[index].arriveTime,
-                              numberOfBeds: datas[index].numberOfBeds,
+          child: FutureBuilder(
+            future: getUserLocation(),
+            builder: (context, getLocationSnapshot) {
+              if(getLocationSnapshot.hasData) {
+                print(getLocationSnapshot.data!.latitude);
+                print(getLocationSnapshot.data!.longitude);
+                return FutureBuilder(
+                  future: api.getHospitalsByList(
+                    // lat: getLocationSnapshot.data!.latitude, 
+                    // lon: getLocationSnapshot.data!.longitude
+                    lat: 37.566352778, 
+                    lon: 126.977952778
+                  ),
+                  builder: (context, getHospitalSnapshot) {
+                    if(getHospitalSnapshot.hasData) {
+                      print(getHospitalSnapshot.data!.length);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: 
+                            ListView.separated(
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    // Navigator.of(context).push(
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => DetailPage(
+                                    //       name: datas[index].name,
+                                    //       distance: datas[index].distance,
+                                    //       address: datas[index].address,
+                                    //       tel: datas[index].tel,
+                                    //       arriveTime: datas[index].arriveTime,
+                                    //       numberOfBeds: datas[index].numberOfBeds,
+                                    //     ),
+                                    //     fullscreenDialog: true,
+                                    //   )
+                                    // );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(8),
+                                    height: 0.15 * vh,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: HospitalCard(
+                                      hospitalId: getHospitalSnapshot.data![index].hospitalId,
+                                      name: getHospitalSnapshot.data![index].name,
+                                      address: getHospitalSnapshot.data![index].address,
+                                      representativeContact: getHospitalSnapshot.data![index].representativeContact,
+                                      emergencyContact: getHospitalSnapshot.data![index].emergencyContact,
+                                      hvec: getHospitalSnapshot.data![index].hvec,
+                                      distance: getHospitalSnapshot.data![index].distance,
+                                      arrivalTime: getHospitalSnapshot.data![index].arrivalTime,
+                                      vh: vh,
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (context, index) 
+                                => const Divider(color: Colors.grey, height: 0.0, thickness: 0.2),
+                              itemCount: getHospitalSnapshot.data!.length
                             ),
-                            fullscreenDialog: true,
-                          )
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 0.15 * vh,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: HospitalCard(
-                          name: datas[index].name,
-                          distance: datas[index].distance,
-                          address: datas[index].address,
-                          tel: datas[index].tel,
-                          arriveTime: datas[index].arriveTime,
-                          numberOfBeds: datas[index].numberOfBeds,
-                          vh: vh,
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) 
-                    => const Divider(color: Colors.grey, height: 0.0, thickness: 0.2),
-                  itemCount: datas.length
-                ),
+                      );
+                    }
+                    else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  }
+                );
+              }
+              else {
+                return Center(child: CircularProgressIndicator());
+              }
+            }
           ),
         ),
         drawer: components.CustomDrawer(currentPage: 'map').build(context)
