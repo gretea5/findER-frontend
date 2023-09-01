@@ -75,19 +75,19 @@ class HospitalCard extends StatelessWidget {
             ),
             InkWell(
               onTap: () { 
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DetailPage(
-                      name: "세브란스병원0",
-                      distance: "1.4km",
-                      address: "서울시 서대문구 연세로 50-1",
-                      tel: "02-0000-0000",
-                      arriveTime: "오후 01시 30분",
-                      numberOfBeds: 8,
-                    ),
-                    fullscreenDialog: true,
-                  )
-                );
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => DetailPage(
+                //       name: "세브란스병원0",
+                //       distance: "1.4km",
+                //       address: "서울시 서대문구 연세로 50-1",
+                //       tel: "02-0000-0000",
+                //       arriveTime: "오후 01시 30분",
+                //       numberOfBeds: 8,
+                //     ),
+                //     fullscreenDialog: true,
+                //   )
+                // );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -184,43 +184,66 @@ class HospitalCard extends StatelessWidget {
                   )
                 ],
               ),
-              InkWell(
-                onTap: () {
-                  print("전화번호 클릭");
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/bed.svg',
-                      width: 20,
-                      height: 20,
-                      colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "잔여 병상 수",
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/emergencyContact.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
+                  ),
+                  SizedBox(width: 5,),
+                  InkWell(
+                    onTap: () => launchCaller(convertPhoneNumber(emergencyContact)),
+                    child: Text(
+                      "$emergencyContact",
                       style: TextStyle(
                         color: elementColor,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "$hvec",
-                      style: TextStyle(
-                        color: bedColor,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
-        )
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/bed.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "잔여 병상 수",
+                    style: TextStyle(
+                      color: elementColor,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "$hvec",
+                    style: TextStyle(
+                      color: bedColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
