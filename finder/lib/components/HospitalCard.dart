@@ -210,7 +210,7 @@ class HospitalCard extends StatelessWidget {
         ),
         Container(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

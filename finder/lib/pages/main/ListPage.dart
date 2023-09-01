@@ -197,7 +197,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                                   },
                                   child: Container(
                                     padding: EdgeInsets.all(8),
-                                    height: 0.15 * vh,
+                                    height: 0.2 * vh,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(10),
