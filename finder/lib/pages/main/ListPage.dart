@@ -185,19 +185,15 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    // Navigator.of(context).push(
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => DetailPage(
-                                    //       name: datas[index].name,
-                                    //       distance: datas[index].distance,
-                                    //       address: datas[index].address,
-                                    //       tel: datas[index].tel,
-                                    //       arriveTime: datas[index].arriveTime,
-                                    //       numberOfBeds: datas[index].numberOfBeds,
-                                    //     ),
-                                    //     fullscreenDialog: true,
-                                    //   )
-                                    // );
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailPage(
+                                          hospitalId: 407,
+                                          name: getHospitalSnapshot.data![index].name,
+                                        ),
+                                        fullscreenDialog: true,
+                                      )
+                                    );
                                   },
                                   child: Container(
                                     padding: EdgeInsets.all(8),
