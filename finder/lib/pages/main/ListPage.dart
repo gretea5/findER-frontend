@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/components/FloatingCountDownButton.dart';
 import 'package:finder/components/HospitalCard.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +38,11 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late SpringBootApiService api;
-  bool light = true;
   var vh = 0.0;
   var vw = 0.0;
   bool isRotating = false;
+  bool light = true;
+  bool countDownButtonVisible = false;
   
   @override
   void initState() {
@@ -62,14 +66,31 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
       controller.forward(from: 0.0);
       setState(() {
         isRotating = true;
+        countDownButtonVisible = false;
       });
       Future.delayed(Duration(seconds: 1), () {
         controller.reset();
         setState(() {
           isRotating = false;
+          countDownButtonVisible = true;
         });
       });
     }
+  }
+
+  void startCountdown() {
+    int secondsRemaining = 11;
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if (secondsRemaining > 0) {
+        secondsRemaining--;
+      } else {
+        timer.cancel(); // 10초가 다 지나면 타이머를 취소합니다.
+        setState(() {
+          countDownButtonVisible = false;
+          isRotating = false;
+        });
+      }
+    });
   }
 
   Future<LatLng> getUserLocation() async {
@@ -129,20 +150,25 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            rotateIcon();
-          },
-          tooltip: 'Reset Counter',
-          backgroundColor: Color.fromARGB(255, 79, 112, 229),
-          child: RotationTransition(
-            turns: controller,
-            child: Icon(
-              Icons.refresh,
-              color: Colors.white,
-            ),
+        floatingActionButton: 
+        !countDownButtonVisible  ?
+          FloatingActionButton(
+            onPressed: (){
+              rotateIcon();
+              startCountdown();
+            },
+            tooltip: 'Reset Counter',
+            backgroundColor: Color.fromARGB(255, 79, 112, 229),
+            child: RotationTransition(
+              turns: controller,
+              child: Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ),
+            )
           )
-        ),
+        :
+          FloatingCountDownButton(),
         body: SafeArea(
           child: FutureBuilder(
             future: getUserLocation(),
@@ -159,7 +185,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                   ),
                   builder: (context, getHospitalSnapshot) {
                     if(getHospitalSnapshot.hasData) {
-                      print(getHospitalSnapshot.data!.length);
+                      print("데이터 갱신!");
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: 
