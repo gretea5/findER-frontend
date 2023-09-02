@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:finder/models/hospitalDetailModel.dart';
-import 'package:finder/models/hospitalMarkerModel.dart';
-import 'package:finder/models/hospitalPreviewModel.dart';
+import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SpringBootApiService {
-  final String baseURL = '192.168.0.8';
+  final String baseURL = '52.78.159.76';
   final BuildContext context;
   SpringBootApiService({
     required this.context
@@ -37,6 +35,7 @@ class SpringBootApiService {
       final SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setString("token", token);
       await preferences.setString("refreshToken", refreshToken);
+      Navigator.pushReplacementNamed(context,'/map');
     }
     else {
       print('Failed to fetch data');
@@ -202,5 +201,186 @@ class SpringBootApiService {
       print('Request failed with status: ${response.statusCode}');
     }
     throw Error();
+  }
+
+  Future<String> writeQuestionnaire(Map<String, dynamic> questionnaire) async {
+    final String apiUrl = 'http://${baseURL}:8080/api/questionnaire';
+
+    final uri = Uri.parse(apiUrl);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("token");
+
+    final response = await http.post(
+      uri,
+      headers: {
+        'Authorization': 'Bearer ${token}',
+        'Content-Type': 'application/json'
+        },
+      body: jsonEncode(questionnaire)
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      return response.body;
+    }
+    else if (response.statusCode == 401) {
+      return '토큰 갱신 필요';
+    }
+    else {
+      return '${response.statusCode} error';
+    }
+  }
+
+  Future<List<User> >getQuestionnaireList() async {
+    final String apiUrl = 'http://${baseURL}:8080/api/questionnaire';
+    final uri = Uri.parse(apiUrl);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString('token');
+    
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer ${token}',
+        'Content-Type': 'application/json',
+      }
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      final List<dynamic> jsonData = jsonDecode(response.body);
+      final List<User> users = [];
+      for (var data in jsonData) {
+        users.add(User.fromJson(data));
+      }
+      return users;
+    } else {
+      return [];
+    }
+  }
+
+  Future<String> editQuestionnaire({
+    required Map<String, dynamic> questionnaire, required int id
+    }) async {
+      final String url = 'http://${baseURL}:8080/api/questionnaire/${id.toString()}';
+      final Uri uri = Uri.parse(url);
+      final SharedPreferences preferences = await SharedPreferences.getInstance();
+      final token = preferences.getString('token');
+
+      final response = await http.patch(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(questionnaire)
+      );
+
+      if (response.statusCode.toString().startsWith('2')) {
+        return response.body;
+      } else if (response.statusCode == 401) {
+        return '토큰 갱신 필요';
+      } else {
+        return '문진표 수정 요청 실패';
+      }
+  }
+
+  Future<String> deleteQuestionnaire({required int id}) async {
+    final String url = 'http://${baseURL}:8080/api/questionnaire/${id.toString()}';
+    final uri = Uri.parse(url);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString('token');
+
+    final response = await http.delete(
+      uri,
+      headers: {
+        'Authorization': 'Bearer ${token}'
+      }
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      return response.body;
+    } else if (response.statusCode == 401) {
+      return '토큰 갱신 필요';
+    } else {
+      return '삭제 요청 실패';
+    }
+  }
+
+  Future<String> requestLink({
+    required String otherUserEmail,
+    required String familyRelations
+    }) async {
+      final String url = 'http://${baseURL}:8080/api/questionnaire/link';
+      final Uri uri = Uri.parse(url);
+      final SharedPreferences preferences = await SharedPreferences.getInstance();
+      final token = preferences.getString('token');
+
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String> {
+          'linkedUserEmail': otherUserEmail,
+          'familyRelations': familyRelations
+        })
+      );
+
+      print(response.body);
+
+      if (response.statusCode.toString().startsWith('2')) {
+        return response.body;
+      } else if (response.statusCode == 401) {
+        return '토큰 갱신 필요';
+      } else {
+        return '연동 요청 실패';
+      }
+    }
+
+  Future<String> waitLinkingResponse({
+    required String otherUserEmail
+    }) async {
+      final String url = 'http://${baseURL}:8080/api/questionnaire/link?linkedUserEmail=${otherUserEmail}';
+      final Uri uri = Uri.parse(url);
+      final SharedPreferences preferences = await SharedPreferences.getInstance();
+      final token = preferences.getString('token');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${token}'
+        }
+      );
+
+      if (response.statusCode.toString().startsWith('2')) {
+        return response.body;
+      } else if (response.statusCode == 401) {
+        return '토큰 갱신 필요';
+      } else {
+        return '문진표 연동 응답 대기 실패';
+      }
+    }
+  
+  Future<String> unlinkQuestionnaire({
+    required String otherUserEmail
+  }) async {
+    final String url = 'http://${baseURL}:8080/api/questionnaire/unlink?linkedUserEmail=${otherUserEmail}';
+    final Uri uri = Uri.parse(url);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString('token');
+
+    final response = await http.delete(
+      uri,
+      headers: {
+        'Authorization': 'Bearer ${token}',
+      }
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      return response.body;
+    } else if (response.statusCode == 401) {
+      return '토큰 갱신 필요';
+    } else {
+      return '문진표 연동 해제 요청 실패';
+    }
   }
 }

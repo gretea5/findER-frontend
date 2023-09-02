@@ -1,13 +1,25 @@
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import './userEditPage.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:http/http.dart';
 import '../../models/modelsExport.dart';
 
-class UserDetailPage extends StatelessWidget {
+class UserDetailPage extends StatefulWidget {
   final User user;
 
   UserDetailPage({super.key, required this.user});
+
+  @override
+  _UserDetailPageState createState() => _UserDetailPageState(user: user);
+
+}
+
+class _UserDetailPageState extends State<UserDetailPage>{
+
+  final User user;
+
+  _UserDetailPageState({required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +27,261 @@ class UserDetailPage extends StatelessWidget {
     final vw = MediaQuery.of(context).size.width;
     final vh = MediaQuery.of(context).size.height;
 
+    final SpringBootApiService api = SpringBootApiService(context: context);
+
+    bool isLinked = user.isLinked;
+    bool? willEdit;
+    bool? willDelete;
+    bool deleteSuccess = false;
+
+    Widget DeniedEditDialog() {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero
+          ),
+          title: Text('문진표 편집'),
+          content: Text('연동된 문진표는 수정할 수 없습니다'),
+          actionsPadding: EdgeInsets.only(bottom: 5.0),
+          actions: [
+            TextButton(
+              child: Text(
+                '확인',
+                style: TextStyle(
+                  color: Colors.black
+                )
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }
+            )
+          ]
+        )
+      );
+    }
+
+    Widget UnlinkQuestionnaireDialog() {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero
+          ),
+          title: Text('문진표 편집'),
+          content: Text('상대방과의 연동을 취소하시겠습니까?'),
+          actionsPadding: EdgeInsets.only(bottom: 5.0),
+          actions: [
+            TextButton(
+              child: Text(
+                '확인',
+                style: TextStyle(
+                  color: Colors.red
+                )
+              ),
+              onPressed: () {
+                api.unlinkQuestionnaire(otherUserEmail: user.email);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
+            ),
+            TextButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: Colors.black
+                )
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }
+            )
+          ]
+        )
+      );
+    }
+
+    Widget ConfirmEditDialog() {
+      return Container( 
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero
+          ),
+          title: Text('문진표 편집'),
+          content: Text('문진표를 수정하시겠습니까?'),
+          actionsPadding: EdgeInsets.only(bottom: 5.0),
+          actions: [
+            TextButton(
+              child: Text(
+                '수정',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 79, 112, 229)
+                )
+              ),
+              onPressed: () {
+                if (isLinked) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return DeniedEditDialog();
+                    }
+                  );
+                }
+                else {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserEditPage(user: user)
+                    )
+                  );
+                }
+              }
+            ),
+            TextButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: Colors.black
+                )
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }
+            )
+          ]
+        )
+      );
+    }
+
+    Widget DeleteQuestionnaireDialog() {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero
+          ),
+          title: Text('문진표 편집'),
+          content: Text('문진표를 삭제하시겠습니까?'),
+          actionsPadding: EdgeInsets.only(bottom: 5.0),
+          actions: [
+            TextButton(
+              child: Text(
+                '삭제',
+                style: TextStyle(
+                  color: Colors.red
+                )
+              ),
+              onPressed: () {
+                api.deleteQuestionnaire(id: user.id);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
+            ),
+            TextButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: Colors.black
+                )
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }
+            )
+          ]
+        )
+      );
+    }
+
+    Widget AskEditOrDeleteDialog() {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero
+          ),
+          title: Text('문진표 편집'),
+          content: Text('문진표를 편집하시겠습니까?'),
+          actionsPadding: EdgeInsets.only(bottom: 5.0),
+          actions: [
+            TextButton(
+              child: Text(
+                '수정',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 79, 112, 229)
+                )
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return isLinked
+                    ? DeniedEditDialog()
+                    : ConfirmEditDialog();
+                  }
+                );
+              }
+            ),
+            TextButton(
+              child: Text(
+                '삭제',
+                style: TextStyle(
+                  color: Colors.red
+                )
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return isLinked
+                    ? UnlinkQuestionnaireDialog()
+                    : DeleteQuestionnaireDialog();
+                  }
+                );
+              }
+            ),
+            TextButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: Colors.black
+                )
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }
+            )
+          ]
+        )
+      );
+    }
+
     String getFormedPhoneNum(String phoneNum) {
       return '${phoneNum.substring(0, 3)}-${phoneNum.substring(3, 7)}-${phoneNum.substring(7, 11)}';
     }
 
-    Widget checkNoneText(String text) {
-      if (text == "X") {
+    Widget checkNoneText(String? text) {
+      if (text == null) {
         return Text(
           '(해당 없음)',
           style: TextStyle(
@@ -87,175 +348,10 @@ class UserDetailPage extends StatelessWidget {
                   builder: (context) {
                     return Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.zero,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.zero
                       ),
-                      child: AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero
-                        ),
-                        actionsPadding: EdgeInsets.only(bottom: 5.0),
-                        title: Text('문진표 편집'),
-                        content: Text('문진표를 편집하시겠습니까?'),
-                        actions: [
-                          TextButton(
-                            child: Text(
-                              '수정',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 79, 112, 229)
-                              ),
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.zero
-                                    ),
-                                    child: AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero
-                                      ),
-                                      actionsPadding: EdgeInsets.only(bottom: 5.0),
-                                      title: Text('문진표 수정'),
-                                      content: Text('문진표를 수정하시겠습니까?'),
-                                      actions: [
-                                        TextButton(
-                                          child: Text(
-                                            '수정',
-                                            style: TextStyle(
-                                              color: Color.fromARGB(255, 79, 112, 229)
-                                            )
-                                          ),
-                                          onPressed: () {
-                                            if (user.isLinked) {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.zero
-                                                    ),
-                                                    child: AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.zero
-                                                      ),
-                                                      actionsPadding: EdgeInsets.only(bottom: 5.0),
-                                                      title: Text('알림'),
-                                                      content: Text('타인의 문진표는 수정할 수 없습니다'),
-                                                      actions: [
-                                                        TextButton(
-                                                          child: Text(
-                                                            '확인',
-                                                            style: TextStyle(
-                                                              color: Colors.black
-                                                            )
-                                                          ),
-                                                          onPressed: () {
-                                                            Navigator.pop(context);
-                                                            Navigator.pop(context);
-                                                          }
-                                                        )
-                                                      ]
-                                                    )
-                                                  );
-                                                }
-                                              );
-                                            } else {
-
-                                            }
-                                          }
-                                        ),
-                                        TextButton(
-                                          child: Text(
-                                            '취소',
-                                            style: TextStyle(
-                                              color: Colors.black
-                                            )
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          }
-                                        )
-                                      ],
-                                    )
-                                  );
-                                }
-                              );
-                            }
-                          ),
-                          TextButton(
-                            child: Text(
-                              '삭제',
-                              style: TextStyle(
-                                color: Colors.red
-                              )
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.zero
-                                    ),
-                                    child: AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero
-                                      ),
-                                      actionsPadding: EdgeInsets.only(bottom: 5.0),
-                                      title: Text('문진표 삭제'),
-                                      content: Text(
-                                        user.isLinked
-                                        ? '문진표를 삭제하시겠습니까?'
-                                        : '연동을 취소하시겠습니까?'),
-                                      actions: [
-                                        TextButton(
-                                          child: Text(
-                                            '삭제',
-                                            style: TextStyle(
-                                              color: Colors.red
-                                            )
-                                          ),
-                                          onPressed: () {
-                                            if (user.isLinked) {
-                                              
-                                            } else {
-
-                                            }
-                                          }
-                                        ),
-                                        TextButton(
-                                          child: Text(
-                                            '취소',
-                                            style: TextStyle(
-                                              color: Colors.black
-                                            )
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          }
-                                        )
-                                      ]
-                                    )
-                                  );
-                                }
-                              );
-                            }
-                          ),
-                          TextButton(
-                            child: Text(
-                              '취소',
-                              style: TextStyle(
-                                color: Colors.black
-                              )
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            }
-                          )
-                        ],
-                      )
+                      child: AskEditOrDeleteDialog()
                     );
                   }
                 );
@@ -559,10 +655,10 @@ class UserDetailPage extends StatelessWidget {
                             )
                           ]
                         ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(vw * 0.01, vh * 0.015, vw * 0.01, 0),
-                          child: checkNoneText(user.surgery)
-                        )
+                        // Container(
+                        //   margin: EdgeInsets.fromLTRB(vw * 0.01, vh * 0.015, vw * 0.01, 0),
+                        //   child: checkNoneText(user.surgery)
+                        // )
                       ]
                     )
                   ),

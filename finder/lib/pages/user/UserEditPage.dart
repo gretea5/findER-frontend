@@ -5,18 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
+import 'package:http/http.dart' as http;
 import '../../components/componentsExport.dart';
 import '../../models/modelsExport.dart';
 
 
-class UserAddPage extends StatefulWidget {
-  UserAddPage({super.key});
+class UserEditPage extends StatefulWidget {
+  final User user;
+
+  UserEditPage({super.key, required this.user});
 
   @override
-  State<UserAddPage> createState() => _UserAddPageState();
+  State<UserEditPage> createState() => _UserEditPageState(user: user);
 }
 
-class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStateMixin{
+class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderStateMixin{
+
+  final User user;
+
+  _UserEditPageState({required this.user});
 
   late SpringBootApiService api;
 
@@ -31,16 +38,66 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   
   @override
   void initState() {
-
-    rotationController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1)
-    )..addListener(() {
-      setState(() {});
-    });
-    rotationController.repeat(reverse: false);
-
     super.initState();
+
+    setState(() {
+      nameTextEditController.text = user.name;
+      ageTextEditController.text = user.age.toString();
+      telTextEditController.text = user.phoneNum;
+      relationText = user.familyRelations;
+
+      if (user.gender == '남자') {
+        selectedGender[0] = true;
+      } else {
+        selectedGender[1] = true;
+      }
+
+      if (user.bloodType.split(' ')[0] == 'rh+') {
+        rhSelected[0] = true;
+      } else {
+        rhSelected[1] = true;
+      }
+
+      selectedBloodType = user.bloodType.split(' ')[1];
+
+      bloodTypeString = user.bloodType;
+
+      addressTextEditController.text = user.address.split(')')[0]+')';
+      detailAddressTextEditController.text = user.address.split(')')[1];
+      
+      if (user.allergy == null) {
+        allergyExists = false;
+      } else {
+        allergyExists = true;
+        allergyTextEditController.text = user.allergy!;
+      }
+
+      if (user.medicine == null) {
+        drugsExists = false;
+      } else {
+        drugsExists = true;
+        drugsTextEditController.text = user.medicine!;
+      }
+
+      if (user.smokingCycle == null) {
+        isSmoker = false;
+      } else {
+        isSmoker = true;
+      }
+
+      if (user.drinkingCycle == null) {
+        isDrinker = false;
+      } else {
+        isDrinker = true;
+      }
+
+      if (user.etc == null) {
+        etcExists = false;
+      } else {
+        etcExists = true;
+        etcTextEditController.text = user.etc!;
+      }
+    });
 
     bodyScrollController.addListener(() {
       setState(() {
@@ -63,17 +120,10 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
     etcTextEditController.addListener(checkEtc);
 
     /** 건강 정보 직접 입력시 이벤트 리스너 끝 */
-
-    /** 건강 정보 간접 입력시 이벤트 리스너 */
-
-    otherEmailTextEditController.addListener(checkOtherEmailField);
-
-    /** 건강 정보 간접 입력시 이벤트 리스너 끝 */
   }
 
   @override
   void dispose() {
-    rotationController.dispose();
     super.dispose();
   }
 
@@ -87,22 +137,18 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   Widget getStepWidget(int currentStep) {
     if (currentStep == 0) 
-      return FirstStep(context);
-    else if (currentStep == 1) 
       return SecondStep(context);
-    else if (currentStep == 2)
+    else if (currentStep == 1) 
       return ThirdStep(context);
-    else if (currentStep == 3)
+    else if (currentStep == 2)
       return FourthStep(context);
     return FifthStep(context);
   }
 
   Widget getCurrentStep(int currentStep) {
-    return currentStep > 0
-    ? Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: addDirectly == true
-      ? [
+      children: [
         Icon(Icons.check_circle, size: 20, color: Colors.green),
         currentStep > 0 
         ? currentStep == 1
@@ -147,192 +193,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
             )
         : Icon(Icons.circle, size: 20, color: Colors.grey)
       ]
-      : [
-        Icon(Icons.check_circle, size: 20, color: Colors.green),
-        currentStep > 0 
-        ? currentStep == 1
-          ? checkSecondStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
-            : SvgPicture.asset(
-                'assets/icons/counter_2.svg',
-                width: 20, height: 20,
-                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-              )
-          : Icon(Icons.check_circle, size: 20, color: Colors.green)
-        : Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 1 
-        ? currentStep == 2
-          ? checkThirdStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
-            : SvgPicture.asset(
-                'assets/icons/counter_3.svg',
-                width: 20, height: 20,
-                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-              )
-          : Icon(Icons.check_circle, size: 20, color: Colors.green)
-        : Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 2 
-        ? currentStep == 3 
-          ? checkFourthStep() 
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
-            : SvgPicture.asset(
-              'assets/icons/counter_4.svg',
-              width: 20, height: 20,
-              colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            )
-          : Icon(Icons.check_circle, size: 20, color: Colors.green)
-        : Icon(Icons.circle, size: 20, color: Colors.grey)
-      ]
-    )
-    : Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        checkFirstStep() 
-        ? Icon(
-          Icons.check_circle,
-          size: 20,
-          color: Color.fromARGB(255, 79, 112, 229)
-        )
-        : SvgPicture.asset(
-          'assets/icons/counter_1.svg',
-          width: 20, height: 20,
-          colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-        ) 
-      ]
     );
   }
-
-  /** 건강 정보 입력 첫번째 단계 */
-
-  bool? addDirectly = null;
-
-  bool checkFirstStep() {
-    return addDirectly != null ? true : false;
-  }
-
-  Widget FirstStep(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: vh * 0.5,
-            margin: EdgeInsets.only(top: vh * 0.12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (addDirectly == null || addDirectly == false)
-                        addDirectly = true;
-                      else
-                        addDirectly = null;
-                    });
-                  },
-                  child: Container(
-                    width: vw >= 400 ? vw * 0.7 : vw * 0.6,
-                    height: vh * 0.15,
-                    decoration: BoxDecoration(
-                      color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
-                      border: Border.all(
-                        color: addDirectly == true 
-                          ? Color.fromARGB(255, 79, 112, 229)
-                          : Color.fromARGB(255, 139, 139, 139),
-                        width: 4.0
-                      ),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: vw > 390 ? vw * 0.035 : vw * 0.015),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        addDirectly == true
-                          ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 25
-                          )
-                          : Icon(
-                            Icons.circle_outlined,
-                            color: Color.fromARGB(255, 139, 139, 139),
-                            size: 25
-                          ),
-                        Text(
-                          '직접 추가하기',
-                          style: TextStyle(
-                            color: addDirectly == true ? Colors.white : Color.fromARGB(255, 139, 139, 139),
-                            fontSize: vw > 390 ? 35 : 25,
-                            fontWeight: FontWeight.bold
-                          )
-                        )
-                      ]
-                    )
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (addDirectly == null || addDirectly == true)
-                        addDirectly = false;
-                      else
-                        addDirectly = null;
-                    });
-                  },
-                  child: Container(
-                    width: vw >= 400 ? vw * 0.7 : vw * 0.6,
-                    height: vh * 0.15,
-                    margin: EdgeInsets.only(top: 75.0),
-                    decoration: BoxDecoration(
-                      color: addDirectly == false ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
-                      border: Border.all(
-                        color: addDirectly == false 
-                          ? Color.fromARGB(255, 79, 112, 229)
-                          : Color.fromARGB(255, 139, 139, 139),
-                        width: 4.0
-                      ),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: vw > 390 ? vw * 0.035 : vw * 0.015),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        addDirectly == false
-                          ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 25
-                          )
-                          : Icon(
-                            Icons.circle_outlined,
-                            color: Color.fromARGB(255, 139, 139, 139),
-                            size: 25
-                          ),
-                        Text(
-                          '검색하여 추가',
-                          style: TextStyle(
-                            color: addDirectly == false ? Colors.white : Color.fromARGB(255, 139, 139, 139),
-                            fontSize: vw > 390 ? 35 : 25,
-                            fontWeight: FontWeight.bold
-                          )
-                        )
-                      ]
-                    )
-                  ),
-                )
-              ]
-            ),
-          ),
-        ]
-      ),
-    );
-  }
-
-  /** 건강 상태 입력 첫번째 단계 끝 */
-
   /** 건강 상태 입력 두번째 단계 */
 
   /** 건강 정보 직접 입력시 위젯 */
@@ -348,16 +210,16 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   final addressNode = FocusNode();
   final detailAddressNode = FocusNode();
 
-  bool nameIsEmpty = true; // 이름 입력 여부
-  bool relationChecked = false; // 관계 체크 여부
-  bool ageIsEmpty = true;
-  bool telIsEmpty = true;
-  bool addressIsEmpty = true;
-  bool sexChecked = false;
-  bool detailAddressIsEmpty = true;
+  bool nameIsEmpty = false; // 이름 입력 여부
+  bool relationChecked = true; // 관계 체크 여부
+  bool ageIsEmpty = false;
+  bool telIsEmpty = false;
+  bool addressIsEmpty = false;
+  bool genderChecked = true;
+  bool detailAddressIsEmpty = false;
 
-  List<bool> selectedSex = [false, false];
-  List<Widget> sexList = [
+  List<bool> selectedGender = [false, false];
+  List<Widget> genderList = [
     Container(
       width: 85.0,
       child: Row(
@@ -422,37 +284,12 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   /** 건강 정보 직접 입력시 위젯 끝 */
 
-  /** 검색 후 추가시 위젯 */
-
-  TextEditingController otherEmailTextEditController = TextEditingController();
-
-  final otherEmailNode = FocusNode();
-
-  bool otherEmailIsEmpty = true;
-
-  void checkOtherEmailField() {
-    setState(() {
-      if (otherEmailTextEditController.text.isEmpty && otherEmailTextEditController.text.length < 4)
-        otherEmailIsEmpty = true;
-      else
-        otherEmailIsEmpty = !RegExp(
-          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
-        ).hasMatch(otherEmailTextEditController.text);
-    });
-  }
-
-  /** 검색 후 추가시 위젯 끝 */
-
   bool checkSecondStep() {
-    if (addDirectly == true)
-      return !nameIsEmpty && relationChecked && !ageIsEmpty &&  !telIsEmpty && !addressIsEmpty && !detailAddressIsEmpty && sexChecked;
-    else
-      return !otherEmailIsEmpty;
+    return !nameIsEmpty && relationChecked && !ageIsEmpty &&  !telIsEmpty && !addressIsEmpty && !detailAddressIsEmpty && genderChecked;
   }
 
   Widget SecondStep(BuildContext context) {
-    return addDirectly == true
-    ? Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -689,7 +526,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                   Text('성별'),
                   Icon(
                     Icons.check_circle,
-                    color: sexChecked ? Colors.green : Colors.grey,
+                    color: genderChecked ? Colors.green : Colors.grey,
                     size: 14
                   )
                 ]
@@ -697,19 +534,19 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
               Container(
                 margin: EdgeInsets.only(top: vh * 0.02),
                 child: ToggleButtons(
-                  isSelected: selectedSex,
+                  isSelected: selectedGender,
                   borderRadius: BorderRadius.circular(12.0),
                   constraints: BoxConstraints(minHeight: 60.0, minWidth: 150.0),
-                  fillColor: selectedSex[0] ? Colors.blue : Color.fromARGB(250, 250, 138, 207),
+                  fillColor: selectedGender[0] ? Colors.blue : Color.fromARGB(250, 250, 138, 207),
                   selectedColor: Colors.white, 
-                  children: sexList,
+                  children: genderList,
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onPressed: (value) {
-                    setState(() {for (int i = 0; i < sexList.length; i++) {
-                      selectedSex[i] = i == value;
+                    setState(() {for (int i = 0; i < genderList.length; i++) {
+                      selectedGender[i] = i == value;
                      }
-                     sexChecked = true;
+                     genderChecked = true;
                     });
                   }
                 )
@@ -717,60 +554,6 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
             ]
           )
         )
-      ]
-    )
-    : Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.02),
-          child: Row(
-            children: [
-              Text('상대방의 이메일 입력'),
-              Icon(
-                Icons.check_circle,
-                color: checkSecondStep() ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: TextField(
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1.0,
-                  color: Colors.grey,
-                )
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  width: 1.0,
-                  color: Color.fromARGB(255, 79, 112, 229)
-                )
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                size: 16,
-                color: otherEmailNode.hasFocus ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
-              ),
-              prefixIconConstraints: BoxConstraints(minWidth: 20, maxWidth: 40),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
-              hintText: '상대방의 이메일을 입력하십시오',
-              hintStyle: TextStyle(
-                color: Colors.grey
-              )
-            ),
-            focusNode: otherEmailNode,
-            controller: otherEmailTextEditController,
-            onTapOutside: (event) {
-              otherEmailNode.unfocus();
-            }
-          )
-        ),
       ]
     );
   }
@@ -830,12 +613,13 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   ];
   List<String> bloodTypeList = ['A', 'B', 'O', 'AB'];
   String selectedBloodType = '';
+
   String bloodTypeString = '';
 
-  bool rhChecked = false;
-  bool bloodTypeChecked = false;
+  bool rhChecked = true;
+  bool bloodTypeChecked = true;
   bool? allergyExists = null;
-  bool allergyChecked = false;
+  bool allergyChecked = true;
 
   bool bloodCheckedAll() {
     return rhChecked && bloodTypeChecked ? true : false;
@@ -888,34 +672,12 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   /** 건강 상태 직접 입력시 위젯 끝 */
 
-  /** 검색 후 추가시 위젯 */
-
-  bool otherRelationChecked = false;
-  List<String> otherRelationList = ['선택안함', '배우자', '자녀', '부', '모'];
-  String myPosition = '';
-  String otherPosition = '';
-
-  void checkOtherRelation() {
-    setState(() {
-      if (myPosition != '' && myPosition != '선택안함' && otherPosition != '' && otherPosition != '선택안함')
-        otherRelationChecked = true;
-      else
-        otherRelationChecked = false;
-    });
-  }
-
-  /** 검색 후 추가시 위젯 끝 */
-
   bool checkThirdStep() {
-    if (addDirectly == true)
       return rhChecked && bloodTypeChecked && allergyChecked ? true : false;
-    else
-      return otherRelationChecked;
   }
 
   Widget ThirdStep(BuildContext context) {
-    return addDirectly == true
-      ? Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -952,8 +714,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                       for (int i = 0; i < rhList.length; i++) {
                         rhSelected[i] = i == value;
                       }
-                      bloodTypeString = rhSelected[0] ? 'rh+ ' + selectedBloodType : 'rh- ' + selectedBloodType;
                       rhChecked = true;
+                      bloodTypeString = rhSelected[0] ? 'rh+ '+selectedBloodType : 'rh- '+selectedBloodType;
                     });
                   }
                 )
@@ -974,7 +736,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                                 onTap: () {
                                   setState(() {
                                     selectedBloodType = bloodType;
-                                    bloodTypeString = rhSelected[0] ? 'rh+ ' + selectedBloodType : 'rh- ' + selectedBloodType;
+                                    bloodTypeString = rhSelected[0] ? 'rh+ '+selectedBloodType : 'rh- '+selectedBloodType;
                                     bloodTypeChecked = true;
                                   });
                                 },
@@ -988,7 +750,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                                       onChanged: (value) {
                                         setState(() {
                                           selectedBloodType = value!;
-                                          bloodTypeString = rhSelected[0] ? 'rh+ ' + selectedBloodType : 'rh- ' + selectedBloodType;
+                                          bloodTypeString = rhSelected[0] ? 'rh+ '+selectedBloodType : 'rh- '+selectedBloodType;
                                           bloodTypeChecked = true;
                                         });
                                       },
@@ -1083,117 +845,6 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         ),
         allergyExists == true ? allergyField() : Container()
       ]
-    )
-    : Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.02),
-          child: Row(
-            children: [
-              Text('상대방과의 관계를 입력하십시오'),
-              Icon(
-                Icons.check_circle,
-                color: otherRelationChecked ? Colors.green : Colors.grey,
-                size: 14,
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.04),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(right: 5.0),
-                child: Text(
-                  '(본인)',
-                  style: TextStyle(
-                    fontSize: 16
-                  )
-                ),
-              ),
-              DropdownButton(
-                alignment: Alignment.center,
-                value: myPosition == '' ? otherRelationList[0] : myPosition,
-                items: otherRelationList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value)
-                  );
-                }).toList(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black
-                ),
-                icon: Icon(
-                  null,
-                  size: 0
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    myPosition = value!;
-                    checkOtherRelation();
-                  });
-                },
-                selectedItemBuilder: (context) {
-                  return otherRelationList.map((String value) {
-                    return Center(
-                      child: Text(
-                        value,
-                        textAlign: TextAlign.center
-                      )
-                    );
-                  }).toList();
-                }
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Icon(
-                  Icons.horizontal_rule,
-                  size: 15,
-                  color: Colors.black
-                )
-              ),
-              DropdownButton(
-                alignment: Alignment.center,
-                value: otherPosition == '' ? otherRelationList[0] : otherPosition,
-                items: otherRelationList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value)
-                  );
-                }).toList(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black
-                ),
-                icon: Icon(
-                  null,
-                  size: 0
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    otherPosition = value!;
-                    checkOtherRelation();
-                  });
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 5.0),
-                child: Text(
-                  '(상대방)',
-                  style: TextStyle(
-                    fontSize: 16
-                  )
-                )
-              )
-            ]
-          )
-        )
-      ]
     );
   }
   /** 건강 상태 입력 세번째 단계 끝 */
@@ -1210,9 +861,9 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   List<String> surgeryDateStringList = [];
 
   bool? drugsExists = null;
-  bool drugsChecked = false;
+  bool drugsChecked = true;
   bool? surgeryExists = null;
-  bool surgeryChecked = false;
+  bool surgeryChecked = true;
 
   void checkDrugs() {
     setState(() {
@@ -1246,10 +897,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   }
 
   bool checkFourthStep() {
-    if (addDirectly == true)
       return drugsChecked && surgeryChecked ? true : false;
-    else
-      return responseSuccessed != null ? true : false;
   }
 
   Widget DrugsField() {
@@ -1430,158 +1078,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   /** 건강 상태 직접 입력시 위젯 끝 */
 
-  /** 검색 후 추가시 위젯 */
-
-  bool requestSent = false; //요청하기 버튼을 누르면 true로 바뀜
-  bool? responseSuccessed; //백에 요청 성공하면 true, 아니면 false
-  bool requestWaiting = false; //백에서 응답이 오면 true, 아니면 false
-  bool timeOuted = false;
-  bool requestCanceled = false;
-
-  late AnimationController rotationController;
-
-  late Timer countTimer;
-
-  int remainMinutes = 2;
-  int remainSeconds = 59;
-
-  void resetCount() {
-    setState(() {
-      remainMinutes = 2;
-      remainSeconds = 59;
-    });
-  }
-
-  void countResponse() {
-    setState(() {
-      if (remainSeconds > 0)
-        remainSeconds--;
-      else if (remainMinutes > 0) {
-        remainMinutes--;
-        remainSeconds = 59;
-      }
-    });
-  }
-
-  Widget getRequestStateIcon() {
-    if (requestWaiting)
-      return Container(
-        width: 150,
-        height: 150,
-        margin: EdgeInsets.only(top: vh * 0.07),
-        child: Stack(
-          children: [
-            Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                child: CircularProgressIndicator(
-                  value: rotationController.value,
-                  color: Color.fromARGB(255, 79, 112, 229),
-                  semanticsLabel: 'A',
-                  strokeWidth: 10.0
-                ),
-              ),
-            ),
-            Center(
-              child: Text(
-                '${remainMinutes}:${remainSeconds.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                )
-              )
-            )
-          ]
-        ),
-      );
-    if (requestSent == false) {
-      return Container(
-        width: 150,
-        height: 150,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            width: 1,
-            color: Color.fromARGB(255, 79, 112, 229)
-          ),
-          color: Color.fromARGB(255, 79, 112, 229)
-        ),
-        margin: EdgeInsets.only(top: vh * 0.07),
-        child: Icon(
-          Icons.group_add_outlined,
-          size: 100,
-          color: Colors.white
-        )
-      );
-    }
-    else {
-      if (responseSuccessed == true)
-        return Container(
-          width: 150,
-          height: 150,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 1,
-              color: Colors.green
-            ),
-            color: Colors.green
-          ),
-          margin: EdgeInsets.only(top: vh * 0.07),
-          child: Icon(
-            Icons.done_all_outlined,
-            size: 100,
-            color: Colors.white
-          )
-        );
-      else
-      return Container(
-        width: 150,
-          height: 150,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 1,
-              color: Colors.red
-            ),
-            color: Colors.red
-          ),
-          margin: EdgeInsets.only(top: vh * 0.07),
-          child: Icon(
-            Icons.priority_high_outlined,
-            size: 100,
-            color: Colors.white
-          )
-      );
-    }
-  }
-
-  String getRequestStateText() {
-    if (requestWaiting)
-      return '요청을 전송중입니다\n';
-    else {
-      if (!requestSent)
-        return '아래 버튼을 눌러 요청을 전송하십시오\n상대방도 요청하면 문진표가 연동됩니다';
-      if (requestCanceled)
-        return '요청을 취소하였습니다\n';
-      if (timeOuted)
-        return '상대방의 요청이 없습니다\n확인 후 다시 시도하십시오';
-      if (responseSuccessed == true)
-        return '상대방과 연동되었습니다\n이제 상대방의 문진표를 조회할 수 있습니다';
-      else
-        return '요청을 실패하였습니다\n잠시 후 다시 시도하십시오';
-    }
-  }
-
-  /** 검색 후 추가시 위젯 끝 */
-
   Widget FourthStep(BuildContext context) {
-    return addDirectly == true
-    ? Column(
+    return Column(
       children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
@@ -1729,121 +1227,6 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           ) :
           Container()
       ]
-    )
-    : Column(
-      children: [
-        getRequestStateIcon(),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.05),
-          child: Text(
-            getRequestStateText(),
-            style: TextStyle(
-              fontSize: vw >= 300 ? 20 : 17,
-              fontWeight: FontWeight.bold
-            )
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.05),
-          child: InkWell(
-            child: Container(
-              width: 100,
-              height: 45,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0)),
-                color: !requestWaiting ? Color.fromARGB(255, 79, 112, 229) : Colors.red
-              ),
-              child: Text(
-                !requestWaiting ? '요청하기' : '취소하기',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16
-                )
-              )
-            ),
-            onTap: !requestWaiting
-            ? () {
-              api.requestLink(otherUserEmail: otherEmailTextEditController.text, familyRelations: otherPosition)
-              .then((value) {
-                if (value == '문진표 연동 요청 완료') {
-                  setState(() {
-                    countTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-                      if (remainMinutes == 0 && remainSeconds == 0) {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        timeOuted = true;
-                        countTimer.cancel();
-                        resetCount();
-                      } else {
-                        countResponse();
-                      }
-                    });
-                    requestWaiting = true;
-                    requestCanceled = false;
-                    requestSent = true;
-                  });
-                  api.waitLinkingResponse(otherUserEmail: otherEmailTextEditController.text)
-                  .then((value) {
-                    if (value == '문진표 연동 완료') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else if (value == '문진표 연동 요청 취소') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        requestCanceled = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else if (value == '문진표 연동 실패') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        timeOuted = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else {
-                      setState(() {
-                        requestWaiting = false;
-                        requestCanceled = false;
-                        requestSent = true;
-                        responseSuccessed =false;
-                        resetCount();
-                      });
-                    }
-                  });
-                } else {
-                  setState(() {
-                    requestWaiting = false;
-                    requestCanceled = false;
-                    requestSent = true;
-                    responseSuccessed = false;
-                    resetCount();
-                  });
-                }
-              });
-            }
-            : () {
-              api.unlinkQuestionnaire(otherUserEmail: otherEmailTextEditController.text)
-              .then((value) {
-                setState(() {
-                  countTimer.cancel();
-                  resetCount();
-                  requestWaiting = false;
-                  requestCanceled = true;
-                  responseSuccessed = false;
-                });
-              });
-            }
-          )
-        )
-      ]
     );
   }
   /** 건강 상태 입력 네번째 단계 끝 */
@@ -1865,7 +1248,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   String smokingAmount = '';
   
   bool? isSmoker = null;
-  bool smokingChecked = false;
+  bool smokingChecked = true;
 
   List<String> drinkingDurationList = ['선택안함', '하루', '일주일', '한 달'];
   List<String> drinkingAmountList = [
@@ -1882,13 +1265,13 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   String drinkingAmount = '';
 
   bool? isDrinker = null;
-  bool drinkingChecked = false;
+  bool drinkingChecked = true;
 
   TextEditingController etcTextEditController = TextEditingController();
   final etcNode = FocusNode();
 
   bool? etcExists = null;
-  bool etcChecked = false;
+  bool etcChecked = true;
   int restSpace = 2;
 
   GlobalKey smokingFieldKey = GlobalKey();
@@ -2136,15 +1519,11 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   }
 
   bool checkFifthStep() {
-    if (addDirectly == true)
-      return smokingChecked && drinkingChecked && etcChecked ? true : false;
-    else
-      return true;
+    return smokingChecked && drinkingChecked && etcChecked ? true : false;
   }
 
   Widget FifthStep(BuildContext context) {
-    return addDirectly == true
-    ? Column(
+    return Column(
       children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
@@ -2349,9 +1728,6 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         ),
         etcExists == true ? EtcField() : Container()
       ]
-    )
-    : Column(
-
     );
   }
 
@@ -2360,14 +1736,12 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   /** 현재 단계에 따라 완성도 체크해서 다음 버튼 활성 or 비활성 함수 */
   bool checkCurrentStep() {
     if (currentStep == 0)
-      return checkFirstStep();
-    else if (currentStep == 1)
       return checkSecondStep();
-    else if (currentStep == 2)
+    else if (currentStep == 1)
       return checkThirdStep();
-    else if (currentStep == 3)
+    else if (currentStep == 2)
       return checkFourthStep();
-    else 
+    else
       return checkFifthStep();
   }
 
@@ -2460,7 +1834,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     'familyRelations': relationText,
                     'phoneNum': telTextEditController.text,
                     'address': addressTextEditController.text+' '+detailAddressTextEditController.text,
-                    'gender': selectedSex[0] ? '남자': '여자',
+                    'gender': selectedGender[0] ? '남자' : '여자',
                     'bloodType': bloodTypeString,
                     'allergy': allergyExists == true ? allergyTextEditController.text : null,
                     'medicine': drugsExists == true ? drugsTextEditController.text : null,
@@ -2468,8 +1842,9 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     'drinkingCycle': isDrinker == true ? drinkingDuration+'동안 '+drinkingAmount : null,
                     'etc': etcExists == true ? etcTextEditController.text : null
                   };
-                  api.writeQuestionnaire(questionnaire).then((value) {
-                    if (value == '문진표 작성 완료') {
+                  api.editQuestionnaire(questionnaire: questionnaire, id: user.id)
+                  .then((value) {
+                    if (value == '문진표 수정 완료') {
                       Navigator.pop(context);
                       Navigator.pop(context);
                     }
@@ -2487,10 +1862,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   }
 
   String getNextButtonText() {
-    if (currentStep == 4)
+    if (currentStep == 3)
       return '제출';
-    if (currentStep == 3 && addDirectly == false)
-      return '완료';
     else
       return '다음';
   }
@@ -2562,7 +1935,6 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
               color: Colors.black
             )
           ),
-          centerTitle: true,
           actions: [
             TextButton(
               child: Text(
@@ -2575,11 +1947,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
               ),
               onPressed: checkCurrentStep() ? 
                 () {
-                  if (addDirectly == true && currentStep == 4)
+                  if (currentStep == 3)
                     completeAddAlert();
-                  else if (addDirectly == false && currentStep == 3) {
-                    Navigator.pop(context);
-                  }
                   else {
                     setState(() {
                       currentStep++;

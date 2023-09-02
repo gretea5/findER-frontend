@@ -1,3 +1,4 @@
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,6 +11,8 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+
+  late SpringBootApiService api;
 
   TextEditingController nameTextEditController = TextEditingController();
   TextEditingController emailTextEditController = TextEditingController();
@@ -29,6 +32,12 @@ class _SignUpPageState extends State<SignUpPage> {
     nameTextEditController.addListener(checkName);
     emailTextEditController.addListener(checkEmail);
     pwTextEditController.addListener(checkPw);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    api = SpringBootApiService(context: context);
   }
 
   void checkName() {
@@ -67,6 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text('회원가입'),
           backgroundColor: Colors.transparent,
@@ -290,7 +300,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       )
                     ),
                     onPressed: checkAll() ? () {
-                      // Navigator.pop(context);
+                      api.signUp(
+                        email: emailTextEditController.text,
+                        name: nameTextEditController.text,
+                        password: pwTextEditController.text
+                      );
+                      Navigator.pop(context);
                     } : null,
                   )
                 )

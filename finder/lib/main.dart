@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:finder/pages/auth/authExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:finder/pages/user/userExport.dart';
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
@@ -12,8 +13,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     //화면 회전 고정

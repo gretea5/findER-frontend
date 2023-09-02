@@ -99,7 +99,7 @@ class InformationCard extends StatelessWidget {
                           'assets/icons/allergy.svg',
                           width: 27,
                           height: 27,
-                          colorFilter: ColorFilter.mode(user.allergy != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                          colorFilter: ColorFilter.mode(user.allergy != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
                         )
                       ),
                       Container(
@@ -108,24 +108,24 @@ class InformationCard extends StatelessWidget {
                           'assets/icons/pill.svg',
                           width: 27,
                           height: 27,
-                          colorFilter: ColorFilter.mode(user.medicine != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                          colorFilter: ColorFilter.mode(user.medicine != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
                         )
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 5.0),
-                        child: SvgPicture.asset(
-                          'assets/icons/surgical.svg',
-                          width: 27,
-                          height: 27,
-                          colorFilter: ColorFilter.mode(user.surgery != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
-                        )
-                      ),
+                      // Container(
+                      //   margin: EdgeInsets.only(left: 5.0),
+                      //   child: SvgPicture.asset(
+                      //     'assets/icons/surgical.svg',
+                      //     width: 27,
+                      //     height: 27,
+                      //     colorFilter: ColorFilter.mode(user.surgery != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
+                      //   )
+                      // ),
                       Container(
                         margin: EdgeInsets.only(left: 5.0),
                         child: Icon(
                           Icons.liquor_outlined,
                           size: 27,
-                          color: user.drinkingCycle != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                          color: user.drinkingCycle != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
                         )
                       ),
                       Container(
@@ -133,7 +133,7 @@ class InformationCard extends StatelessWidget {
                         child: Icon(
                           Icons.smoking_rooms,
                           size: 27,
-                          color: user.smokingCycle != "X" ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                          color: user.smokingCycle != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
                         )
                       )
                     ]

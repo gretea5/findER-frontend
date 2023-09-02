@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_octicons/flutter_octicons.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  late SpringBootApiService api;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    api = SpringBootApiService(context: context);
+  }  
 
   TextEditingController emailTextEditController = TextEditingController();
   TextEditingController pwTextEditController = TextEditingController();
@@ -225,7 +234,10 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           checkLoginFormat();
                           if (isLoginFormatCorrect) {
-                            
+                            api.login(
+                              email: emailTextEditController.text,
+                              password: pwTextEditController.text
+                            );
                           }    
                           else {
                             showDialog(

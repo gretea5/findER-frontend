@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:finder/api/SpringBootApiService.dart';
 import './UserDetailPage.dart';
 import '../../components/componentsExport.dart';
+import 'package:focus_detector_v2/focus_detector_v2.dart';
 import '../../models/modelsExport.dart';
 
 class UserListPage extends StatefulWidget {
@@ -16,26 +16,28 @@ class UserListPage extends StatefulWidget {
 
 class _UserListPageState extends State<UserListPage> {
   List<User> users = [];
+  late SpringBootApiService api;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    api = SpringBootApiService(context: context);
+    getUsers();
+  }
 
   Future<void> getUsers() async {
-    setState(() {
-      users = [];
+    await api.getQuestionnaireList()
+    .then((value) {
+      setState(() {
+        users = value;
+      });
     });
-
-    // String jsonString = await rootBundle.loadString('assets/datas/users.json');
-
-    // List<dynamic> jsonList = jsonDecode(jsonString);
-
-
-    // setState(() {
-    //   for (dynamic json in jsonList) {
-    //     print(json);
-    //     users.add(User.fromJson(json));
-    //   }
-    // });
   }
 
   void showDetail(User user) {
+    setState(() {
+      users = [];
+    });
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -47,7 +49,6 @@ class _UserListPageState extends State<UserListPage> {
   @override
   void initState() {
     super.initState();
-    getUsers();
   }
 
   @override
@@ -88,33 +89,38 @@ class _UserListPageState extends State<UserListPage> {
             statusBarBrightness: Brightness.dark
           ),
         ),
-        body: Container(
-          child: ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  print(users[index].name);
-                  showDetail(users[index]);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey,
-                        width: 0.6
+        body: FocusDetector(
+          onFocusGained: () {
+            getUsers();
+          },
+          child: Container(
+            child: ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print(users[index].name);
+                    showDetail(users[index]);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey,
+                          width: 0.6
+                        )
                       )
-                    )
+                    ),
+                    child: InformationCard(
+                      inList: true,
+                      user: users[index]
+                    ),
                   ),
-                  child: InformationCard(
-                    inList: true,
-                    user: users[index]
-                  ),
-                ),
-              );
-            },
-          )
+                );
+              },
+            )
+          ),
         ),
         drawer: CustomDrawer(currentPage: 'user').build(context),
       ),
