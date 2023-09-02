@@ -36,20 +36,17 @@ class BedDataDTO {
   final double percent;
   final double otherPercent;
   final List<int> twoAgoList;
-  final List<int> oneAgoList;
 
   BedDataDTO({
     required this.successTime,
     required this.percent,
     required this.otherPercent,
     required this.twoAgoList,
-    required this.oneAgoList,
   });
 
   BedDataDTO.fromJson(Map<String, dynamic> json) 
     : successTime = json['successTime'] as String,
       percent = json['percent'] as double,
       otherPercent = json['otherPercent'] as double,
-      twoAgoList = List<int>.from(json['twoAgoList']),
-      oneAgoList = List<int>.from(json['oneAgoList']);
+      twoAgoList = List<int>.from(json['twoAgoList']);
 }

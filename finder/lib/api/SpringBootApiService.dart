@@ -184,10 +184,16 @@ class SpringBootApiService {
   }
 
   Future<HospitalDetailModel> getHospitalDetailById({
-    required int id
+    required int id,
+    required double lat,
+    required double lon
   }) async {
     final String apiUrl = 'http://${baseURL}:8080/api/hospitals/details/${id}';
-    final uri = Uri.parse(apiUrl);
+    final Map<String, String> queryParams = {
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    };
+    final uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final token = preferences.getString("token");
     final response = await http.get(
@@ -195,6 +201,7 @@ class SpringBootApiService {
       headers: {'Authorization': 'Bearer ${token}'},
     );
     if (response.statusCode == 200) {
+      print(response.body);
       final instance = jsonDecode(response.body);
       return HospitalDetailModel.fromJson(instance);
     } else {

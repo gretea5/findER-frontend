@@ -1,27 +1,31 @@
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HospitalCard extends StatelessWidget {
+  final double vh;
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
-  String name;
-  String distance;
-  String address;
-  String tel;
-  String arriveTime;
-  int numberOfBeds;
+  final int hospitalId;
+  final String name;
+  final String address;
+  final String representativeContact;
+  final String emergencyContact;
+  final int? hvec; 
+  final double distance;
+  final String arrivalTime;
 
   HospitalCard({
     super.key,
+    required this.hospitalId,
     required this.name,
-    required this.distance,
     required this.address,
-    required this.tel,
-    required this.arriveTime,
-    required this.numberOfBeds,
+    required this.representativeContact,
+    required this.emergencyContact,
+    required this.hvec,
+    required this.distance,
+    required this.arrivalTime,
     required this.vh,
   });
 
@@ -38,8 +42,6 @@ class HospitalCard extends StatelessWidget {
     }
   }
 
-  final double vh;
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,7 +54,7 @@ class HospitalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "$name", 
+                  name.length > 10 ? "${name.substring(0, 10)}.." : "$name", 
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -64,7 +66,7 @@ class HospitalCard extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  "$distance",
+                  "${distance}km",
                   style: TextStyle(
                     color: elementColor,
                   ),
@@ -73,19 +75,19 @@ class HospitalCard extends StatelessWidget {
             ),
             InkWell(
               onTap: () { 
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DetailPage(
-                      name: "세브란스병원0",
-                      distance: "1.4km",
-                      address: "서울시 서대문구 연세로 50-1",
-                      tel: "02-0000-0000",
-                      arriveTime: "오후 01시 30분",
-                      numberOfBeds: 8,
-                    ),
-                    fullscreenDialog: true,
-                  )
-                );
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => DetailPage(
+                //       name: "세브란스병원0",
+                //       distance: "1.4km",
+                //       address: "서울시 서대문구 연세로 50-1",
+                //       tel: "02-0000-0000",
+                //       arriveTime: "오후 01시 30분",
+                //       numberOfBeds: 8,
+                //     ),
+                //     fullscreenDialog: true,
+                //   )
+                // );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,7 +123,7 @@ class HospitalCard extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    "$address",
+                    address.length > 20 ? "${address.substring(0, 20)}.." : "$address",
                     style: TextStyle(
                       color: elementColor,
                     ),
@@ -137,9 +139,9 @@ class HospitalCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: () => launchCaller(convertPhoneNumber(tel)),
+                    onTap: () => launchCaller(convertPhoneNumber(representativeContact)),
                     child: Text(
-                      "$tel",
+                      "$representativeContact",
                       style: TextStyle(
                         color: elementColor,
                         decoration: TextDecoration.underline,
@@ -175,50 +177,73 @@ class HospitalCard extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    "$arriveTime",
+                    "$arrivalTime",
                     style: TextStyle(
                       color: elementColor,
                     ),
                   )
                 ],
               ),
-              InkWell(
-                onTap: () {
-                  print("전화번호 클릭");
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/bed.svg',
-                      width: 20,
-                      height: 20,
-                      colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "잔여 병상 수",
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/emergencyContact.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
+                  ),
+                  SizedBox(width: 5,),
+                  InkWell(
+                    onTap: () => launchCaller(convertPhoneNumber(emergencyContact)),
+                    child: Text(
+                      "$emergencyContact",
                       style: TextStyle(
                         color: elementColor,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "$numberOfBeds",
-                      style: TextStyle(
-                        color: bedColor,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
-        )
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/bed.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "잔여 병상 수",
+                    style: TextStyle(
+                      color: elementColor,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "$hvec",
+                    style: TextStyle(
+                      color: bedColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
