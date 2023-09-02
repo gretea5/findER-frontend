@@ -39,25 +39,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
   var vh = 0.0;
   var vw = 0.0;
   bool isRotating = false;
-  final List<EmergencyInfo> datas = [
-    EmergencyInfo(name: "세브란스병원0" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원1" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원2" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원3" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원4" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원5" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원6" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원7" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-    EmergencyInfo(name: "세브란스병원" ,distance:"1.4km",address: "서울시 서대문구 연세로 50-1",tel: "02-0000-0000" ,arriveTime: "오후 01시 30분",numberOfBeds : 8),
-  ];
-
+  
   @override
   void initState() {
     super.initState();
