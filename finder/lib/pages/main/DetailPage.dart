@@ -1,5 +1,7 @@
 import 'package:d_chart/d_chart.dart';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/components/SegmentedControlContent.dart';
+import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +31,9 @@ class _DetailPageState extends State<DetailPage> {
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
-  int segmentedControlValue = 0;
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
-  var name = "한성대학교";
   var lat = 37.582620285171856;
   var lon = 127.00819672835458;
   late SpringBootApiService api;
@@ -406,321 +406,13 @@ class _DetailPageState extends State<DetailPage> {
                                   ),
                                 ),
                                 SizedBox(height: 15),
-                                Container(
-                                  width: vw * 0.6,
-                                  child: CupertinoSegmentedControl<int>(
-                                  selectedColor: themeColor,
-                                  borderColor: Colors.white,
-                                  children: {
-                                    0: Text('병원 정보'),
-                                    1: Text('병상 추이'),
-                                  },
-                                  onValueChanged: (int val) {
-                                    // 선택한 값 변경 시에만 상태 업데이트
-                                    if (segmentedControlValue != val) {
-                                      setState(() {
-                                        segmentedControlValue = val;
-                                      });
-                                    }
-                                  },
-                                  groupValue: segmentedControlValue,
-                                  ),
+                                SegmentedControlContent(
+                                  vw: vw,
+                                  vh: vh,
+                                  themeColor: themeColor,
+                                  bedColor: bedColor, 
+                                  getHospitalDetailSnapshot: getHospitalDetailSnapshot
                                 ),
-                                segmentedControlValue == 0 ? 
-                                  Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [               
-                                        Container(
-                                          margin: EdgeInsets.only(top: 20),
-                                          child: Text(
-                                            "구급차 가용 여부",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 7, top: 10),
-                                          child: Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/icons/ambulance.svg',
-                                                width: 20,
-                                                height: 20,
-                                                colorFilter: 
-                                                getHospitalDetailSnapshot.data!.ambulance ?
-                                                  ColorFilter.mode(themeColor, BlendMode.srcIn)
-                                                :
-                                                  ColorFilter.mode(bedColor, BlendMode.srcIn),
-                                              ),
-                                              SizedBox(width: 5),
-                                              getHospitalDetailSnapshot.data!.ambulance ?
-                                              Text(
-                                                "구급차 가용 가능",
-                                                style: TextStyle(
-                                                  color: themeColor,
-                                                ),
-                                              )
-                                              :
-                                              Text(
-                                                "구급차 가용 불가",
-                                                style: TextStyle(
-                                                  color: bedColor,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(top: 20),
-                                          child: Text(
-                                            "CT, MRI 가용 여부",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 10, top: 10),
-                                          child: Row(
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "CT",
-                                                    style: TextStyle(
-                                                      color: getHospitalDetailSnapshot.data!.ct ? Color(0xFF3469F0) : Color(0xFFFF0000),
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Text(
-                                                    "MRI",
-                                                    style: TextStyle(
-                                                      color: getHospitalDetailSnapshot.data!.mri ? Color(0xFF3469F0) : Color(0xFFFF0000),
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(width: 15),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    getHospitalDetailSnapshot.data!.ct ? "O" : "X",
-                                                    style: TextStyle(
-                                                      color: getHospitalDetailSnapshot.data!.ct ? Color(0xFF3469F0) : Color(0xFFFF0000),
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Text(
-                                                    getHospitalDetailSnapshot.data!.mri ? "O" : "X",
-                                                    style: TextStyle(
-                                                      color: getHospitalDetailSnapshot.data!.mri ? Color(0xFF3469F0) : Color(0xFFFF0000),
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                :
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "최근",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    "4",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Color(0xFF3469F0),
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    "시간 중 병상을 이용 가능했던 시간은",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 8),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "${getHospitalDetailSnapshot.data!.bedData.successTime}",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Color(0xFF3469F0),
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    " 입니다.",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 0.4 * vh,
-                                          width: 0.9 * vw,
-                                          margin: EdgeInsets.only(top: 20),
-                                          child: AspectRatio(
-                                            aspectRatio: 16 / 9,
-                                            child: DChartPie(
-                                                  data: [
-                                                    {'domain': 'OnTime', 'measure': getHospitalDetailSnapshot.data!.bedData.otherPercent},
-                                                    {'domain': 'OffTime', 'measure': getHospitalDetailSnapshot.data!.bedData.percent},
-                                                  ],
-                                                  fillColor: (pieData, index) {
-                                                    switch(pieData['domain']) {
-                                                      case 'OnTime':
-                                                        return Color(0xFF5CDC2F);
-                                                      default:
-                                                        return Colors.white;
-                                                    }
-                                                  },
-                                                  pieLabel: (pieData, index) {
-                                                    return "${pieData['measure']}%";
-                                                  },
-                                                  labelFontSize: 18,
-                                                  labelColor: Colors.black,
-                                                  labelLineColor: Colors.black,
-                                                ),
-                                                
-                                          )
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(top: 40),
-                                          child: Text(
-                                            "최근 일주일간 평균 병상 추이",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 0.4 * vh,
-                                          width: 0.9 * vw,
-                                          margin: EdgeInsets.only(top: 20),
-                                          child: Row(
-                                            children: [
-                                              RotatedBox(quarterTurns: 3, child: Text('병상 수')),
-                                              SizedBox(width: 8),
-                                              Expanded(
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.end,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            ClipRRect(
-                                                              child: Container(
-                                                                width: 10,
-                                                                height: 10,
-                                                                decoration: BoxDecoration(
-                                                                  color: Colors.amber,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(width: 5),
-                                                            Text('1시간'),
-                                                          ],
-                                                        ),
-                                                        SizedBox(width: 5),
-                                                        Row(
-                                                          children: [
-                                                            ClipRRect(
-                                                              child: Container(
-                                                                width: 10,
-                                                                height: 10,
-                                                                decoration: BoxDecoration(
-                                                                  color: Colors.blue,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(width: 5),
-                                                            Text('2시간'),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    AspectRatio(
-                                                      aspectRatio: 16 / 10,
-                                                      child: DChartLine(
-                                                        lineColor: (lineData, index, id) {
-                                                          return id == 'Line 1'
-                                                              ? Colors.blue
-                                                              : Colors.amber;
-                                                        },
-                                                        data: [
-                                                          {
-                                                            'id': 'Line 1',
-                                                            'data': [
-                                                              {'domain': -120, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[0]},
-                                                              {'domain': -105, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[1]},
-                                                              {'domain': -90, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[2]},
-                                                              {'domain': -75, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[3]},
-                                                              {'domain': -60, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[4]},
-                                                              {'domain': -45, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[5]},
-                                                              {'domain': -30, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[6]},
-                                                              {'domain': -15, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[7]},
-                                                              {'domain': 0, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[8]},
-                                                            ],
-                                                          },
-                                                          // {
-                                                          //   'id': 'Line 2',
-                                                          //   'data': [
-                                                          //     {'domain': 0, 'measure': 2},
-                                                          //     {'domain': 20, 'measure': 5},
-                                                          //     {'domain': 40, 'measure': 1},
-                                                          //     {'domain': 60, 'measure': 1},
-                                                          //     {'domain': 80, 'measure': 5},
-                                                          //   ],
-                                                          // },
-                                                        ],
-                                                        includePoints: true,
-                                                      ),
-                                                    ),
-                                                    Text('분 전'),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
@@ -732,7 +424,7 @@ class _DetailPageState extends State<DetailPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator()
+                            SizedBox()
                           ],
                         )
                       );
@@ -745,7 +437,7 @@ class _DetailPageState extends State<DetailPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator()
+                      SizedBox()
                     ],
                   )
                 );
