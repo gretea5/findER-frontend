@@ -301,6 +301,32 @@ class _DetailPageState extends State<DetailPage> {
                                 Row(
                                   children: [
                                     SvgPicture.asset(
+                                      'assets/icons/emergencyContact.svg',
+                                      width: 20,
+                                      height: 20,
+                                      colorFilter: ColorFilter.mode(elementColor, BlendMode.srcIn),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    InkWell(
+                                      onTap: () => launchCaller(convertPhoneNumber(getHospitalDetailSnapshot.data!.emergencyContact)),
+                                      child: Text(
+                                        "${getHospitalDetailSnapshot.data!.emergencyContact}",
+                                        style: TextStyle(
+                                          color: elementColor,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10
+                                ),
+                                Row(
+                                  children: [
+                                    SvgPicture.asset(
                                       'assets/icons/bed.svg',
                                       width: 20,
                                       height: 20,
@@ -390,9 +416,12 @@ class _DetailPageState extends State<DetailPage> {
                                     1: Text('병상 추이'),
                                   },
                                   onValueChanged: (int val) {
-                                    setState(() {
-                                      segmentedControlValue = val;
-                                    });
+                                    // 선택한 값 변경 시에만 상태 업데이트
+                                    if (segmentedControlValue != val) {
+                                      setState(() {
+                                        segmentedControlValue = val;
+                                      });
+                                    }
                                   },
                                   groupValue: segmentedControlValue,
                                   ),
