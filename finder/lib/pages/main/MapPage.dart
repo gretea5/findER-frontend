@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
-import 'package:finder/components/HospitalCard.dart';
+import 'package:finder/components/HospitalPreview.dart';
 import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,6 +24,7 @@ class _MapPageState extends State<MapPage> {
   bool light = false;
   bool markerClicked = false;
   bool cardVisible = false;
+  int tappedMarkerId = 0;
   var vh = 0.0;
   var vw = 0.0;
   Set<Marker> markers = {}; 
@@ -192,8 +193,10 @@ class _MapPageState extends State<MapPage> {
                           setState(() {});
                         }),
                         onMarkerTap: (markerId, latLng, zoomLevel) {
+                          print("marker Tapped =====>${markerId}");
                           if(!markerClicked) {
                             setState(() {
+                              tappedMarkerId = int.parse(markerId);
                               markerClicked = true;
                             });
                             mapController!.panTo(latLng);
@@ -299,27 +302,10 @@ class _MapPageState extends State<MapPage> {
                         ),
                       ),
                       markerClicked ?
-                      Container(
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.fromLTRB(0,0,0, vh * 0.095),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 0.15 * vh,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.black, width: 1),
-                        ),
-                        // child: HospitalCard(
-                        //   name: "세브란스병원",
-                        //   distance:"1.4km",
-                        //   address: "서울시 서대문구 연세로 50-1",
-                        //   tel: "02-0000-0000",
-                        //   arriveTime: "오후 01시 30분",
-                        //   numberOfBeds : 8,
-                        //   vh: vh
-                        // ),
-                      ),
+                      HospitalPreview(
+                        hospitalId: tappedMarkerId,
+                        latitude: snapshot.data!.latitude,
+                        longitude: snapshot.data!.longitude,
                       )
                       : const SizedBox()
                     ]
