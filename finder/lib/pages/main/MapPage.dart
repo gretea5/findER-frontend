@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/components/HospitalCard.dart';
+import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
@@ -28,6 +29,7 @@ class _MapPageState extends State<MapPage> {
   Set<Marker> markers = {}; 
   Map<String, dynamic> responseData = {};
   late SpringBootApiService api;
+  List<HospitalMarkerModel> areaMarkers = [];
   
 
 
@@ -169,12 +171,24 @@ class _MapPageState extends State<MapPage> {
                         onMapCreated: ((controller) async {
                           mapController = controller;
                           mapController!.setCenter(LatLng(snapshot.data!.latitude, snapshot.data!.longitude));
-                          markers.add(
-                            Marker(
-                              markerId: UniqueKey().toString(),
-                              latLng: LatLng(snapshot.data!.latitude, snapshot.data!.longitude),                          
-                            )
+                          final bounds = await mapController!.getBounds();
+                          final swLatLng = bounds.getSouthWest();
+                          final neLatLng = bounds.getNorthEast();
+                          areaMarkers = await api.getHospitalsByMap(
+                            swLat: swLatLng.latitude,
+                            swLon: swLatLng.longitude,
+                            neLat: neLatLng.latitude,
+                            neLon: neLatLng.longitude
                           );
+                          print("onMapCreated called");
+                          for(var areaMarker in areaMarkers) {
+                            markers.add(
+                              Marker(
+                                markerId: areaMarker.hospitalId.toString(),
+                                latLng: LatLng(areaMarker.lat, areaMarker.lon)
+                              )
+                            );
+                          }
                           setState(() {});
                         }),
                         onMarkerTap: (markerId, latLng, zoomLevel) {
@@ -185,7 +199,49 @@ class _MapPageState extends State<MapPage> {
                             mapController!.panTo(latLng);
                           }
                         },
-                        onDragChangeCallback: (latLng, zoomLevel, dragType) {
+                        onZoomChangeCallback: (zoomLevel, zoomType) async{
+                          final bounds = await mapController!.getBounds();
+                            final swLatLng = bounds.getSouthWest();
+                            final neLatLng = bounds.getNorthEast();
+                            areaMarkers = await api.getHospitalsByMap(
+                              swLat: swLatLng.latitude,
+                              swLon: swLatLng.longitude,
+                              neLat: neLatLng.latitude,
+                              neLon: neLatLng.longitude
+                            );
+                            print("onZoomChangeCallback DragType.end called");
+                            for(var areaMarker in areaMarkers) {
+                              markers.add(
+                                Marker(
+                                  markerId: areaMarker.hospitalId.toString(),
+                                  latLng: LatLng(areaMarker.lat, areaMarker.lon)
+                                )
+                              );
+                            }
+                            setState(() {});
+                        },
+                        onDragChangeCallback: (latLng, zoomLevel, dragType) async{
+                          if (dragType == DragType.end) {
+                            final bounds = await mapController!.getBounds();
+                            final swLatLng = bounds.getSouthWest();
+                            final neLatLng = bounds.getNorthEast();
+                            areaMarkers = await api.getHospitalsByMap(
+                              swLat: swLatLng.latitude,
+                              swLon: swLatLng.longitude,
+                              neLat: neLatLng.latitude,
+                              neLon: neLatLng.longitude
+                            );
+                            print("onDragChangeCallback DragType.end called");
+                            for(var areaMarker in areaMarkers) {
+                              markers.add(
+                                Marker(
+                                  markerId: areaMarker.hospitalId.toString(),
+                                  latLng: LatLng(areaMarker.lat, areaMarker.lon)
+                                )
+                              );
+                            }
+                            setState(() {});
+                          }
                           FocusScope.of(context).unfocus();
                           if(markerClicked) {
                             setState(() {
@@ -254,15 +310,15 @@ class _MapPageState extends State<MapPage> {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.black, width: 1),
                         ),
-                        child: HospitalCard(
-                          name: "세브란스병원",
-                          distance:"1.4km",
-                          address: "서울시 서대문구 연세로 50-1",
-                          tel: "02-0000-0000",
-                          arriveTime: "오후 01시 30분",
-                          numberOfBeds : 8,
-                          vh: vh
-                        ),
+                        // child: HospitalCard(
+                        //   name: "세브란스병원",
+                        //   distance:"1.4km",
+                        //   address: "서울시 서대문구 연세로 50-1",
+                        //   tel: "02-0000-0000",
+                        //   arriveTime: "오후 01시 30분",
+                        //   numberOfBeds : 8,
+                        //   vh: vh
+                        // ),
                       ),
                       )
                       : const SizedBox()
