@@ -178,10 +178,8 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                 print(getLocationSnapshot.data!.longitude);
                 return FutureBuilder(
                   future: api.getHospitalsByList(
-                    // lat: getLocationSnapshot.data!.latitude, 
-                    // lon: getLocationSnapshot.data!.longitude
-                    lat: 37.566352778, 
-                    lon: 126.977952778
+                    lat: getLocationSnapshot.data!.latitude, 
+                    lon: getLocationSnapshot.data!.longitude
                   ),
                   builder: (context, getHospitalSnapshot) {
                     if(getHospitalSnapshot.hasData) {
