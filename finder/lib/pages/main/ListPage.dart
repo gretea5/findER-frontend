@@ -196,7 +196,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => DetailPage(
-                                          hospitalId: 407,
+                                          hospitalId: 406,
                                           name: getHospitalSnapshot.data![index].name,
                                         ),
                                         fullscreenDialog: true,

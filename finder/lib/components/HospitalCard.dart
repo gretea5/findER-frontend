@@ -75,19 +75,16 @@ class HospitalCard extends StatelessWidget {
             ),
             InkWell(
               onTap: () { 
-                // Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => DetailPage(
-                //       name: "세브란스병원0",
-                //       distance: "1.4km",
-                //       address: "서울시 서대문구 연세로 50-1",
-                //       tel: "02-0000-0000",
-                //       arriveTime: "오후 01시 30분",
-                //       numberOfBeds: 8,
-                //     ),
-                //     fullscreenDialog: true,
-                //   )
-                // );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      //hospitalId: hospitalId
+                      hospitalId: 406,
+                      name: name,
+                    ),
+                    fullscreenDialog: true,
+                  )
+                );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

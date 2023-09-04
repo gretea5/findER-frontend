@@ -61,7 +61,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
             margin: EdgeInsets.fromLTRB(0,0,0, vh * 0.095),
             child: Container(
               padding: EdgeInsets.all(8),
-              height: 0.2 * vh,
+              height: 0.175 * vh,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -98,19 +98,16 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                       ),
                       InkWell(
                         onTap: () { 
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => DetailPage(
-                          //       name: "세브란스병원0",
-                          //       distance: "1.4km",
-                          //       address: "서울시 서대문구 연세로 50-1",
-                          //       tel: "02-0000-0000",
-                          //       arriveTime: "오후 01시 30분",
-                          //       numberOfBeds: 8,
-                          //     ),
-                          //     fullscreenDialog: true,
-                          //   )
-                          // );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                //hospitalId: widget.hospitalId, 
+                                hospitalId: 406,
+                                name: snapshot.data!.name
+                              ),
+                              fullscreenDialog: true,
+                            )
+                          );
                         },
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
