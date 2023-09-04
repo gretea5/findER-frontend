@@ -36,6 +36,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
+  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   late AnimationController controller;
   late SpringBootApiService api;
   var vh = 0.0;
@@ -229,13 +230,21 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                       );
                     }
                     else {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                        )
+                      );
                     }
                   }
                 );
               }
               else {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                  )
+                );
               }
             }
           ),

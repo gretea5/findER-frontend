@@ -311,7 +311,11 @@ class _MapPageState extends State<MapPage> {
                     ]
                   );
                 }
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                  )
+                );
               },
             ),
           ),
