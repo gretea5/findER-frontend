@@ -80,8 +80,8 @@ class HospitalDetailTrendInfo extends StatelessWidget {
               aspectRatio: 16 / 9,
               child: DChartPie(
                     data: [
-                      {'domain': 'OnTime', 'measure': getHospitalDetailSnapshot.data!.bedData.otherPercent},
-                      {'domain': 'OffTime', 'measure': getHospitalDetailSnapshot.data!.bedData.percent},
+                      {'domain': 'OnTime', 'measure': getHospitalDetailSnapshot.data!.bedData.percent},
+                      {'domain': 'OffTime', 'measure': getHospitalDetailSnapshot.data!.bedData.otherPercent},
                     ],
                     fillColor: (pieData, index) {
                       switch(pieData['domain']) {
