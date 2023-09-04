@@ -359,12 +359,30 @@ class _DetailPageState extends State<DetailPage> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text(
-                                        "현위치에서 ${widget.name}까지는",
-                                        style: TextStyle(
-                                          fontSize: 16,
+                                      widget.name.length > 17 ?
+                                        Column(
+                                          children: [
+                                            Text(
+                                              "현위치에서 ${widget.name.substring(0, 17)}",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${widget.name.substring(17)}까지는",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      :
+                                        Text(
+                                          "현위치에서 ${widget.name}까지는",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
                                         ),
-                                      ),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
