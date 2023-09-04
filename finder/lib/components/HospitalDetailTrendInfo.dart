@@ -13,6 +13,7 @@ class HospitalDetailTrendInfo extends StatelessWidget {
   final AsyncSnapshot<HospitalDetailModel> getHospitalDetailSnapshot;
   final double vh;
   final double vw;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +104,7 @@ class HospitalDetailTrendInfo extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(top: 40),
             child: Text(
-              "최근 일주일간 평균 병상 추이",
+              "최근 2시간 내 병상 추이",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -113,7 +114,7 @@ class HospitalDetailTrendInfo extends StatelessWidget {
           Container(
             height: 0.4 * vh,
             width: 0.9 * vw,
-            margin: EdgeInsets.only(top: 20),
+            margin: EdgeInsets.only(top: 15),
             child: Row(
               children: [
                 RotatedBox(quarterTurns: 3, child: Text('병상 수')),
@@ -122,49 +123,11 @@ class HospitalDetailTrendInfo extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 5),
-                              Text('1시간'),
-                            ],
-                          ),
-                          SizedBox(width: 5),
-                          Row(
-                            children: [
-                              ClipRRect(
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 5),
-                              Text('2시간'),
-                            ],
-                          ),
-                        ],
-                      ),
                       AspectRatio(
                         aspectRatio: 16 / 10,
                         child: DChartLine(
                           lineColor: (lineData, index, id) {
-                            return id == 'Line 1'
-                                ? Colors.blue
-                                : Colors.amber;
+                            return Color.fromARGB(255, 79, 112, 229);
                           },
                           data: [
                             {
@@ -181,16 +144,6 @@ class HospitalDetailTrendInfo extends StatelessWidget {
                                 {'domain': 0, 'measure': getHospitalDetailSnapshot.data!.bedData.twoAgoList[8]},
                               ],
                             },
-                            // {
-                            //   'id': 'Line 2',
-                            //   'data': [
-                            //     {'domain': 0, 'measure': 2},
-                            //     {'domain': 20, 'measure': 5},
-                            //     {'domain': 40, 'measure': 1},
-                            //     {'domain': 60, 'measure': 1},
-                            //     {'domain': 80, 'measure': 5},
-                            //   ],
-                            // },
                           ],
                           includePoints: true,
                         ),
