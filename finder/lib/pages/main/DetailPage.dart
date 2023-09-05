@@ -306,7 +306,7 @@ class _DetailPageState extends State<DetailPage> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(8),
-                                  height: vh * 0.15,
+                                  height: vh * 0.165,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -320,6 +320,7 @@ class _DetailPageState extends State<DetailPage> {
                                                 fontSize: 16,
                                               ),
                                             ),
+                                            SizedBox(height: 3),
                                             Text(
                                               "${widget.name.substring(14)}까지는",
                                               style: TextStyle(
