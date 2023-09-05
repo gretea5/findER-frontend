@@ -49,6 +49,7 @@ class _MapPageState extends State<MapPage> {
         double searchLat = double.parse(responseData["documents"][0]['y']);
         double searchLon = double.parse(responseData["documents"][0]['x']);
         mapController!.setCenter(LatLng(searchLat, searchLon));
+        mapController!.setLevel(3);
       }
     } else {
       showSearchErrorDialog(context);
