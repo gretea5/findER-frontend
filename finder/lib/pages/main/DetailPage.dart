@@ -1,7 +1,5 @@
-import 'package:d_chart/d_chart.dart';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/components/SegmentedControlContent.dart';
-import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
