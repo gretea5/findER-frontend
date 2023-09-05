@@ -1,5 +1,4 @@
-import 'package:finder/components/HospitalDetailInfo.dart';
-import 'package:finder/components/HospitalDetailTrendInfo.dart';
+import 'package:finder/components/componentsExport.dart';
 import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'package:finder/api/KakaoApiService.dart';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/api/UrlLauncherService.dart';
-import 'package:finder/components/SegmentedControlContent.dart';
+import 'package:finder/components/componentsExport.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailPage extends StatefulWidget {
   final int hospitalId;

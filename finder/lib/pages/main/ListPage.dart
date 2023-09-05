@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/api/UrlLauncherService.dart';
-import 'package:finder/components/FloatingCountDownButton.dart';
-import 'package:finder/components/HospitalCard.dart';
+import 'package:finder/components/componentsExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import '../../components/componentsExport.dart' as components;
