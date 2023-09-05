@@ -144,7 +144,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
               value: light,
               onChanged: (bool value) {
                 if(value == false) {
-                  Navigator.pushNamed(context, '/map');
+                  Navigator.pop(context);
                 }
               },
               thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
