@@ -120,7 +120,7 @@ class HospitalCard extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    address.length > 18 ? "${address.substring(0, 18)}.." : "$address",
+                    address.length > 16 ? "${address.substring(0, 16)}.." : "$address",
                     style: TextStyle(
                       color: elementColor,
                     ),

@@ -143,7 +143,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               width: 5,
                             ),
                             Text(
-                              snapshot.data!.address.length > 20 ? "${snapshot.data!.address.substring(0, 20)}.." : "${snapshot.data!.address}",
+                              snapshot.data!.address.length > 16 ? "${snapshot.data!.address.substring(0, 16)}.." : "${snapshot.data!.address}",
                               style: TextStyle(
                                 color: elementColor,
                               ),
