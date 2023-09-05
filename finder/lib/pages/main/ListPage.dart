@@ -123,10 +123,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
@@ -262,7 +259,6 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
           ),
         ),
         drawer: components.CustomDrawer(currentPage: 'map').build(context)
-      ),
-    );
+      );
   }
 }

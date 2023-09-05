@@ -96,9 +96,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           elevation: 1,
           backgroundColor: Colors.white,
@@ -464,7 +462,6 @@ class _DetailPageState extends State<DetailPage> {
             }, 
           ),
         ),
-      ),
-    );
+      );
   }
 }

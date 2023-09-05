@@ -108,10 +108,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      debugShowCheckedModeBanner: false,
-      home: GestureDetector(
+    return GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
@@ -321,8 +318,7 @@ class _MapPageState extends State<MapPage> {
           ),
           drawer: components.CustomDrawer(currentPage: 'map').build(context)
         ),
-      ),
-    );
+      );
   }
 }
 

@@ -53,9 +53,7 @@ class _LoginPageState extends State<LoginPage> {
     var vh = MediaQuery.of(context).size.height;
     var vw = MediaQuery.of(context).size.width;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
@@ -340,7 +338,6 @@ class _LoginPageState extends State<LoginPage> {
             ],
           )
         )
-      )
-    );
+      );
   }
 }

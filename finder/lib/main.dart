@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:finder/pages/auth/authExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:finder/pages/user/userExport.dart';
-import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
@@ -17,14 +16,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //화면 회전 고정
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
+      debugShowCheckedModeBanner: false, 
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
+      ),
       key: GlobalKey(),
       initialRoute: '/auth/login',
       routes: {
