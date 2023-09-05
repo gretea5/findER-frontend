@@ -56,6 +56,14 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  void removePreview() {
+    if(markerClicked) {
+      setState(() {
+        markerClicked = false;
+      });
+    }
+  }
+
   Future<LatLng> getUserLocation() async {
     final status = await Geolocator.checkPermission();
     if (status == LocationPermission.denied) {
@@ -133,8 +141,10 @@ class _MapPageState extends State<MapPage> {
             actions: [ 
               IconButton(
                 onPressed: () async {
+                  removePreview();
                   LatLng curPos = await getUserLocation();
                   mapController!.setCenter(curPos);
+                  mapController!.setLevel(3);
                 },
                 icon: Icon(Icons.my_location),
                 color: Colors.white,
@@ -250,19 +260,11 @@ class _MapPageState extends State<MapPage> {
                               setState(() {});
                             }
                             FocusScope.of(context).unfocus();
-                            if(markerClicked) {
-                              setState(() {
-                                markerClicked = false;
-                              });
-                            }
+                            removePreview();
                           },
                           onMapTap: (latLng) {
                             FocusScope.of(context).unfocus();
-                            if(markerClicked) {
-                              setState(() {
-                                markerClicked = false;
-                              });
-                            }
+                            removePreview();
                           },
                           markers: markers.toList(),
                         ),
@@ -274,6 +276,7 @@ class _MapPageState extends State<MapPage> {
                             //height: vh * 0.1,
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: TextField(
+                              onTap: removePreview,
                               controller: searchTextController,
                               textAlignVertical: TextAlignVertical.center,
                               decoration: InputDecoration(
@@ -286,6 +289,7 @@ class _MapPageState extends State<MapPage> {
                                   onPressed: () async {
                                     await searchkeyword(searchTextController.text, context);
                                     searchTextController.text = "";
+                                    removePreview();
                                     FocusScope.of(context).unfocus();
                                   },
                                 ),
