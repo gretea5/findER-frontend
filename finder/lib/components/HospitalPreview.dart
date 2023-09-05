@@ -1,8 +1,8 @@
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class HospitalPreview extends StatefulWidget {
   final int hospitalId;
@@ -21,22 +21,10 @@ class HospitalPreview extends StatefulWidget {
 class _HospitalPreviewState extends State<HospitalPreview> {
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   late SpringBootApiService api;
   var vh = 0.0;
   var vw = 0.0;
-
-  String convertPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll('-', '');
-  }
-
-  void launchCaller(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   void didChangeDependencies() {
@@ -159,7 +147,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                             ),
                             SizedBox(width: 5,),
                             InkWell(
-                              onTap: () => launchCaller(convertPhoneNumber(snapshot.data!.representativeContact)),
+                              onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(snapshot.data!.representativeContact)),
                               child: Text(
                                 "${snapshot.data!.representativeContact}",
                                 style: TextStyle(
@@ -214,7 +202,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                             ),
                             SizedBox(width: 5,),
                             InkWell(
-                              onTap: () => launchCaller(convertPhoneNumber(snapshot.data!.emergencyContact)),
+                              onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(snapshot.data!.emergencyContact)),
                               child: Text(
                                 "${snapshot.data!.emergencyContact}",
                                 style: TextStyle(

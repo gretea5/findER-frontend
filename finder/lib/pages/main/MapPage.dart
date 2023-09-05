@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/components/HospitalPreview.dart';
 import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
 import 'package:http/http.dart' as http;
@@ -18,6 +18,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final searchTextController = TextEditingController();
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   KakaoMapController? mapController;
   final String apiUrl =
       "https://dapi.kakao.com/v2/local/search/keyword.json";
@@ -33,8 +34,6 @@ class _MapPageState extends State<MapPage> {
   late SpringBootApiService api;
   List<HospitalMarkerModel> areaMarkers = [];
   
-
-
   Future<void> searchkeyword(String query, BuildContext context) async {
     final response = await http.get(
       Uri.parse("$apiUrl?query=${Uri.encodeComponent(query)}"),
@@ -62,23 +61,6 @@ class _MapPageState extends State<MapPage> {
         markerClicked = false;
       });
     }
-  }
-
-  Future<LatLng> getUserLocation() async {
-    final status = await Geolocator.checkPermission();
-    if (status == LocationPermission.denied) {
-      final result = await Geolocator.requestPermission();
-      if (result == LocationPermission.denied) {
-        return LatLng(37.3608681, 126.9306506);
-      }
-    }
-    if (status == LocationPermission.deniedForever) {
-      return LatLng(37.3608681, 126.9306506);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return LatLng(position.latitude, position.longitude);
   }
 
   @override
@@ -142,7 +124,7 @@ class _MapPageState extends State<MapPage> {
               IconButton(
                 onPressed: () async {
                   removePreview();
-                  LatLng curPos = await getUserLocation();
+                  LatLng curPos = await urlLauncherApi.getUserLocation();
                   mapController!.setCenter(curPos);
                   mapController!.setLevel(3);
                 },
@@ -176,7 +158,7 @@ class _MapPageState extends State<MapPage> {
             },
             child: SafeArea(
               child: FutureBuilder(
-                future: getUserLocation(),
+                future: urlLauncherApi.getUserLocation(),
                 builder: (context, snapshot) {
                   if(snapshot.hasData) {
                     return Stack(

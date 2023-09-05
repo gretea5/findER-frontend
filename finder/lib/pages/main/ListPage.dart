@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/components/FloatingCountDownButton.dart';
 import 'package:finder/components/HospitalCard.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
 
 class EmergencyInfo {
@@ -37,6 +35,7 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   late AnimationController controller;
   late SpringBootApiService api;
   ScrollController scrollController = ScrollController();
@@ -103,24 +102,6 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
     );
   }
 
-  Future<LatLng> getUserLocation() async {
-    final status = await Geolocator.checkPermission();
-    if (status == LocationPermission.denied) {
-      final result = await Geolocator.requestPermission();
-      if (result == LocationPermission.denied) {
-        return LatLng(37.3608681, 126.9306506);
-      }
-    }
-    if (status == LocationPermission.deniedForever) {
-      return LatLng(37.3608681, 126.9306506);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return LatLng(position.latitude, position.longitude);
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,7 +161,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
           FloatingCountDownButton(),
         body: SafeArea(
           child: FutureBuilder(
-            future: getUserLocation(),
+            future: urlLauncherApi.getUserLocation(),
             builder: (context, getLocationSnapshot) {
               if(getLocationSnapshot.hasData) {
                 print(getLocationSnapshot.data!.latitude);

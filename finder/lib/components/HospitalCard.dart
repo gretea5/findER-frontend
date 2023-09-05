@@ -1,9 +1,10 @@
+import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class HospitalCard extends StatelessWidget {
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   final double vh;
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
@@ -28,19 +29,6 @@ class HospitalCard extends StatelessWidget {
     required this.arrivalTime,
     required this.vh,
   });
-
-  String convertPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll('-', '');
-  }
-
-  void launchCaller(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +124,7 @@ class HospitalCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: () => launchCaller(convertPhoneNumber(representativeContact)),
+                    onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(representativeContact)),
                     child: Text(
                       "$representativeContact",
                       style: TextStyle(
@@ -191,7 +179,7 @@ class HospitalCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: () => launchCaller(convertPhoneNumber(emergencyContact)),
+                    onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(emergencyContact)),
                     child: Text(
                       "$emergencyContact",
                       style: TextStyle(

@@ -1,4 +1,5 @@
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/components/SegmentedControlContent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -29,6 +29,7 @@ class _DetailPageState extends State<DetailPage> {
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
@@ -54,19 +55,6 @@ class _DetailPageState extends State<DetailPage> {
       throw Exception('Could not launch $url');
     }
   }
-  
-  String convertPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll('-', '');
-  }
-
-  void launchCaller(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -75,23 +63,6 @@ class _DetailPageState extends State<DetailPage> {
       backgroundColor: themeColor,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM);
-  }
-
-  Future<LatLng> getUserLocation() async {
-    final status = await Geolocator.checkPermission();
-    if (status == LocationPermission.denied) {
-      final result = await Geolocator.requestPermission();
-      if (result == LocationPermission.denied) {
-        return LatLng(37.3608681, 126.9306506);
-      }
-    }
-    if (status == LocationPermission.deniedForever) {
-      return LatLng(37.3608681, 126.9306506);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return LatLng(position.latitude, position.longitude);
   }
 
   @override
@@ -121,7 +92,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         body: SingleChildScrollView(
           child: FutureBuilder(
-            future: getUserLocation(),
+            future: urlLauncherApi.getUserLocation(),
             builder: (context, getLocationSnapShot) {
               if(getLocationSnapShot.hasData) {
                 return FutureBuilder(
@@ -280,7 +251,7 @@ class _DetailPageState extends State<DetailPage> {
                                       width: 5,
                                     ),
                                     InkWell(
-                                      onTap: () => launchCaller(convertPhoneNumber(getHospitalDetailSnapshot.data!.representativeContact)),
+                                      onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(getHospitalDetailSnapshot.data!.representativeContact)),
                                       child: Text(
                                         "${getHospitalDetailSnapshot.data!.representativeContact}",
                                         style: TextStyle(
@@ -306,7 +277,7 @@ class _DetailPageState extends State<DetailPage> {
                                       width: 5,
                                     ),
                                     InkWell(
-                                      onTap: () => launchCaller(convertPhoneNumber(getHospitalDetailSnapshot.data!.emergencyContact)),
+                                      onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(getHospitalDetailSnapshot.data!.emergencyContact)),
                                       child: Text(
                                         "${getHospitalDetailSnapshot.data!.emergencyContact}",
                                         style: TextStyle(
