@@ -353,22 +353,22 @@ class _DetailPageState extends State<DetailPage> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(8),
-                                  height: vh * 0.13,
+                                  height: vh * 0.15,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      widget.name.length > 17 ?
+                                      widget.name.length > 14 ?
                                         Column(
                                           children: [
                                             Text(
-                                              "현위치에서 ${widget.name.substring(0, 17)}",
+                                              "현위치에서 ${widget.name.substring(0, 14)}",
                                               style: TextStyle(
                                                 fontSize: 16,
                                               ),
                                             ),
                                             Text(
-                                              "${widget.name.substring(17)}까지는",
+                                              "${widget.name.substring(14)}까지는",
                                               style: TextStyle(
                                                 fontSize: 16,
                                               ),
