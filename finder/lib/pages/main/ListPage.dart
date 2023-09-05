@@ -3,6 +3,7 @@ import 'package:finder/api/servicesExport.dart';
 import 'package:finder/components/componentsExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
+import 'package:finder/styles/Colors.dart';
 import '../../components/componentsExport.dart' as components;
 
 class EmergencyInfo {
@@ -32,7 +33,6 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
-  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
   late AnimationController controller;
   late SpringBootApiService api;

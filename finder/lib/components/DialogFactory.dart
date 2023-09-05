@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:finder/styles/Colors.dart';
 class DialogFactory {
-  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
+  
   void showSearchErrorDialog(BuildContext context) {
     showDialog(
       context: context,

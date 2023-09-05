@@ -2,18 +2,15 @@ import 'package:finder/components/componentsExport.dart';
 import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:finder/styles/Colors.dart';
 
 class SegmentedControlContent extends StatefulWidget {
   final double vh;
   final double vw;
-  final Color themeColor;
-  final Color bedColor;
   final AsyncSnapshot<HospitalDetailModel> getHospitalDetailSnapshot;
   const SegmentedControlContent({
     required this.vw,
     required this.vh,
-    required this.themeColor,
-    required this.bedColor,
     required this.getHospitalDetailSnapshot
   });
   @override
@@ -29,7 +26,7 @@ class _SegmentedControlContentState extends State<SegmentedControlContent> {
         Container(
           width: widget.vw * 0.6,
           child: CupertinoSegmentedControl<int>(
-          selectedColor: widget.themeColor,
+          selectedColor: themeColor,
           borderColor: Colors.white,
           children: {
             0: Text('병원 정보'),
@@ -50,8 +47,6 @@ class _SegmentedControlContentState extends State<SegmentedControlContent> {
         ?
           HospitalDetailInfo(
             getHospitalDetailSnapshot: widget.getHospitalDetailSnapshot,
-            themeColor: widget.themeColor,
-            bedColor: widget.bedColor
           )
         :
           HospitalDetailTrendInfo(

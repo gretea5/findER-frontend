@@ -3,6 +3,7 @@ import 'package:finder/components/componentsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
@@ -21,9 +22,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
-  final Color elementColor = Color(0xFF787878);
-  final Color bedColor = Color(0xFFFF0000);
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
   final KakaoApiService kakaoApiService = KakaoApiService();
   Set<Marker> markers = {}; // 마커 변수
@@ -381,8 +379,6 @@ class _DetailPageState extends State<DetailPage> {
                                 SegmentedControlContent(
                                   vw: vw,
                                   vh: vh,
-                                  themeColor: themeColor,
-                                  bedColor: bedColor, 
                                   getHospitalDetailSnapshot: getHospitalDetailSnapshot
                                 ),
                               ],

@@ -2,12 +2,12 @@ import 'package:finder/api/servicesExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finder/styles/Colors.dart';
+
 
 class HospitalCard extends StatelessWidget {
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
   final double vh;
-  final Color elementColor = Color(0xFF787878);
-  final Color bedColor = Color(0xFFFF0000);
   final int hospitalId;
   final String name;
   final String address;

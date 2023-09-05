@@ -3,6 +3,7 @@ import 'package:finder/components/componentsExport.dart';
 import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
 
@@ -13,7 +14,6 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final searchTextController = TextEditingController();
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
   final KakaoApiService kakaoApiService = KakaoApiService();

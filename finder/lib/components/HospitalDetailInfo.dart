@@ -1,17 +1,13 @@
 import 'package:finder/models/hospitalDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finder/styles/Colors.dart';
 
 class HospitalDetailInfo extends StatelessWidget {
   const HospitalDetailInfo({
     super.key,
-    required this.themeColor,
-    required this.bedColor,
     required this.getHospitalDetailSnapshot
   });
-
-  final Color themeColor;
-  final Color bedColor;
   final AsyncSnapshot<HospitalDetailModel> getHospitalDetailSnapshot;
 
   @override

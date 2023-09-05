@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
+import 'package:finder/styles/Colors.dart';
 class FloatingCountDownButton extends StatefulWidget {
   const FloatingCountDownButton({super.key});
 
@@ -9,7 +9,7 @@ class FloatingCountDownButton extends StatefulWidget {
 }
 
 class _FloatingCountDownButtonState extends State<FloatingCountDownButton> {
-  final Color elementColor = Color(0xFF787878);
+
   int secondsRemaining = 10;
   bool isCounting = true;
   late Timer timer;
