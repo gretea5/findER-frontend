@@ -1,3 +1,4 @@
+import 'package:finder/api/KakaoApiService.dart';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/components/SegmentedControlContent.dart';
@@ -30,6 +31,7 @@ class _DetailPageState extends State<DetailPage> {
   final Color elementColor = Color(0xFF787878);
   final Color bedColor = Color(0xFFFF0000);
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
+  final KakaoApiService kakaoApiService = KakaoApiService();
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
@@ -42,18 +44,6 @@ class _DetailPageState extends State<DetailPage> {
     vh = MediaQuery.of(context).size.height;
     vw = MediaQuery.of(context).size.width;
     api = SpringBootApiService(context: context);
-  }
-
-  Future<void> openKaKaoMap({
-    required String name,
-    required double lat,
-    required double lon
-    }) async {
-    var _url = 'https://map.kakao.com/link/to/$name,$lat,$lon';
-    Uri url = Uri.parse(_url);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
   }
 
   void showToast(String message) {
@@ -192,7 +182,7 @@ class _DetailPageState extends State<DetailPage> {
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () {
-                                                openKaKaoMap(
+                                                kakaoApiService.openKaKaoMap(
                                                   name: getHospitalDetailSnapshot.data!.name,
                                                   lat: getHospitalDetailSnapshot.data!.lat,
                                                   lon: getHospitalDetailSnapshot.data!.lon

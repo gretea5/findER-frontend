@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'package:finder/api/KakaoApiService.dart';
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/api/UrlLauncherService.dart';
 import 'package:finder/components/HospitalPreview.dart';
@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
-import 'package:http/http.dart' as http;
 
 class MapPage extends StatefulWidget {
   MapPage({super.key});
@@ -19,10 +18,9 @@ class _MapPageState extends State<MapPage> {
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   final searchTextController = TextEditingController();
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
+  final KakaoApiService kakaoApiService = KakaoApiService();
+  late SpringBootApiService api;
   KakaoMapController? mapController;
-  final String apiUrl =
-      "https://dapi.kakao.com/v2/local/search/keyword.json";
-  final String restApiKey = "f5ab79d5d376224730ecd3b214369a8c";
   bool light = false;
   bool markerClicked = false;
   bool cardVisible = false;
@@ -30,30 +28,7 @@ class _MapPageState extends State<MapPage> {
   var vh = 0.0;
   var vw = 0.0;
   Set<Marker> markers = {}; 
-  Map<String, dynamic> responseData = {};
-  late SpringBootApiService api;
   List<HospitalMarkerModel> areaMarkers = [];
-  
-  Future<void> searchkeyword(String query, BuildContext context) async {
-    final response = await http.get(
-      Uri.parse("$apiUrl?query=${Uri.encodeComponent(query)}"),
-      headers: {"Authorization": "KakaoAK $restApiKey"},
-    );
-    if (response.statusCode == 200) {
-      responseData = jsonDecode(response.body);
-      if(responseData["documents"].length == 0) {
-        showSearchErrorDialog(context);
-      }
-      else {
-        double searchLat = double.parse(responseData["documents"][0]['y']);
-        double searchLon = double.parse(responseData["documents"][0]['x']);
-        mapController!.setCenter(LatLng(searchLat, searchLon));
-        mapController!.setLevel(3);
-      }
-    } else {
-      showSearchErrorDialog(context);
-    }
-  }
 
   void removePreview() {
     if(markerClicked) {
@@ -75,27 +50,6 @@ class _MapPageState extends State<MapPage> {
   void dispose() {
     searchTextController.dispose();
     super.dispose();
-  }
-
-  void showSearchErrorDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('검색 오류'),
-          content: Text('입력하신 검색어를 찾을 수 없습니다.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('닫기'),
-              onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(
-                foregroundColor: themeColor
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -269,7 +223,11 @@ class _MapPageState extends State<MapPage> {
                                   color: Color.fromARGB(255, 79, 112, 229),
                                   icon: Icon(Icons.search),
                                   onPressed: () async {
-                                    await searchkeyword(searchTextController.text, context);
+                                    await kakaoApiService.searchkeyword(
+                                      query: searchTextController.text,
+                                      context: context,
+                                      mapController: mapController
+                                    );
                                     searchTextController.text = "";
                                     removePreview();
                                     FocusScope.of(context).unfocus();
