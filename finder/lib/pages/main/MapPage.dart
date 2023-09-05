@@ -3,6 +3,7 @@ import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/components/HospitalPreview.dart';
 import 'package:finder/models/modelsExport.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../../components/componentsExport.dart' as components;
@@ -157,71 +158,23 @@ class _MapPageState extends State<MapPage> {
             ],
           ),
           
-          body: SafeArea(
-            child: FutureBuilder(
-              future: getUserLocation(),
-              builder: (context, snapshot) {
-                if(snapshot.hasData) {
-                  return Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      KakaoMap(
-                        onMapCreated: ((controller) async {
-                          mapController = controller;
-                          mapController!.setCenter(LatLng(snapshot.data!.latitude, snapshot.data!.longitude));
-                          final bounds = await mapController!.getBounds();
-                          final swLatLng = bounds.getSouthWest();
-                          final neLatLng = bounds.getNorthEast();
-                          areaMarkers = await api.getHospitalsByMap(
-                            swLat: swLatLng.latitude,
-                            swLon: swLatLng.longitude,
-                            neLat: neLatLng.latitude,
-                            neLon: neLatLng.longitude
-                          );
-                          print("onMapCreated called");
-                          for(var areaMarker in areaMarkers) {
-                            markers.add(
-                              Marker(
-                                markerId: areaMarker.hospitalId.toString(),
-                                latLng: LatLng(areaMarker.lat, areaMarker.lon)
-                              )
-                            );
-                          }
-                          setState(() {});
-                        }),
-                        onMarkerTap: (markerId, latLng, zoomLevel) {
-                          print("marker Tapped =====>${markerId}");
-                          if(!markerClicked) {
-                            setState(() {
-                              tappedMarkerId = int.parse(markerId);
-                              markerClicked = true;
-                            });
-                            mapController!.panTo(latLng);
-                          }
-                        },
-                        onZoomChangeCallback: (zoomLevel, zoomType) async{
-                          final bounds = await mapController!.getBounds();
-                            final swLatLng = bounds.getSouthWest();
-                            final neLatLng = bounds.getNorthEast();
-                            areaMarkers = await api.getHospitalsByMap(
-                              swLat: swLatLng.latitude,
-                              swLon: swLatLng.longitude,
-                              neLat: neLatLng.latitude,
-                              neLon: neLatLng.longitude
-                            );
-                            print("onZoomChangeCallback DragType.end called");
-                            for(var areaMarker in areaMarkers) {
-                              markers.add(
-                                Marker(
-                                  markerId: areaMarker.hospitalId.toString(),
-                                  latLng: LatLng(areaMarker.lat, areaMarker.lon)
-                                )
-                              );
-                            }
-                            setState(() {});
-                        },
-                        onDragChangeCallback: (latLng, zoomLevel, dragType) async{
-                          if (dragType == DragType.end) {
+          body: WillPopScope(
+            onWillPop: () async {
+              SystemNavigator.pop(); // 앱 종료
+              return false; // 뒤로 가기 이벤트를 무시
+            },
+            child: SafeArea(
+              child: FutureBuilder(
+                future: getUserLocation(),
+                builder: (context, snapshot) {
+                  if(snapshot.hasData) {
+                    return Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
+                      children: [
+                        KakaoMap(
+                          onMapCreated: ((controller) async {
+                            mapController = controller;
+                            mapController!.setCenter(LatLng(snapshot.data!.latitude, snapshot.data!.longitude));
                             final bounds = await mapController!.getBounds();
                             final swLatLng = bounds.getSouthWest();
                             final neLatLng = bounds.getNorthEast();
@@ -231,7 +184,7 @@ class _MapPageState extends State<MapPage> {
                               neLat: neLatLng.latitude,
                               neLon: neLatLng.longitude
                             );
-                            print("onDragChangeCallback DragType.end called");
+                            print("onMapCreated called");
                             for(var areaMarker in areaMarkers) {
                               markers.add(
                                 Marker(
@@ -241,79 +194,133 @@ class _MapPageState extends State<MapPage> {
                               );
                             }
                             setState(() {});
-                          }
-                          FocusScope.of(context).unfocus();
-                          if(markerClicked) {
-                            setState(() {
-                              markerClicked = false;
-                            });
-                          }
-                        },
-                        onMapTap: (latLng) {
-                          FocusScope.of(context).unfocus();
-                          if(markerClicked) {
-                            setState(() {
-                              markerClicked = false;
-                            });
-                          }
-                        },
-                        markers: markers.toList(),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Container(
-                          color: Colors.transparent,
-                          width: vw * 0.95,
-                          //height: vh * 0.1,
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: TextField(
-                            controller: searchTextController,
-                            textAlignVertical: TextAlignVertical.center,
-                            decoration: InputDecoration(
-                              hintText: '지명을 검색하세요.',
-                              fillColor: Colors.white,
-                              filled: true,
-                              suffixIcon: IconButton(
-                                color: Color.fromARGB(255, 79, 112, 229),
-                                icon: Icon(Icons.search),
-                                onPressed: () async {
-                                  await searchkeyword(searchTextController.text, context);
-                                  searchTextController.text = "";
-                                  FocusScope.of(context).unfocus();
-                                },
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                borderSide: BorderSide(
+                          }),
+                          onMarkerTap: (markerId, latLng, zoomLevel) {
+                            print("marker Tapped =====>${markerId}");
+                            if(!markerClicked) {
+                              setState(() {
+                                tappedMarkerId = int.parse(markerId);
+                                markerClicked = true;
+                              });
+                              mapController!.panTo(latLng);
+                            }
+                          },
+                          onZoomChangeCallback: (zoomLevel, zoomType) async{
+                            final bounds = await mapController!.getBounds();
+                              final swLatLng = bounds.getSouthWest();
+                              final neLatLng = bounds.getNorthEast();
+                              areaMarkers = await api.getHospitalsByMap(
+                                swLat: swLatLng.latitude,
+                                swLon: swLatLng.longitude,
+                                neLat: neLatLng.latitude,
+                                neLon: neLatLng.longitude
+                              );
+                              print("onZoomChangeCallback DragType.end called");
+                              for(var areaMarker in areaMarkers) {
+                                markers.add(
+                                  Marker(
+                                    markerId: areaMarker.hospitalId.toString(),
+                                    latLng: LatLng(areaMarker.lat, areaMarker.lon)
+                                  )
+                                );
+                              }
+                              setState(() {});
+                          },
+                          onDragChangeCallback: (latLng, zoomLevel, dragType) async{
+                            if (dragType == DragType.end) {
+                              final bounds = await mapController!.getBounds();
+                              final swLatLng = bounds.getSouthWest();
+                              final neLatLng = bounds.getNorthEast();
+                              areaMarkers = await api.getHospitalsByMap(
+                                swLat: swLatLng.latitude,
+                                swLon: swLatLng.longitude,
+                                neLat: neLatLng.latitude,
+                                neLon: neLatLng.longitude
+                              );
+                              print("onDragChangeCallback DragType.end called");
+                              for(var areaMarker in areaMarkers) {
+                                markers.add(
+                                  Marker(
+                                    markerId: areaMarker.hospitalId.toString(),
+                                    latLng: LatLng(areaMarker.lat, areaMarker.lon)
+                                  )
+                                );
+                              }
+                              setState(() {});
+                            }
+                            FocusScope.of(context).unfocus();
+                            if(markerClicked) {
+                              setState(() {
+                                markerClicked = false;
+                              });
+                            }
+                          },
+                          onMapTap: (latLng) {
+                            FocusScope.of(context).unfocus();
+                            if(markerClicked) {
+                              setState(() {
+                                markerClicked = false;
+                              });
+                            }
+                          },
+                          markers: markers.toList(),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Container(
+                            color: Colors.transparent,
+                            width: vw * 0.95,
+                            //height: vh * 0.1,
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: TextField(
+                              controller: searchTextController,
+                              textAlignVertical: TextAlignVertical.center,
+                              decoration: InputDecoration(
+                                hintText: '지명을 검색하세요.',
+                                fillColor: Colors.white,
+                                filled: true,
+                                suffixIcon: IconButton(
                                   color: Color.fromARGB(255, 79, 112, 229),
+                                  icon: Icon(Icons.search),
+                                  onPressed: () async {
+                                    await searchkeyword(searchTextController.text, context);
+                                    searchTextController.text = "";
+                                    FocusScope.of(context).unfocus();
+                                  },
                                 ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                borderSide: BorderSide(
-                                  color: Color.fromARGB(255, 79, 112, 229),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 79, 112, 229),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 79, 112, 229),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      markerClicked ?
-                      HospitalPreview(
-                        hospitalId: tappedMarkerId,
-                        latitude: snapshot.data!.latitude,
-                        longitude: snapshot.data!.longitude,
-                      )
-                      : const SizedBox()
-                    ]
+                        markerClicked ?
+                        HospitalPreview(
+                          hospitalId: tappedMarkerId,
+                          latitude: snapshot.data!.latitude,
+                          longitude: snapshot.data!.longitude,
+                        )
+                        : const SizedBox()
+                      ]
+                    );
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                    )
                   );
-                }
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)
-                  )
-                );
-              },
+                },
+              ),
             ),
           ),
           drawer: components.CustomDrawer(currentPage: 'map').build(context)
