@@ -54,7 +54,7 @@ class HospitalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  name.length > 10 ? "${name.substring(0, 10)}.." : "$name", 
+                  name.length > 8 ? "${name.substring(0, 8)}.." : "$name", 
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,

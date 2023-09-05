@@ -174,8 +174,8 @@ class _DetailPageState extends State<DetailPage> {
                                           width: 5,
                                         ),
                                         Text(
-                                          getHospitalDetailSnapshot.data!.address.length > 25 ? 
-                                          "${getHospitalDetailSnapshot.data!.address.substring(0, 25)}..."
+                                          getHospitalDetailSnapshot.data!.address.length > 18 ? 
+                                          "${getHospitalDetailSnapshot.data!.address.substring(0, 18)}..."
                                           :"${getHospitalDetailSnapshot.data!.address}",
                                           style: TextStyle(
                                             color: elementColor,
@@ -351,6 +351,9 @@ class _DetailPageState extends State<DetailPage> {
                                       ),
                                     ),
                                   ],
+                                ),
+                                SizedBox(
+                                  height: 10
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(8),

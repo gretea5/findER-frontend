@@ -77,7 +77,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            snapshot.data!.name.length > 10 ? "${snapshot.data!.name.substring(0, 10)}.." : "${snapshot.data!.name}", 
+                            snapshot.data!.name.length > 8 ? "${snapshot.data!.name.substring(0, 8)}.." : "${snapshot.data!.name}", 
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w600,
