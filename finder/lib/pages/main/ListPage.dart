@@ -39,6 +39,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
   final Color themeColor = Color.fromARGB(255, 79, 112, 229);
   late AnimationController controller;
   late SpringBootApiService api;
+  ScrollController scrollController = ScrollController();
   var vh = 0.0;
   var vw = 0.0;
   bool isRotating = false;
@@ -94,6 +95,14 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
     });
   }
 
+  void refreshScroll() {
+    scrollController.animateTo(
+      0.0, // 맨 위로 스크롤
+      duration: Duration(seconds: 1), // 스크롤 애니메이션 지속 시간
+      curve: Curves.easeInOut, // 애니메이션 커브
+    );
+  }
+
   Future<LatLng> getUserLocation() async {
     final status = await Geolocator.checkPermission();
     if (status == LocationPermission.denied) {
@@ -110,6 +119,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
     );
     return LatLng(position.latitude, position.longitude);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +167,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
             onPressed: (){
               rotateIcon();
               startCountdown();
+              refreshScroll();
             },
             tooltip: 'Reset Counter',
             backgroundColor: Color.fromARGB(255, 79, 112, 229),
@@ -189,6 +200,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: 
                             ListView.separated(
+                              controller: scrollController,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
