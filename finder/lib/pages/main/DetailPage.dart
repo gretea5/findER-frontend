@@ -315,7 +315,7 @@ class _DetailPageState extends State<DetailPage> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(8),
-                                  height: vh * 0.15,
+                                  height: widget.name.length > 14 ? vh * 0.18 : vh * 0.15,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -323,19 +323,24 @@ class _DetailPageState extends State<DetailPage> {
                                       widget.name.length > 14 ?
                                         Column(
                                           children: [
-                                            Text(
-                                            "현위치에서",
-                                            style: TextStyle(
-                                              fontSize: fontSize * 1.3,
-                                            ),
-                                          ),
-                                            Text(
-                                              "${widget.name.substring(0, 14)}",
-                                              style: TextStyle(
-                                                fontSize: fontSize * 1.4,
-                                                color: themeColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "현위치에서",
+                                                  style: TextStyle(
+                                                    fontSize: fontSize * 1.3,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "${widget.name.substring(0, 14)}",
+                                                  style: TextStyle(
+                                                    fontSize: fontSize * 1.4,
+                                                    color: themeColor,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                             SizedBox(height: 3),
                                             Text(
