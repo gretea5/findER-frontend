@@ -447,9 +447,7 @@ class _SignUpPageState extends State<SignUpPage> {
     var vw = MediaQuery.of(context).size.width;
     var vh = MediaQuery.of(context).size.height - kToolbarHeight;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text('회원가입'),
@@ -633,7 +631,6 @@ class _SignUpPageState extends State<SignUpPage> {
             )
           )
         )
-      )
-    );
+      );
   }
 }

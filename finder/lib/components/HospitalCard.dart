@@ -1,12 +1,13 @@
+import 'package:finder/api/servicesExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:finder/styles/Colors.dart';
+
 
 class HospitalCard extends StatelessWidget {
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   final double vh;
-  final Color elementColor = Color(0xFF787878);
-  final Color bedColor = Color(0xFFFF0000);
   final int hospitalId;
   final String name;
   final String address;
@@ -29,19 +30,6 @@ class HospitalCard extends StatelessWidget {
     required this.vh,
   });
 
-  String convertPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll('-', '');
-  }
-
-  void launchCaller(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -54,7 +42,7 @@ class HospitalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  name.length > 10 ? "${name.substring(0, 10)}.." : "$name", 
+                  name.length > 8 ? "${name.substring(0, 8)}.." : "$name", 
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -75,19 +63,15 @@ class HospitalCard extends StatelessWidget {
             ),
             InkWell(
               onTap: () { 
-                // Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => DetailPage(
-                //       name: "세브란스병원0",
-                //       distance: "1.4km",
-                //       address: "서울시 서대문구 연세로 50-1",
-                //       tel: "02-0000-0000",
-                //       arriveTime: "오후 01시 30분",
-                //       numberOfBeds: 8,
-                //     ),
-                //     fullscreenDialog: true,
-                //   )
-                // );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      hospitalId: hospitalId,
+                      name: name,
+                    ),
+                    fullscreenDialog: true,
+                  )
+                );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,7 +107,7 @@ class HospitalCard extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    address.length > 20 ? "${address.substring(0, 20)}.." : "$address",
+                    address.length > 16 ? "${address.substring(0, 16)}.." : "$address",
                     style: TextStyle(
                       color: elementColor,
                     ),
@@ -139,7 +123,7 @@ class HospitalCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: () => launchCaller(convertPhoneNumber(representativeContact)),
+                    onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(representativeContact)),
                     child: Text(
                       "$representativeContact",
                       style: TextStyle(
@@ -194,7 +178,7 @@ class HospitalCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: () => launchCaller(convertPhoneNumber(emergencyContact)),
+                    onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(emergencyContact)),
                     child: Text(
                       "$emergencyContact",
                       style: TextStyle(

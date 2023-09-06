@@ -23,15 +23,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //화면 회전 고정
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
 
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white,),
+      debugShowCheckedModeBanner: false, 
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
+      ),
       key: GlobalKey(),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

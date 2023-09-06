@@ -1,12 +1,9 @@
 import 'dart:async';
-
-import 'package:finder/api/SpringBootApiService.dart';
-import 'package:finder/components/FloatingCountDownButton.dart';
-import 'package:finder/components/HospitalCard.dart';
+import 'package:finder/api/servicesExport.dart';
+import 'package:finder/components/componentsExport.dart';
 import 'package:finder/pages/main/mainExport.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:finder/styles/Colors.dart';
 import '../../components/componentsExport.dart' as components;
 
 class EmergencyInfo {
@@ -36,8 +33,10 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
   late AnimationController controller;
   late SpringBootApiService api;
+  ScrollController scrollController = ScrollController();
   var vh = 0.0;
   var vw = 0.0;
   bool isRotating = false;
@@ -93,29 +92,17 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
     });
   }
 
-  Future<LatLng> getUserLocation() async {
-    final status = await Geolocator.checkPermission();
-    if (status == LocationPermission.denied) {
-      final result = await Geolocator.requestPermission();
-      if (result == LocationPermission.denied) {
-        return LatLng(37.3608681, 126.9306506);
-      }
-    }
-    if (status == LocationPermission.deniedForever) {
-      return LatLng(37.3608681, 126.9306506);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+  void refreshScroll() {
+    scrollController.animateTo(
+      0.0, // 맨 위로 스크롤
+      duration: Duration(seconds: 1), // 스크롤 애니메이션 지속 시간
+      curve: Curves.easeInOut, // 애니메이션 커브
     );
-    return LatLng(position.latitude, position.longitude);
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
@@ -136,7 +123,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
               value: light,
               onChanged: (bool value) {
                 if(value == false) {
-                  Navigator.pushNamed(context, '/map');
+                  Navigator.pop(context);
                 }
               },
               thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
@@ -156,6 +143,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
             onPressed: (){
               rotateIcon();
               startCountdown();
+              refreshScroll();
             },
             tooltip: 'Reset Counter',
             backgroundColor: Color.fromARGB(255, 79, 112, 229),
@@ -171,17 +159,15 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
           FloatingCountDownButton(),
         body: SafeArea(
           child: FutureBuilder(
-            future: getUserLocation(),
+            future: urlLauncherApi.getUserLocation(),
             builder: (context, getLocationSnapshot) {
               if(getLocationSnapshot.hasData) {
                 print(getLocationSnapshot.data!.latitude);
                 print(getLocationSnapshot.data!.longitude);
                 return FutureBuilder(
                   future: api.getHospitalsByList(
-                    // lat: getLocationSnapshot.data!.latitude, 
-                    // lon: getLocationSnapshot.data!.longitude
-                    lat: 37.566352778, 
-                    lon: 126.977952778
+                    lat: getLocationSnapshot.data!.latitude, 
+                    lon: getLocationSnapshot.data!.longitude
                   ),
                   builder: (context, getHospitalSnapshot) {
                     if(getHospitalSnapshot.hasData) {
@@ -190,13 +176,14 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: 
                             ListView.separated(
+                              controller: scrollController,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => DetailPage(
-                                          hospitalId: 407,
+                                          hospitalId: getHospitalSnapshot.data![index].hospitalId,
                                           name: getHospitalSnapshot.data![index].name,
                                         ),
                                         fullscreenDialog: true,
@@ -231,19 +218,26 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                       );
                     }
                     else {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                        )
+                      );
                     }
                   }
                 );
               }
               else {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                  )
+                );
               }
             }
           ),
         ),
         drawer: components.CustomDrawer(currentPage: 'map').build(context)
-      ),
-    );
+      );
   }
 }

@@ -1,17 +1,11 @@
-import 'package:d_chart/d_chart.dart';
-import 'package:finder/api/SpringBootApiService.dart';
-import 'package:finder/components/SegmentedControlContent.dart';
-import 'package:finder/models/hospitalDetailModel.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:finder/api/servicesExport.dart';
+import 'package:finder/components/componentsExport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailPage extends StatefulWidget {
   final int hospitalId;
@@ -28,9 +22,8 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final Color themeColor = Color.fromARGB(255, 79, 112, 229);
-  final Color elementColor = Color(0xFF787878);
-  final Color bedColor = Color(0xFFFF0000);
+  final UrlLauncherService urlLauncherApi = UrlLauncherService();
+  final KakaoApiService kakaoApiService = KakaoApiService();
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
@@ -45,31 +38,6 @@ class _DetailPageState extends State<DetailPage> {
     api = SpringBootApiService(context: context);
   }
 
-  Future<void> openKaKaoMap({
-    required String name,
-    required double lat,
-    required double lon
-    }) async {
-    var _url = 'https://map.kakao.com/link/to/$name,$lat,$lon';
-    Uri url = Uri.parse(_url);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-  
-  String convertPhoneNumber(String phoneNumber) {
-    return phoneNumber.replaceAll('-', '');
-  }
-
-  void launchCaller(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   void showToast(String message) {
     Fluttertoast.showToast(
       msg: message,
@@ -79,28 +47,9 @@ class _DetailPageState extends State<DetailPage> {
       gravity: ToastGravity.BOTTOM);
   }
 
-  Future<LatLng> getUserLocation() async {
-    final status = await Geolocator.checkPermission();
-    if (status == LocationPermission.denied) {
-      final result = await Geolocator.requestPermission();
-      if (result == LocationPermission.denied) {
-        return LatLng(37.3608681, 126.9306506);
-      }
-    }
-    if (status == LocationPermission.deniedForever) {
-      return LatLng(37.3608681, 126.9306506);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return LatLng(position.latitude, position.longitude);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           elevation: 1,
           backgroundColor: Colors.white,
@@ -125,7 +74,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         body: SingleChildScrollView(
           child: FutureBuilder(
-            future: getUserLocation(),
+            future: urlLauncherApi.getUserLocation(),
             builder: (context, getLocationSnapShot) {
               if(getLocationSnapShot.hasData) {
                 return FutureBuilder(
@@ -174,8 +123,8 @@ class _DetailPageState extends State<DetailPage> {
                                           width: 5,
                                         ),
                                         Text(
-                                          getHospitalDetailSnapshot.data!.address.length > 25 ? 
-                                          "${getHospitalDetailSnapshot.data!.address.substring(0, 25)}..."
+                                          getHospitalDetailSnapshot.data!.address.length > 18 ? 
+                                          "${getHospitalDetailSnapshot.data!.address.substring(0, 18)}..."
                                           :"${getHospitalDetailSnapshot.data!.address}",
                                           style: TextStyle(
                                             color: elementColor,
@@ -225,7 +174,7 @@ class _DetailPageState extends State<DetailPage> {
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () {
-                                                openKaKaoMap(
+                                                kakaoApiService.openKaKaoMap(
                                                   name: getHospitalDetailSnapshot.data!.name,
                                                   lat: getHospitalDetailSnapshot.data!.lat,
                                                   lon: getHospitalDetailSnapshot.data!.lon
@@ -284,7 +233,7 @@ class _DetailPageState extends State<DetailPage> {
                                       width: 5,
                                     ),
                                     InkWell(
-                                      onTap: () => launchCaller(convertPhoneNumber(getHospitalDetailSnapshot.data!.representativeContact)),
+                                      onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(getHospitalDetailSnapshot.data!.representativeContact)),
                                       child: Text(
                                         "${getHospitalDetailSnapshot.data!.representativeContact}",
                                         style: TextStyle(
@@ -310,7 +259,7 @@ class _DetailPageState extends State<DetailPage> {
                                       width: 5,
                                     ),
                                     InkWell(
-                                      onTap: () => launchCaller(convertPhoneNumber(getHospitalDetailSnapshot.data!.emergencyContact)),
+                                      onTap: () => urlLauncherApi.launchCaller(urlLauncherApi.convertPhoneNumber(getHospitalDetailSnapshot.data!.emergencyContact)),
                                       child: Text(
                                         "${getHospitalDetailSnapshot.data!.emergencyContact}",
                                         style: TextStyle(
@@ -352,19 +301,41 @@ class _DetailPageState extends State<DetailPage> {
                                     ),
                                   ],
                                 ),
+                                SizedBox(
+                                  height: 10
+                                ),
                                 Container(
                                   padding: EdgeInsets.all(8),
-                                  height: vh * 0.13,
+                                  height: vh * 0.165,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text(
-                                        "현위치에서 ${widget.name}까지는",
-                                        style: TextStyle(
-                                          fontSize: 16,
+                                      widget.name.length > 14 ?
+                                        Column(
+                                          children: [
+                                            Text(
+                                              "현위치에서 ${widget.name.substring(0, 14)}",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            SizedBox(height: 3),
+                                            Text(
+                                              "${widget.name.substring(14)}까지는",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      :
+                                        Text(
+                                          "현위치에서 ${widget.name}까지는",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
                                         ),
-                                      ),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -409,8 +380,6 @@ class _DetailPageState extends State<DetailPage> {
                                 SegmentedControlContent(
                                   vw: vw,
                                   vh: vh,
-                                  themeColor: themeColor,
-                                  bedColor: bedColor, 
                                   getHospitalDetailSnapshot: getHospitalDetailSnapshot
                                 ),
                               ],
@@ -445,7 +414,6 @@ class _DetailPageState extends State<DetailPage> {
             }, 
           ),
         ),
-      ),
-    );
+      );
   }
 }

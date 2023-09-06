@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SpringBootApiService {
-  final String baseURL = '52.78.159.76';
+  final String baseURL = '223.194.134.199';
   final BuildContext context;
   SpringBootApiService({
     required this.context
@@ -406,6 +406,28 @@ class SpringBootApiService {
       return '토큰 갱신 필요';
     } else {
       return '문진표 연동 해제 요청 실패';
+    }
+  }
+
+  Future<void> logout() async {
+    final String url = 'http://${baseURL}:8080/api/logout';
+    final Uri uri = Uri.parse(url);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString('token');
+
+    final response = await http.delete(
+      uri,
+      headers: {
+        'Authorization': 'Bearer ${token}',
+      }
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      print("logout response Body =====> ${response.body}");
+    } else if (response.statusCode == 401) {
+      print("토큰 갱신 필요");
+    } else {
+      print("문진표 연동 해제 요청 실패");
     }
   }
 }

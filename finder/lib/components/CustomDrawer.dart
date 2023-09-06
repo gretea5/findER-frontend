@@ -1,9 +1,8 @@
+import 'package:finder/api/servicesExport.dart';
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
-
   final String currentPage;
-
   CustomDrawer({required this.currentPage});
 
   @override
@@ -21,7 +20,7 @@ class CustomDrawer extends StatelessWidget {
           DrawerHeader(
             margin: EdgeInsets.only(bottom: 50),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 83, 113, 255),
+              color: Color.fromARGB(255, 83, 113, 255)
             ),
             child: Center(
               widthFactor: vw * 0.5,
@@ -35,7 +34,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             title: InkWell(
-              child: Row(
+            child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
@@ -102,7 +101,48 @@ class CustomDrawer extends StatelessWidget {
               }
             )
           ),
-        ]
+          Container(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: Container(
+                child: ListTile(
+                  title: InkWell(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 20.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 20.0),
+                            child: Icon(
+                              Icons.logout_rounded,
+                              color: Colors.red,
+                              size: 35,
+                            )
+                          ),
+                          Text(
+                            "로그아웃",
+                            style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Noto Sans KR'
+                            )
+                          )
+                        ]
+                      )
+                    ),
+                    onTap: () async {
+                      SpringBootApiService api = SpringBootApiService(context: context);
+                      await api.logout();
+                      Navigator.pushReplacementNamed(context, '/auth/login');
+                    }
+                  )
+                ),
+              ),
+            ),
+          )        
+        ],
       ),
     );
   }
