@@ -124,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(5),
                           )
                         ),
+                        keyboardType: TextInputType.emailAddress,
                         style: TextStyle(fontSize: 14, color: Colors.black),
                         onTapOutside:(event) {
                           emailNode.unfocus();
@@ -239,7 +240,41 @@ class _LoginPageState extends State<LoginPage> {
                             api.login(
                               email: emailTextEditController.text,
                               password: pwTextEditController.text
-                            );
+                            ).then((value) {
+                              if (value == '로그인 실패')     
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle
+                                      ),
+                                      child: AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                                        ),
+                                        actionsPadding: EdgeInsets.only(bottom: 5.0),
+                                        title: Text('로그인 실패'),
+                                        content: Text('이메일과 비밀번호를 다시 확인하십시오'),
+                                        actions: [
+                                          TextButton(
+                                            child: Text(
+                                              '확인',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            }
+                                          )
+                                        ]
+                                      ),
+                                    );
+                                  }
+                                );
+                            });
                           }    
                           else {
                             showDialog(

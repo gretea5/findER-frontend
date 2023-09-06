@@ -903,6 +903,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                 color: Colors.grey
               )
             ),
+            keyboardType: TextInputType.emailAddress,
             focusNode: otherEmailNode,
             controller: otherEmailTextEditController,
             onTapOutside: (event) {
@@ -2623,7 +2624,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
             actions: [
               TextButton(
                 child: Text(
-                  '',
+                  '확인',
                   style: TextStyle(
                     color: Colors.blueAccent,
                     fontWeight: FontWeight.bold

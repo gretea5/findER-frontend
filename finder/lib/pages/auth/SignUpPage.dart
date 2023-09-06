@@ -29,6 +29,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool nameIsEmpty = true;
   bool emailIsEmpty = true;
   bool emailEnable = false;
+  bool emailChecked = false;
   bool pwIsEmpty = true;
   bool pwAgainIsEmpty = true;
 
@@ -36,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void initState() {
     super.initState();
     nameTextEditController.addListener(checkName);
-    emailTextEditController.addListener(checkEmail);
+    emailTextEditController.addListener(checkEmailEmpty);
     pwTextEditController.addListener(checkPw);
     pwAgainTextEditController.addListener(checkPwAgain);
   }
@@ -53,7 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void checkEmail() {
+  void checkEmailEmpty() {
     setState(() {
       // emailIsEmpty = !emailTextEditController.text.isEmpty && emailTextEditController.text.length > 5 ? false : true;
       if (emailTextEditController.text.isEmpty && emailTextEditController.text.length < 4)
@@ -62,6 +63,18 @@ class _SignUpPageState extends State<SignUpPage> {
         emailIsEmpty = !RegExp(
           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
         ).hasMatch(emailTextEditController.text);
+    });
+  }
+
+  void checkEmailValidation(bool result) {
+    setState(() {
+      emailEnable = result;
+    });
+  }
+
+  void checkEmail() {
+    setState(() {
+      emailChecked = !emailIsEmpty && emailEnable;
     });
   }
 
@@ -86,7 +99,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool checkAll() {
-    return !nameIsEmpty && !emailIsEmpty && !pwIsEmpty && !pwAgainIsEmpty;
+    return !nameIsEmpty && emailChecked && !pwIsEmpty && !pwAgainIsEmpty;
     //return !nameIsEmpty && !emailIsEmpty && emailEnable && !pwIsEmpty && !pwAgainIsEmpty;
   }
 
@@ -106,16 +119,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "이름", 
                   style: TextStyle(
-                    color: Color.fromARGB(255, 51, 24, 249),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     fontWeight: FontWeight.bold
                     )
                   ),
                 Icon(
-                  Icons.check_circle,
+                  nameIsEmpty ? Icons.check_circle_outlined : Icons.check_circle,
                   fill: 1,
                   weight: 400,
                   grade: 0,
-                  opticalSize: 14,
+                  size: 18,
                   color: nameIsEmpty ? Colors.grey : Colors.green
                 )
               ]
@@ -131,14 +144,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -157,17 +170,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "이메일",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 51, 24, 249),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     fontWeight: FontWeight.bold
                   )
                 ),
                 Icon(
-                  Icons.check_circle,
+                  emailChecked ? Icons.check_circle : Icons.check_circle_outlined,
                   fill: 1,
                   weight: 400,
                   grade: 0,
-                  opticalSize: 14,
-                  color: emailIsEmpty ? Colors.grey : Colors.green
+                  size: 18,
+                  color: emailChecked ? Colors.green : Colors.grey
                 )
               ]
             )
@@ -178,6 +191,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: TextField(
               controller: emailTextEditController,
               focusNode: emailNode,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
                   vertical: 0.0,
@@ -185,14 +199,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -227,6 +241,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     api.emailValidate(
                       email: emailTextEditController.text
                     ).then((value) {
+                      checkEmailValidation(value);
                       if (value) {
                         showDialog(
                           context: context,
@@ -327,16 +342,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "비밀번호",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 51, 24, 249),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     fontWeight: FontWeight.bold
                   )
                 ),
                 Icon(
-                  Icons.check_circle,
+                  pwIsEmpty ? Icons.check_circle_outlined : Icons.check_circle,
                   fill: 1,
                   weight: 400,
                   grade: 0,
-                  opticalSize: 14,
+                  size: 18,
                   color: pwIsEmpty ? Colors.grey : Colors.green
                 )
               ]
@@ -356,14 +371,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -382,16 +397,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "비밀번호 확인",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 51, 24, 249),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     fontWeight: FontWeight.bold
                   )
                 ),
                 Icon(
-                  Icons.check_circle,
+                  pwAgainIsEmpty ? Icons.check_circle_outlined : Icons.check_circle,
                   fill: 1,
                   weight: 400,
                   grade: 0,
-                  opticalSize: 14,
+                  size: 18,
                   color: pwAgainIsEmpty ? Colors.grey : Colors.green
                 )
               ]
@@ -411,14 +426,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 61, 128, 235),
+                    color: Color.fromARGB(255, 79, 112, 229),
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),

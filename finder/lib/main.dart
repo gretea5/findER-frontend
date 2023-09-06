@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         const Locale('ko', 'KR'),
         const Locale('en', 'US')
       ],
-      initialRoute: '/auth/login',
+      initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
         '/': (context) => LoginPage(),

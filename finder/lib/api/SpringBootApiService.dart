@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SpringBootApiService {
-  final String baseURL = '223.194.134.199';
+  final String baseURL = '172.30.1.61';
   final BuildContext context;
   SpringBootApiService({
     required this.context
@@ -35,12 +35,12 @@ class SpringBootApiService {
       final SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setString("token", token);
       await preferences.setString("refreshToken", refreshToken);
-      Navigator.pushReplacementNamed(context,'/map');
+      return '로그인 성공';
     }
     else {
       print('Failed to fetch data');
+      return '로그인 실패';
     }
-    return response.body;
   }
 
   Future<String> signUp({

@@ -52,17 +52,17 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 1,
-          backgroundColor: Colors.white,
+          backgroundColor: themeColor,
           centerTitle: true,
           title: Text(
             "${widget.name}",
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 24,
             ),
           ),
           leading: IconButton(
-            color: Colors.black,
+            color: Colors.white,
             icon: Icon(
               Icons.chevron_left
             ),

@@ -34,7 +34,7 @@ class HospitalDetailTrendInfo extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "4",
+                      "2",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
