@@ -269,6 +269,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     onPressed: () {
                                       setState(() {
                                         emailEnable = true;
+                                        checkEmail();
                                       });
                                       Navigator.pop(context);
                                     }
@@ -305,6 +306,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     onPressed: () {
                                       setState(() {
                                         emailEnable = false;
+                                        checkEmail();
                                       });
                                       Navigator.pop(context);
                                     }

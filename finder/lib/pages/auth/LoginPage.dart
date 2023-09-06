@@ -274,6 +274,12 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   }
                                 );
+                                else {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/map'
+                                  );
+                                }
                             });
                           }    
                           else {
