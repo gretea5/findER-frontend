@@ -1,5 +1,6 @@
 import 'package:finder/api/servicesExport.dart';
 import 'package:finder/components/componentsExport.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +28,7 @@ class _DetailPageState extends State<DetailPage> {
   Set<Marker> markers = {}; // 마커 변수
   var vh = 0.0;
   var vw = 0.0;
+  var fontSize = 0.0;
   var lat = 37.582620285171856;
   var lon = 127.00819672835458;
   late SpringBootApiService api;
@@ -36,6 +38,7 @@ class _DetailPageState extends State<DetailPage> {
     vh = MediaQuery.of(context).size.height;
     vw = MediaQuery.of(context).size.width;
     api = SpringBootApiService(context: context);
+    fontSize = vw * 0.04;
   }
 
   void showToast(String message) {
@@ -128,6 +131,7 @@ class _DetailPageState extends State<DetailPage> {
                                           :"${getHospitalDetailSnapshot.data!.address}",
                                           style: TextStyle(
                                             color: elementColor,
+                                            fontSize: fontSize
                                           ),
                                         ),
                                         SizedBox(
@@ -215,6 +219,7 @@ class _DetailPageState extends State<DetailPage> {
                                       "${getHospitalDetailSnapshot.data!.simpleAddress}",
                                       style: TextStyle(
                                         color: elementColor,
+                                        fontSize: fontSize
                                       ),
                                     ),
                                   ],
@@ -239,6 +244,7 @@ class _DetailPageState extends State<DetailPage> {
                                         style: TextStyle(
                                           color: elementColor,
                                           decoration: TextDecoration.underline,
+                                          fontSize: fontSize
                                         ),
                                       ),
                                     ),
@@ -265,6 +271,7 @@ class _DetailPageState extends State<DetailPage> {
                                         style: TextStyle(
                                           color: elementColor,
                                           decoration: TextDecoration.underline,
+                                          fontSize: fontSize
                                         ),
                                       ),
                                     ),
@@ -288,6 +295,7 @@ class _DetailPageState extends State<DetailPage> {
                                       "현재 잔여 병상 수",
                                       style: TextStyle(
                                         color: elementColor,
+                                        fontSize: fontSize,
                                       ),
                                     ),
                                     SizedBox(
@@ -297,16 +305,17 @@ class _DetailPageState extends State<DetailPage> {
                                       "${getHospitalDetailSnapshot.data!.hvec}",
                                       style: TextStyle(
                                         color: bedColor,
+                                        fontSize: fontSize,
                                       ),
                                     ),
                                   ],
                                 ),
                                 SizedBox(
-                                  height: 10
+                                  height: 7
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(8),
-                                  height: vh * 0.165,
+                                  height: vh * 0.15,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -315,41 +324,70 @@ class _DetailPageState extends State<DetailPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              "현위치에서 ${widget.name.substring(0, 14)}",
+                                            "현위치에서",
+                                            style: TextStyle(
+                                              fontSize: fontSize * 1.3,
+                                            ),
+                                          ),
+                                            Text(
+                                              "${widget.name.substring(0, 14)}",
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: fontSize * 1.4,
+                                                color: themeColor,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             SizedBox(height: 3),
                                             Text(
                                               "${widget.name.substring(14)}까지는",
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: fontSize * 1.4,
+                                                color: themeColor,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ],
                                         )
                                       :
-                                        Text(
-                                          "현위치에서 ${widget.name}까지는",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "현위치에서 ",
+                                              style: TextStyle(
+                                                fontSize: fontSize * 1.3,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${widget.name}",
+                                              style: TextStyle(
+                                                fontSize: fontSize * 1.4,
+                                                fontWeight: FontWeight.bold,
+                                                color: themeColor,
+                                              ),
+                                            ),
+                                            Text(
+                                              " 까지는",
+                                              style: TextStyle(
+                                                fontSize: fontSize * 1.3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),                      
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Text("${getHospitalDetailSnapshot.data!.distance}km",
                                             style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
+                                              fontSize: fontSize * 1.4,
+                                              fontWeight: FontWeight.bold,
                                               color: Color(0xFF3469F0),
                                             ),
                                           ),
                                           Text(
                                             " 거리에 있으며, 예상 도착 시간은",
                                             style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: fontSize * 1.3,
                                             ),
                                           ),
                                         ],
@@ -360,15 +398,15 @@ class _DetailPageState extends State<DetailPage> {
                                           Text(
                                             "${getHospitalDetailSnapshot.data!.arrivalTime}",
                                             style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
+                                              fontSize: fontSize * 1.4,
+                                              fontWeight: FontWeight.bold,
                                               color: Color(0xFF3469F0),
                                             ),
                                           ),
                                           Text(
                                             " 입니다.",
                                             style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: fontSize * 1.3,
                                             ),
                                           ),
                                         ],
@@ -376,7 +414,7 @@ class _DetailPageState extends State<DetailPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 15),
+                                SizedBox(height: 10),
                                 SegmentedControlContent(
                                   vw: vw,
                                   vh: vh,

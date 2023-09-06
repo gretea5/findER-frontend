@@ -7,6 +7,7 @@ import 'package:finder/styles/Colors.dart';
 
 class HospitalCard extends StatelessWidget {
   final UrlLauncherService urlLauncherApi = UrlLauncherService();
+  final double vw;
   final double vh;
   final int hospitalId;
   final String name;
@@ -28,10 +29,12 @@ class HospitalCard extends StatelessWidget {
     required this.distance,
     required this.arrivalTime,
     required this.vh,
+    required this.vw,
   });
 
   @override
   Widget build(BuildContext context) {
+    var fontSize = vw * 0.04;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -44,7 +47,7 @@ class HospitalCard extends StatelessWidget {
                 Text(
                   name.length > 8 ? "${name.substring(0, 8)}.." : "$name", 
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: fontSize * 1.6,
                     fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -57,6 +60,7 @@ class HospitalCard extends StatelessWidget {
                   "${distance}km",
                   style: TextStyle(
                     color: elementColor,
+                    fontSize: fontSize * 1.0,
                   ),
                 ),
               ],
@@ -66,7 +70,8 @@ class HospitalCard extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => DetailPage(
-                      hospitalId: hospitalId,
+                      //hospitalId: hospitalId,
+                      hospitalId: 406,
                       name: name,
                     ),
                     fullscreenDialog: true,
@@ -80,6 +85,7 @@ class HospitalCard extends StatelessWidget {
                     "자세히 보기",
                     style: TextStyle(
                       color: elementColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   ),
                   Icon(
@@ -110,6 +116,7 @@ class HospitalCard extends StatelessWidget {
                     address.length > 16 ? "${address.substring(0, 16)}.." : "$address",
                     style: TextStyle(
                       color: elementColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   )
                 ],
@@ -129,6 +136,7 @@ class HospitalCard extends StatelessWidget {
                       style: TextStyle(
                         color: elementColor,
                         decoration: TextDecoration.underline,
+                        fontSize: fontSize * 1.15,
                       ),
                     ),
                   ),
@@ -155,6 +163,7 @@ class HospitalCard extends StatelessWidget {
                     "예상 도착 시간",
                     style: TextStyle(
                       color: elementColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   ),
                   SizedBox(
@@ -164,6 +173,7 @@ class HospitalCard extends StatelessWidget {
                     "$arrivalTime",
                     style: TextStyle(
                       color: elementColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   )
                 ],
@@ -184,6 +194,7 @@ class HospitalCard extends StatelessWidget {
                       style: TextStyle(
                         color: elementColor,
                         decoration: TextDecoration.underline,
+                        fontSize: fontSize * 1.15,
                       ),
                     ),
                   ),
@@ -212,6 +223,7 @@ class HospitalCard extends StatelessWidget {
                     "잔여 병상 수",
                     style: TextStyle(
                       color: elementColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   ),
                   SizedBox(
@@ -221,6 +233,7 @@ class HospitalCard extends StatelessWidget {
                     "$hvec",
                     style: TextStyle(
                       color: bedColor,
+                      fontSize: fontSize * 1.15,
                     ),
                   ),
                 ],

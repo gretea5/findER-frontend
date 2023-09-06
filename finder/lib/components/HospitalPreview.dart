@@ -33,6 +33,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
 
   @override
   Widget build(BuildContext context) {
+    var fontSize = vw * 0.04;
     return FutureBuilder(
       future: api.getHospitalById(
         id: widget.hospitalId,
@@ -64,7 +65,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                           Text(
                             snapshot.data!.name.length > 8 ? "${snapshot.data!.name.substring(0, 8)}.." : "${snapshot.data!.name}", 
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: fontSize * 1.6,
                               fontWeight: FontWeight.w600,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -77,6 +78,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                             "${snapshot.data!.distance}km",
                             style: TextStyle(
                               color: elementColor,
+                              fontSize: fontSize * 1.0,
                             ),
                           ),
                         ],
@@ -86,7 +88,8 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
-                                hospitalId: widget.hospitalId, 
+                                //hospitalId: widget.hospitalId, 
+                                hospitalId: 406,
                                 name: snapshot.data!.name
                               ),
                               fullscreenDialog: true,
@@ -100,6 +103,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               "자세히 보기",
                               style: TextStyle(
                                 color: elementColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             ),
                             Icon(
@@ -130,6 +134,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               snapshot.data!.address.length > 16 ? "${snapshot.data!.address.substring(0, 16)}.." : "${snapshot.data!.address}",
                               style: TextStyle(
                                 color: elementColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             )
                           ],
@@ -149,6 +154,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                                 style: TextStyle(
                                   color: elementColor,
                                   decoration: TextDecoration.underline,
+                                  fontSize: fontSize * 1.15,
                                 ),
                               ),
                             ),
@@ -175,6 +181,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               "예상 도착 시간",
                               style: TextStyle(
                                 color: elementColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             ),
                             SizedBox(
@@ -184,6 +191,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               "${snapshot.data!.arrivalTime}",
                               style: TextStyle(
                                 color: elementColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             )
                           ],
@@ -204,6 +212,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                                 style: TextStyle(
                                   color: elementColor,
                                   decoration: TextDecoration.underline,
+                                  fontSize: fontSize * 1.15,
                                 ),
                               ),
                             ),
@@ -232,6 +241,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               "잔여 병상 수",
                               style: TextStyle(
                                 color: elementColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             ),
                             SizedBox(
@@ -241,6 +251,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                               "${snapshot.data!.hvec}",
                               style: TextStyle(
                                 color: bedColor,
+                                fontSize: fontSize * 1.15,
                               ),
                             ),
                           ],
