@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import './UserDetailPage.dart';
 import '../../components/componentsExport.dart';
 import 'package:focus_detector_v2/focus_detector_v2.dart';
@@ -56,7 +56,7 @@ class _UserListPageState extends State<UserListPage> {
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
-        backgroundColor: Color.fromARGB(255, 79, 112, 229),
+        backgroundColor: themeColor,
         elevation: 0,
         leading: DrawerButton(),
         actions: [

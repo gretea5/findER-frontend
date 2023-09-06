@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:gif_view/gif_view.dart';
 import 'package:flutter/material.dart';
 import 'package:finder/pages/auth/authExport.dart';
@@ -12,7 +11,6 @@ void main() {
   AuthRepository.initialize(appKey: '1cacbfac891fab7876d54b6d718d06de');
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Color.fromARGB(255, 79, 112, 229),
-    
   ));
   runApp(const MyApp());
 }

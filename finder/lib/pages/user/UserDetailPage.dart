@@ -1,4 +1,5 @@
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import './userEditPage.dart';
@@ -145,7 +146,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
               child: Text(
                 '수정',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 79, 112, 229),
+                  color: themeColor,
                   fontWeight: FontWeight.bold
                 )
               ),
@@ -294,7 +295,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
               child: Text(
                 '수정',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 79, 112, 229),
+                  color: themeColor,
                   fontWeight: FontWeight.bold
                 )
               ),
@@ -430,7 +431,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
               '편집',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 79, 112, 229),
+                color: themeColor,
                 fontSize: 16,
               )
             ),
@@ -504,14 +505,14 @@ class _UserDetailPageState extends State<UserDetailPage>{
                               borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0)),
                               border: Border.all(
                                 width: 1.5,
-                                color: Color.fromARGB(255, 79, 112, 229)
+                                color: themeColor
                               ),
                               color: Colors.white
                             ),
                             child: Text(
                               user.familyRelations,
                               style: TextStyle(
-                                color: Color.fromARGB(255, 79, 112, 229),
+                                color: themeColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold
                               )
@@ -554,7 +555,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                         children: [
                           Icon(
                             Icons.call_outlined,
-                            color: Color.fromARGB(255, 79, 112, 229),
+                            color: themeColor,
                             size: 25,
                             weight: 700
                           ),
@@ -607,7 +608,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                             'assets/icons/home.svg',
                             width: 25,
                             height: 25,
-                            colorFilter: ColorFilter.mode(Color.fromARGB(255, 79, 112, 229), BlendMode.srcIn)
+                            colorFilter: ColorFilter.mode(themeColor, BlendMode.srcIn)
                           ),
                           Container(
                             margin: EdgeInsets.only(left: 3),
@@ -652,7 +653,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                             'assets/icons/allergy.svg',
                             width: 25,
                             height: 25,
-                            colorFilter: ColorFilter.mode(Color.fromARGB(255, 79, 112, 229), BlendMode.srcIn)
+                            colorFilter: ColorFilter.mode(themeColor, BlendMode.srcIn)
                           ),
                           Container(
                             margin: EdgeInsets.only(left: 3),
@@ -692,7 +693,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                             'assets/icons/pill.svg',
                             width: 25,
                             height: 25,
-                            colorFilter: ColorFilter.mode(Color.fromARGB(255, 79, 112, 229), BlendMode.srcIn)
+                            colorFilter: ColorFilter.mode(themeColor, BlendMode.srcIn)
                           ),
                           Container(
                             margin: EdgeInsets.only(left: 3),
@@ -732,7 +733,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                 //             'assets/icons/surgical.svg',
                 //             width: 25,
                 //             height: 25,
-                //             colorFilter: ColorFilter.mode(Color.fromARGB(255, 79, 112, 229), BlendMode.srcIn)
+                //             colorFilter: ColorFilter.mode(themeColor, BlendMode.srcIn)
                 //           ),
                 //           Container(
                 //             margin: EdgeInsets.only(left: 3),
@@ -771,7 +772,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                           Icon(
                             Icons.liquor_outlined,
                             size: 25,
-                            color: Color.fromARGB(255, 79, 112, 229),
+                            color: themeColor,
                             weight: 700
                           ),
                           Container(
@@ -811,7 +812,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                           Icon(
                             Icons.smoking_rooms_outlined,
                             size: 25,
-                            color: Color.fromARGB(255, 79, 112, 229),
+                            color: themeColor,
                             weight: 700
                           ),
                           Container(
@@ -851,7 +852,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                           Icon(
                             Icons.more_horiz_outlined,
                             size: 25,
-                            color: Color.fromARGB(255, 79, 112, 229),
+                            color: themeColor,
                             weight: 700
                           ),
                           Container(

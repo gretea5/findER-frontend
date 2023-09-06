@@ -1,12 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
-import 'package:http/http.dart' as http;
-import '../../components/componentsExport.dart';
 import '../../models/modelsExport.dart';
 
 
@@ -157,7 +154,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         currentStep > 0 
         ? currentStep == 1
           ? checkSecondStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_2.svg',
                 width: 20, height: 20,
@@ -168,7 +165,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         currentStep > 1 
         ? currentStep == 2
           ? checkThirdStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_3.svg',
                 width: 20, height: 20,
@@ -179,7 +176,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         currentStep > 2 
         ? currentStep == 3 
           ? checkFourthStep() 
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
               'assets/icons/counter_4.svg',
               width: 20, height: 20,
@@ -781,7 +778,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                                           bloodTypeChecked = true;
                                         });
                                       },
-                                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                                      activeColor: themeColor
                                     ),
                                     Text(bloodType)
                                 ]
@@ -836,7 +833,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                                 checkAllergy();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 없음')
                         ]
@@ -860,7 +857,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                                 checkAllergy();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 있음')
                         ]
@@ -1209,7 +1206,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           checkSmoker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('비흡연')
                   ]
@@ -1233,7 +1230,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           checkSmoker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('흡연중')
                   ]
@@ -1280,7 +1277,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           checkDrinker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('해당 없음')
                   ]
@@ -1304,7 +1301,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           checkDrinker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('해당 있음')
                   ]
@@ -1585,7 +1582,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                               checkDrugs();
                             });
                           },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
+                          activeColor: themeColor
                         ),
                         Text('해당 없음')
                       ]
@@ -1601,7 +1598,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                               checkDrugs();
                             });
                           },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
+                          activeColor: themeColor
                         ),
                         Text('해당 있음')
                       ],
@@ -1650,7 +1647,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           checkEtc();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('특이사항 없음')
                   ]
@@ -1676,7 +1673,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                           });
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('특이사항 있음')
                   ]

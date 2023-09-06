@@ -1,7 +1,5 @@
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});

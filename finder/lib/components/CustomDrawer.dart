@@ -9,7 +9,6 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final vw = MediaQuery.of(context).size.width;
-    final vh = MediaQuery.of(context).size.height;
 
     return Drawer(
       width: vw * 0.66,

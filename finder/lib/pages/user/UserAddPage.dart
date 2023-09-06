@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import '../../components/componentsExport.dart';
-import '../../models/modelsExport.dart';
 
 
 class UserAddPage extends StatefulWidget {
@@ -171,7 +168,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 0 
         ? currentStep == 1
           ? checkSecondStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_2.svg',
                 width: 20, height: 20,
@@ -182,7 +179,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 1 
         ? currentStep == 2
           ? checkThirdStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_3.svg',
                 width: 20, height: 20,
@@ -193,7 +190,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 2 
         ? currentStep == 3 
           ? checkFourthStep() 
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
               'assets/icons/counter_4.svg',
               width: 20, height: 20,
@@ -203,7 +200,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         : Icon(Icons.circle, size: 20, color: Colors.grey),
         currentStep > 3
           ? checkFifthStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_5.svg',
                 width: 20, height: 20,
@@ -216,7 +213,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 0 
         ? currentStep == 1
           ? checkSecondStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_2.svg',
                 width: 20, height: 20,
@@ -227,7 +224,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 1 
         ? currentStep == 2
           ? checkThirdStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
                 'assets/icons/counter_3.svg',
                 width: 20, height: 20,
@@ -238,7 +235,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         currentStep > 2 
         ? currentStep == 3 
           ? checkFourthStep() 
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
+            ? Icon(Icons.check_circle, size: 20, color: themeColor)
             : SvgPicture.asset(
               'assets/icons/counter_4.svg',
               width: 20, height: 20,
@@ -255,7 +252,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
         ? Icon(
           Icons.check_circle,
           size: 20,
-          color: Color.fromARGB(255, 79, 112, 229)
+          color: themeColor
         )
         : SvgPicture.asset(
           'assets/icons/counter_1.svg',
@@ -299,10 +296,10 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                     width: 250,
                     height: vh * 0.15,
                     decoration: BoxDecoration(
-                      color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
+                      color: addDirectly == true ? themeColor : Colors.transparent,
                       border: Border.all(
                         color: addDirectly == true 
-                          ? Color.fromARGB(255, 79, 112, 229)
+                          ? themeColor
                           : Color.fromARGB(255, 139, 139, 139),
                         width: 4.0
                       ),
@@ -348,10 +345,10 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                     height: vh * 0.15,
                     margin: EdgeInsets.only(top: 75.0),
                     decoration: BoxDecoration(
-                      color: addDirectly == false ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
+                      color: addDirectly == false ? themeColor : Colors.transparent,
                       border: Border.all(
                         color: addDirectly == false 
-                          ? Color.fromARGB(255, 79, 112, 229)
+                          ? themeColor
                           : Color.fromARGB(255, 139, 139, 139),
                         width: 4.0
                       ),
@@ -888,13 +885,13 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   width: 1.0,
-                  color: Color.fromARGB(255, 79, 112, 229)
+                  color: themeColor
                 )
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 16,
-                color: otherEmailNode.hasFocus ? Color.fromARGB(255, 79, 112, 229) : Colors.grey
+                color: otherEmailNode.hasFocus ? themeColor : Colors.grey
               ),
               prefixIconConstraints: BoxConstraints(minWidth: 20, maxWidth: 40),
               contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
@@ -1132,7 +1129,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                           bloodTypeChecked = true;
                                         });
                                       },
-                                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                                      activeColor: themeColor
                                     ),
                                     Text(bloodType)
                                 ]
@@ -1187,7 +1184,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                 checkAllergy();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 없음')
                         ]
@@ -1211,7 +1208,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                 checkAllergy();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 있음')
                         ]
@@ -1680,7 +1677,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                 height: 150,
                 child: CircularProgressIndicator(
                   value: rotationController.value,
-                  color: Color.fromARGB(255, 79, 112, 229),
+                  color: themeColor,
                   semanticsLabel: 'A',
                   strokeWidth: 10.0
                 ),
@@ -1707,9 +1704,9 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
           shape: BoxShape.circle,
           border: Border.all(
             width: 1,
-            color: Color.fromARGB(255, 79, 112, 229)
+            color: themeColor
           ),
-          color: Color.fromARGB(255, 79, 112, 229)
+          color: themeColor
         ),
         margin: EdgeInsets.only(top: vh * 0.07),
         child: Icon(
@@ -1904,7 +1901,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           checkSmoker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('비흡연')
                   ]
@@ -1928,7 +1925,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           checkSmoker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('흡연중')
                   ]
@@ -1975,7 +1972,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           checkDrinker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('해당 없음')
                   ]
@@ -1999,7 +1996,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           checkDrinker();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('해당 있음')
                   ]
@@ -2034,7 +2031,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0)),
-                color: !requestWaiting ? Color.fromARGB(255, 79, 112, 229) : Colors.red
+                color: !requestWaiting ? themeColor : Colors.red
               ),
               child: Text(
                 !requestWaiting ? '요청하기' : '취소하기',
@@ -2062,7 +2059,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           child: Text(
                             '요청',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 79, 112, 229),
+                              color: themeColor,
                               fontWeight: FontWeight.bold
                             )
                           ),
@@ -2473,7 +2470,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                 checkDrugs();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 없음')
                         ]
@@ -2497,7 +2494,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                 checkDrugs();
                               });
                             },
-                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                            activeColor: themeColor
                           ),
                           Text('해당 있음')
                         ],
@@ -2546,7 +2543,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           checkEtc();
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('특이사항 없음')
                   ]
@@ -2572,7 +2569,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                           });
                         });
                       },
-                      activeColor: Color.fromARGB(255, 79, 112, 229)
+                      activeColor: themeColor
                     ),
                     Text('특이사항 있음')
                   ]

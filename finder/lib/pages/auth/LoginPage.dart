@@ -1,9 +1,7 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_octicons/flutter_octicons.dart';
-import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -225,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                           )
                         ),
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 79, 112, 229)),
+                          backgroundColor: MaterialStateProperty.all<Color>(themeColor),
                           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                           minimumSize: MaterialStateProperty.all<Size>(Size(115, 45)),
                           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
