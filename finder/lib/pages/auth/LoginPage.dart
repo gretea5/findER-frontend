@@ -48,6 +48,14 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  String getLoginFailedReason() {
+    if (isEmailFormatCorrect == false)
+      return '잘못된 이메일입니다';
+    else {
+      return '비밀번호가 올바르지 않습니다';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var vh = MediaQuery.of(context).size.height;
@@ -56,33 +64,24 @@ class _LoginPageState extends State<LoginPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () {
-                  emailNode.unfocus();
-                  pwNode.unfocus();
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: vh / 3.75,
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    'findER',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold
-                    )
-                  )
-                ),
-              ),
               Container(
-                child: null,
                 width: double.infinity,
-                height: vh * 0.1,
+                alignment: Alignment.center,
+                color: Colors.white,
+                margin: EdgeInsets.only(top: vh * 0.15, bottom: vh * 0.02),
+                child: Image.asset(
+                  'assets/images/logo2.png',
+                  width: vw * 0.4,
+                  height: vw * 0.5,
+                  fit: BoxFit.fitWidth
+                )
               ),
               Container(
                 alignment: Alignment.topLeft,
@@ -220,14 +219,20 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       margin: EdgeInsets.only(right: vw * 0.05),
                       child: TextButton(
-                        child: Text('로그인'),
+                        child: Text(
+                          '로그인',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15
+                          )
+                        ),
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                          backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 79, 112, 229)),
                           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                           minimumSize: MaterialStateProperty.all<Size>(Size(115, 45)),
                           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0)
+                              borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0))
                             )
                           ),
                         ),
@@ -244,24 +249,53 @@ class _LoginPageState extends State<LoginPage> {
                               context: context,
                               builder: (context) {
                                 return Container(
-                                  decoration: BoxDecoration()
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle
+                                  ),
+                                  child: AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.elliptical(12, 9)),
+                                    ),
+                                    actionsPadding: EdgeInsets.only(bottom: 5.0),
+                                    title: Text('로그인 실패'),
+                                    content: Text(getLoginFailedReason()),
+                                    actions: [
+                                      TextButton(
+                                        child: Text(
+                                          '확인',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        }
+                                      )
+                                    ]
+                                  )
                                 );
                               }
                             );
                           }
                         },
-                        
                       )
                     ),
                     TextButton(
-                      child: Text('회원가입'),
+                      child: Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15
+                        )
+                      ),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 169, 169, 169)),
+                        backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 150, 150, 150)),
                         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         minimumSize: MaterialStateProperty.all<Size>(Size(115, 45)),
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.5)
+                            borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0))
                           )
                         )
                       ),
@@ -272,71 +306,71 @@ class _LoginPageState extends State<LoginPage> {
                   ]
                 )
               ),
-              Container(
-                margin: EdgeInsets.only(bottom: vh * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: vw * 0.1,
-                      decoration: BoxDecoration(border: Border.all(width: 0.1, color: Colors.grey))
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Text('또는', style: TextStyle(color: Colors.grey))
-                    ),
-                    Container(
-                      width: vw * 0.1,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 0.1, color: Colors.grey)
-                      )
-                    )
-                  ]
-                )
-              ),
-              Container(
-                width: 300,
-                height: 50,
-                child: InkWell(
-                  child: Image.asset(
-                    'assets/images/kakao_login_large_wide.png', 
-                    width: 300, 
-                    height: 50,
-                    fit: BoxFit.contain
-                  ),
-                  onTap: () {
+              // Container(
+              //   margin: EdgeInsets.only(bottom: vh * 0.03),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Container(
+              //         width: vw * 0.1,
+              //         decoration: BoxDecoration(border: Border.all(width: 0.1, color: Colors.grey))
+              //       ),
+              //       Container(
+              //         margin: EdgeInsets.symmetric(horizontal: 15.0),
+              //         child: Text('또는', style: TextStyle(color: Colors.grey))
+              //       ),
+              //       Container(
+              //         width: vw * 0.1,
+              //         decoration: BoxDecoration(
+              //           border: Border.all(width: 0.1, color: Colors.grey)
+              //         )
+              //       )
+              //     ]
+              //   )
+              // ),
+              // Container(
+              //   width: 300,
+              //   height: 50,
+              //   child: InkWell(
+              //     child: Image.asset(
+              //       'assets/images/kakao_login_large_wide.png', 
+              //       width: 300, 
+              //       height: 50,
+              //       fit: BoxFit.contain
+              //     ),
+              //     onTap: () {
                     
-                  },
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                )
-              ),
-              Container(
-                margin: EdgeInsets.only(top: vh * 0.04),
-                child: InkWell(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        '회원가입 없이 시작',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          )
-                        ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.grey, size: 12
-                      )
-                    ]
-                  ),
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/map');
-                  },
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent
-                )
-              )
+              //     },
+              //     highlightColor: Colors.transparent,
+              //     splashColor: Colors.transparent,
+              //   )
+              // ),
+              // Container(
+              //   margin: EdgeInsets.only(top: vh * 0.04),
+              //   child: InkWell(
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         Text(
+              //           '회원가입 없이 시작',
+              //           style: TextStyle(
+              //             color: Colors.grey,
+              //             )
+              //           ),
+              //         Icon(
+              //           Icons.arrow_forward_ios,
+              //           color: Colors.grey, size: 12
+              //         )
+              //       ]
+              //     ),
+              //     onTap: () {
+              //       Navigator.pushReplacementNamed(context, '/map');
+              //     },
+              //     highlightColor: Colors.transparent,
+              //     splashColor: Colors.transparent
+              //   )
+              // )
             ],
           )
         )

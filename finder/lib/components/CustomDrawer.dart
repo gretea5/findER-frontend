@@ -8,16 +8,30 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final vw = MediaQuery.of(context).size.width;
+    final vh = MediaQuery.of(context).size.height;
+
     return Drawer(
-      width: MediaQuery.of(context).size.width / 1.5,
+      width: vw * 0.66,
       backgroundColor: Colors.white,
       child: ListView(
+        padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
+            margin: EdgeInsets.only(bottom: 50),
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: Color.fromARGB(255, 83, 113, 255),
             ),
-            child: Text("findER")
+            child: Center(
+              widthFactor: vw * 0.5,
+              heightFactor: vw * 0.75,
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: vw * 0.5,
+                height: vw * 0.75,
+              )
+            )
           ),
           ListTile(
             title: InkWell(

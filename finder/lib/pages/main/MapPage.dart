@@ -254,15 +254,15 @@ class _MapPageState extends State<MapPage> {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.black, width: 1),
                         ),
-                        child: HospitalCard(
-                          name: "세브란스병원",
-                          distance:"1.4km",
-                          address: "서울시 서대문구 연세로 50-1",
-                          tel: "02-0000-0000",
-                          arriveTime: "오후 01시 30분",
-                          numberOfBeds : 8,
-                          vh: vh
-                        ),
+                        // child: HospitalCard(
+                        //   name: "세브란스병원",
+                        //   distance:"1.4km",
+                        //   address: "서울시 서대문구 연세로 50-1",
+                        //   tel: "02-0000-0000",
+                        //   arriveTime: "오후 01시 30분",
+                        //   numberOfBeds : 8,
+                        //   vh: vh
+                        // ),
                       ),
                       )
                       : const SizedBox()

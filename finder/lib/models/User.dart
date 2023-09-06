@@ -5,7 +5,7 @@ class User {
   final String name;
   final String phoneNum;
   final String address;
-  final int age;
+  final String birthday;
   final String gender;
   final String bloodType;
   final String familyRelations;
@@ -24,7 +24,7 @@ class User {
     required this.name,
     required this.phoneNum,
     required this.address,
-    required this.age,
+    required this.birthday,
     required this.gender,
     required this.bloodType,
     required this.familyRelations,
@@ -45,7 +45,7 @@ class User {
       name: json['name'],
       phoneNum: json['phoneNum'],
       address: json['address'],
-      age: json['age'],
+      birthday: json['birthday'],
       gender: json['gender'],
       bloodType: json['bloodType'],
       familyRelations: json['familyRelations'],

@@ -67,6 +67,20 @@ class SpringBootApiService {
     return response.body;
   }
 
+  Future<bool> emailValidate({
+    required String email
+  }) async {
+    final response = await http.get(
+      Uri.parse('http://${baseURL}:8080/api/emailValidation?email=${email}'),
+    );
+
+    if (response.statusCode.toString().startsWith('2')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<void> refreshToken() async{
     final String apiUrl = 'http://${baseURL}:8080/api/refresh';
     final uri = Uri.parse(apiUrl);
@@ -332,7 +346,7 @@ class SpringBootApiService {
         })
       );
 
-      print(response.body);
+      print('link: '+response.body);
 
       if (response.statusCode.toString().startsWith('2')) {
         return response.body;
@@ -358,6 +372,8 @@ class SpringBootApiService {
         }
       );
 
+      print('wait: '+response.body);
+
       if (response.statusCode.toString().startsWith('2')) {
         return response.body;
       } else if (response.statusCode == 401) {
@@ -381,6 +397,8 @@ class SpringBootApiService {
         'Authorization': 'Bearer ${token}',
       }
     );
+
+    print('unlink: '+response.body);
 
     if (response.statusCode.toString().startsWith('2')) {
       return response.body;

@@ -5,15 +5,27 @@ import '../models/modelsExport.dart';
 class InformationCard extends StatelessWidget {
 
   final User user;
-  final bool inList;
 
-  InformationCard({super.key, required this.user, required this.inList});
+  InformationCard({super.key, required this.user});
 
-  String showUserName() {
-    if (inList)
-      return user.name;
-    else
-      return user.name.replaceRange(1, 2, '*');
+  String calculateAge(String birthday) {
+    String birthdayFormat = '';
+    if (birthday[0] == '0' || birthday[0] == '1' || birthday[0] =='2') {
+      birthdayFormat = '20$birthday';
+    } else {
+      birthdayFormat = '19$birthday';
+    }
+    print(birthdayFormat);
+    DateTime birthdate = DateTime.parse(birthdayFormat);
+    DateTime today = DateTime.now();
+    
+    int age = today.year - birthdate.year;
+
+    if (today.month < birthdate.month || (today.month == birthdate.month && today.day < birthdate.day)) {
+      age--;
+    }
+
+    return age.toString();
   }
 
   @override
@@ -40,7 +52,7 @@ class InformationCard extends StatelessWidget {
                       children: [
                         Container(
                           child: Text(
-                            showUserName(),
+                            user.name,
                             style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
@@ -51,9 +63,7 @@ class InformationCard extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(left: vw * 0.02),
                           child: Text(
-                            inList
-                            ? '${user.age}세・(${user.gender})'
-                            : '${user.age}세',
+                            '${calculateAge(user.birthday)}세・(${user.gender})',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 20,
@@ -62,8 +72,7 @@ class InformationCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    inList
-                    ? Container(
+                    Container(
                       alignment: Alignment.center,
                       width: 45,
                       height: 20,
@@ -84,12 +93,20 @@ class InformationCard extends StatelessWidget {
                           fontWeight: FontWeight.bold
                         )
                       )
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: vw * 0.02),
+                      child: user.isLinked
+                      ? Icon(
+                        Icons.link_outlined,
+                        color: Color.fromARGB(255, 79, 112, 229),
+                        size: 21
+                      )
+                      : null
                     )
-                    : Container()
                   ]
                 ),
-                inList
-                ? Container(
+                Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,15 +128,6 @@ class InformationCard extends StatelessWidget {
                           colorFilter: ColorFilter.mode(user.medicine != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
                         )
                       ),
-                      // Container(
-                      //   margin: EdgeInsets.only(left: 5.0),
-                      //   child: SvgPicture.asset(
-                      //     'assets/icons/surgical.svg',
-                      //     width: 27,
-                      //     height: 27,
-                      //     colorFilter: ColorFilter.mode(user.surgery != null ? Color.fromARGB(255, 79, 112, 229) : Colors.grey, BlendMode.srcIn)
-                      //   )
-                      // ),
                       Container(
                         margin: EdgeInsets.only(left: 5.0),
                         child: Icon(
@@ -139,63 +147,12 @@ class InformationCard extends StatelessWidget {
                     ]
                   ),
                 )
-                : Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        child: SvgPicture.asset(
-                          'assets/icons/allergy.svg',
-                          width: 27,
-                          height: 27,
-                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 5.0),
-                        child: SvgPicture.asset(
-                          'assets/icons/pill.svg',
-                          width: 27,
-                          height: 27,
-                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 5.0),
-                        child: SvgPicture.asset(
-                          'assets/icons/surgical.svg',
-                          width: 27,
-                          height: 27,
-                          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 5.0),
-                        child: Icon(
-                          Icons.liquor_outlined,
-                          size: 27,
-                          color: Colors.grey
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 5.0),
-                        child: Icon(
-                          Icons.smoking_rooms,
-                          size: 27,
-                          color: Colors.grey
-                        )
-                      )
-                    ]
-                  ),
-                ),
               ]
             ),
             flex: 90
           ),
           Flexible(
-            child: inList 
-            ? Container(
+            child: Container(
               alignment: Alignment.center,
               child: Icon(
                 Icons.chevron_right_rounded,
@@ -203,8 +160,7 @@ class InformationCard extends StatelessWidget {
                 size: 40,
                 weight: 700
               )
-            )
-            : Container(),
+            ),
             flex: 10
           )
         ]

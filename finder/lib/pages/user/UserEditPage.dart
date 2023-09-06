@@ -42,7 +42,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
 
     setState(() {
       nameTextEditController.text = user.name;
-      ageTextEditController.text = user.age.toString();
+      ageTextEditController.text = user.birthday;
       telTextEditController.text = user.phoneNum;
       relationText = user.familyRelations;
 
@@ -63,7 +63,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
       bloodTypeString = user.bloodType;
 
       addressTextEditController.text = user.address.split(')')[0]+')';
-      detailAddressTextEditController.text = user.address.split(')')[1];
+      detailAddressTextEditController.text = user.address.split(')')[1].substring(1);
       
       if (user.allergy == null) {
         allergyExists = false;
@@ -83,12 +83,16 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         isSmoker = false;
       } else {
         isSmoker = true;
+        smokingAmount = user.smokingCycle!.split('안 ')[1];
+        smokingDuration = user.smokingCycle!.split('동')[0];
       }
 
       if (user.drinkingCycle == null) {
         isDrinker = false;
       } else {
         isDrinker = true;
+        drinkingAmount = user.drinkingCycle!.split('안 ')[1];
+        drinkingDuration = user.drinkingCycle!.split('동')[0];
       }
 
       if (user.etc == null) {
@@ -183,15 +187,6 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
             )
           : Icon(Icons.check_circle, size: 20, color: Colors.green)
         : Icon(Icons.circle, size: 20, color: Colors.grey),
-        currentStep > 3
-          ? checkFifthStep()
-            ? Icon(Icons.check_circle, size: 20, color: Color.fromARGB(255, 79, 112, 229))
-            : SvgPicture.asset(
-                'assets/icons/counter_5.svg',
-                width: 20, height: 20,
-                colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn)
-            )
-        : Icon(Icons.circle, size: 20, color: Colors.grey)
       ]
     );
   }
@@ -250,6 +245,7 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
     )
   ];
 
+  List<String> relationList = ['선택안함', '본인', '배우자', '부', '모', '자녀', '기타'];
   String relationText = '선택안함';
 
   void checkNameField() {
@@ -266,7 +262,12 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
 
   void checkTelField() {
     setState(() {
-      telIsEmpty = !telTextEditController.text.isEmpty && telTextEditController.text.length == 11 ? false : true;
+      telIsEmpty = 
+      !telTextEditController.text.isEmpty 
+      && telTextEditController.text.length == 11
+      && RegExp(r'^010\d{8}$').hasMatch(telTextEditController.text)
+      ? false 
+      : true;
     });
   }
   
@@ -296,59 +297,26 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                '이름'
-              ),
-              Icon(
-                Icons.check_circle,
-                color: !nameIsEmpty ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          height: 40.0,
-          child: TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 0.0
-              )
-            ),
-            controller: nameTextEditController,
-            style: TextStyle(color: Colors.black),
-            focusNode: nameNode,
-            onTapOutside: (event) {
-              nameNode.unfocus();
-            },
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.03),
-          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+                width: vw * 0.25,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('관계'),
                         Icon(
-                          Icons.check_circle,
+                          relationChecked ? Icons.check_circle : Icons.check_circle_outlined,
                           color: relationChecked ? Colors.green : Colors.grey,
-                          size: 14
-                        )
+                          size: 18
+                        ),
                       ]
                     ),
                     Container(
-                      width: 150.0,
                       child: DropdownButton(
                         isExpanded: true,
                         value: relationText,
@@ -356,56 +324,54 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           height: 1,
                           color: Colors.grey
                         ),
-                        items:
-                          ['선택안함', '본인', '배우자', '자녀', '부', '모'].map<DropdownMenuItem<String?>>((String? i) {
-                            return DropdownMenuItem<String?>(
-                              value: i,
-                              child: Text({'본인': '본인', '배우자': '배우자', '자녀': '자녀', '부': '부', '모': '모'}[i] ?? '선택안함')
-                            );
-                          }).toList(),
-                        onChanged: (event) {
-                          setState(() {
-                            relationText = event!;
-                            event == '선택안함' ? relationChecked = false : relationChecked = true;
-                          });
-                        }
+                        style: TextStyle(
+                          color: Colors.grey
+                        ),
+                        
+                        onTap: () {
+                        },
+                        items: relationList.map<DropdownMenuItem<String>>((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(item)
+                          );
+                        }).toList(),
+                        onChanged: null
                       )
                     )
                   ]
-                )
+                ),
               ),
               Container(
-                margin: EdgeInsets.only(left: vw * 0.075),
+                width: vw * 0.60,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('나이'),
+                        Text('이름'),
                         Icon(
-                          Icons.check_circle,
-                          color: !ageIsEmpty ? Colors.green : Colors.grey,
-                          size: 14
+                          !nameIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !nameIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
                         )
                       ]
                     ),
                     Container(
-                      width: 150.0,
                       height: 40.0,
                       child: TextField(
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
-                            vertical: 0
-                          ),
+                            vertical: 0.0
+                          )
                         ),
-                        keyboardType: TextInputType.number,
-                        controller: ageTextEditController,
-                        focusNode: ageNode,
+                        controller: nameTextEditController,
+                        style: TextStyle(color: Colors.black),
+                        focusNode: nameNode,
                         onTapOutside: (event) {
-                          ageNode.unfocus();
-                        }
+                          nameNode.unfocus();
+                        },
                       )
                     )
                   ]
@@ -416,58 +382,117 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         ),
         Container(
           margin: EdgeInsets.only(top: vh * 0.015),
-          child: Column(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text('전화번호'),
-                  Icon(
-                    Icons.check_circle,
-                    color: !telIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
-                  )
-                ]
+              Container(
+                width: vw * 0.25,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('생년월일'),
+                        Icon(
+                          !ageIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !ageIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
+                        )
+                      ],
+                    ),
+                    Container(
+                      height: 40.0,
+                      child: TextField(
+                        controller: ageTextEditController,
+                        focusNode: ageNode,
+                        onTap: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(DateTime.now().year - 120),
+                            lastDate: DateTime.now(),
+                            locale: const Locale('ko')
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              ageTextEditController.text = '${selectedDate.year.toString().substring(2)}${selectedDate.month.toString().padLeft(2, '0')}${selectedDate.day.toString().padLeft(2, '0')}';
+                            });
+                          }
+                        }
+                      )
+                    )
+                  ]
+                )
               ),
               Container(
-                height: 40.0,
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0
+                width: vw * 0.60,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('전화번호'),
+                        Icon(
+                          !telIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !telIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
+                        )
+                      ]
                     ),
-                    hintText: '(-)를 제외하고 입력하십시오',
-                    counterText: '',
-                  ),
-                  controller: telTextEditController,
-                  focusNode: telNode,
-                  onTapOutside: (event) {
-                    telNode.unfocus();
-                  },
-                  maxLength: 11,
-                  keyboardType: TextInputType.number
+                    Container(
+                      height: 40.0,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 0
+                          ),
+                          hintText: '(-)를 제외하고 입력하십시오',
+                          counterText: '',
+                        ),
+                        controller: telTextEditController,
+                        focusNode: telNode,
+                        onTapOutside: (event) {
+                          telNode.unfocus();
+                        },
+                        maxLength: 11,
+                        keyboardType: TextInputType.number
+                      )
+                    )
+                  ]
                 )
-              )
-            ]
-          )
+              ),
+            ],
+          ),
         ),
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('주소'),
                   Icon(
-                    Icons.check_circle,
+                    !addressIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
                     color: !addressIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
               Container(
+                height: 40,
                 child: TextField(
                   controller: addressTextEditController,
                   focusNode: addressNode,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0.0
+                    )
+                  ),
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (_) => KpostalView(
@@ -493,14 +518,14 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('상세주소(없으면 \'없음\')'),
                   Icon(
-                    Icons.check_circle,
+                    !detailAddressIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
                     color: !detailAddressIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -522,12 +547,14 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('성별'),
                   Icon(
-                    Icons.check_circle,
+                    genderChecked ? Icons.check_circle : Icons.check_circle_outlined,
                     color: genderChecked ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -686,14 +713,14 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('혈액형'),
                   Icon(
-                    Icons.check_circle,
+                    bloodCheckedAll() ? Icons.check_circle : Icons.check_circle_outlined,
                     color: bloodCheckedAll() ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -776,12 +803,14 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('알러지 정보 입력'),
                   Icon(
-                    Icons.check_circle,
+                    allergyChecked ? Icons.check_circle : Icons.check_circle_outlined,
                     color: allergyChecked ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -852,388 +881,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
   /** 건강 상태 입력 네번째 단계 */
 
   /** 건강 상태 직접 입력시 위젯 */
-  TextEditingController drugsTextEditController = TextEditingController();
-  List<TextEditingController> surgeryControllerList = [];
-  final drugsNode = FocusNode();
-  final List<FocusNode>surgeryNodeList = [];
-  List<TextField> surgeryTextFieldList = [];
-  List<DateTime> surgeryDateList = [];
-  List<String> surgeryDateStringList = [];
 
-  bool? drugsExists = null;
-  bool drugsChecked = true;
-  bool? surgeryExists = null;
-  bool surgeryChecked = true;
-
-  void checkDrugs() {
-    setState(() {
-      if (drugsExists == false)
-        drugsChecked = true;
-      else if (drugsExists == true) {
-        if (drugsTextEditController.text.isEmpty) 
-          drugsChecked = false;
-        else
-          drugsChecked = true;
-      }
-    });
-  }
-
-  void checkSurgery() {
-    setState(() {
-      if (surgeryExists == false)
-        surgeryChecked = true;
-      else if (surgeryExists == true) {
-        surgeryChecked = true;
-        if (surgeryControllerList.length == 0) {
-          surgeryChecked = false;
-        }
-        for (TextEditingController controller in surgeryControllerList) {
-          if (controller.text.isEmpty) {
-            surgeryChecked = false;
-          }
-        }
-      }
-    });
-  }
-
-  bool checkFourthStep() {
-      return drugsChecked && surgeryChecked ? true : false;
-  }
-
-  Widget DrugsField() {
-    return drugsExists == true ? Container(
-      margin: EdgeInsets.only(top: vh * 0.01),
-      child: TextField(
-        controller: drugsTextEditController,
-        focusNode: drugsNode,
-        maxLines: 6,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(10),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.grey,
-              width: 1.0
-            )
-          )
-        ),
-        onTapOutside: (event) {
-          drugsNode.unfocus();
-        },
-      )
-    ) : Container();
-  }
-
-  double getSurgeryFieldHeight() {
-    if (drugsExists == true) {
-      if (surgeryTextFieldList.length > 3)
-        return vh * 0.18;
-      else 
-        return 40.0 * surgeryTextFieldList.length;
-    } else {
-      if (surgeryTextFieldList.length > 8)
-        return vh * 0.39;
-      else
-        return 40.0 * surgeryTextFieldList.length;
-    }
-  }
-
-  Widget SurgeryAllField() {
-    return surgeryTextFieldList.length > 0 ?
-      Container(
-        height: getSurgeryFieldHeight(),
-        width: vw * 0.9,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              for (int i = 0; i < surgeryTextFieldList.length; i++) 
-                Container(
-                  height: 30.0,
-                  margin: EdgeInsets.only(top: vh * 0.01),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: vw * 0.4,
-                        child: surgeryTextFieldList[i]
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1.0
-                          ),
-                          borderRadius: BorderRadius.circular(6.0)
-                        ),
-                        margin: EdgeInsets.only(left: vw * 0.05),
-                        child: TextButton(
-                          style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0)
-                            ),
-                          ),
-                          child: Text(surgeryDateStringList[i]),
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              initialDate: surgeryDateList[i],
-                              firstDate: DateTime(DateTime.now().year - 1),
-                              lastDate: DateTime.now()
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                surgeryDateList[i] = selectedDate;
-                                surgeryDateStringList[i] = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2, '0')}';
-                              });
-                            }
-                          }
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: vw * 0.05),
-                        child: InkWell(
-                          child: Icon(
-                            Icons.remove_circle,
-                            color: Colors.redAccent,
-                            size: 20
-                          ),
-                          onTap: () {
-                            setState(() {
-                              TextEditingController removeController = surgeryControllerList.removeAt(i);
-                              FocusNode removeNode = surgeryNodeList.removeAt(i);
-                              surgeryDateList.removeAt(i);
-                              surgeryDateStringList.removeAt(i);
-                              surgeryTextFieldList.removeAt(i);
-                              removeController.dispose();
-                              removeNode.dispose();
-                            });
-                          }
-                        )
-                      )
-                    ]
-                  )
-                )
-            ]
-          )
-        )
-      )
-      : Container();
-  }
-
-  void addSurgeryTextField() {
-    setState(() {
-      surgeryControllerList.add(
-        new TextEditingController()
-      );
-      checkSurgery();
-      surgeryControllerList[surgeryControllerList.length - 1].addListener(checkSurgery);
-      surgeryNodeList.add(
-        new FocusNode()
-      );
-      surgeryTextFieldList.add(
-        new TextField(
-          controller: surgeryControllerList[surgeryControllerList.length - 1],
-          focusNode: surgeryNodeList[surgeryNodeList.length - 1],
-          onTap: () {
-            setState(() {
-              offset = 1;
-            });
-          },
-          onTapOutside: (event) {
-            for (int i = 0; i < surgeryNodeList.length; i++) {
-              surgeryNodeList[i].unfocus();
-              bodyScrollController.animateTo(
-                0,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOut
-              );
-              setState(() {
-                offset = 0;
-              });
-            }
-          },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6.0),
-              borderSide: BorderSide(
-                width: 1.0,
-                color: Colors.grey
-              ),
-            ),
-            hintText: '수술명',
-            contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0)
-          )
-        )
-      );
-      surgeryDateList.add(
-        new DateTime.now()
-      );
-      DateTime lastSurgery = surgeryDateList[surgeryDateList.length - 1];
-      surgeryDateStringList.add(
-        '${lastSurgery.year}-${lastSurgery.month.toString().padLeft(2, '0')}-${lastSurgery.day.toString().padLeft(2, '0')}'
-      );
-    });
-  }
-
-  /** 건강 상태 직접 입력시 위젯 끝 */
-
-  Widget FourthStep(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.02),
-          child: Row(
-            children: [
-              Text('복용중인 약'),
-              Icon(
-                Icons.check_circle,
-                color: drugsChecked ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Column(
-            children: [
-              Container(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Radio<bool> (
-                          value: false,
-                          groupValue: drugsExists,
-                          onChanged: (value) {
-                            setState(() {
-                              drugsExists = value!;
-                              checkDrugs();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 없음')
-                      ]
-                    ),
-                    Row(
-                      children: [
-                        Radio<bool> (
-                          value: true,
-                          groupValue: drugsExists,
-                          onChanged: (value) {
-                            setState(() {
-                              drugsExists = value!;
-                              checkDrugs();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 있음')
-                      ],
-                    ),
-                    DrugsField()
-                  ]
-                )
-              ),
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Row(
-            children: [
-              Text('수술 이력 (최근 1년 이내)'),
-              Icon(
-                Icons.check_circle,
-                color: surgeryChecked == true ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: false,
-                    groupValue: surgeryExists,
-                    onChanged: (value) {
-                      setState(() {
-                        surgeryExists = value!;
-                        surgeryChecked = true;
-                      });
-                    },
-                    activeColor: Color.fromARGB(255, 79, 112, 229)
-                  ),
-                  Text('해당 없음')
-                ]
-              ),
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: true,
-                    groupValue: surgeryExists,
-                    onChanged: (value) {
-                      setState(() {
-                        surgeryExists = value!;
-                        checkSurgery();
-                      });
-                    },
-                    activeColor: Color.fromARGB(255, 79, 112, 229)
-                  ),
-                  Text('해당 있음')
-                ]
-              ),
-            ]
-          )
-        ),
-        surgeryExists == true ?
-          Container(
-            child: SurgeryAllField()
-          ) :
-          Container(),
-        surgeryExists == true ?
-          Container(
-            margin: EdgeInsets.only(top: 15.0),
-            height: 35.0,
-            width: vw * 0.812,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(Radius.elliptical(7.5,7.5)),
-              border: Border.all(
-                color: Color.fromARGB(255, 79, 112, 229),
-                width: 2.0,
-              )
-            ),
-            child: InkWell(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.add,
-                    weight: 1000,
-                    size: 25,
-                    color: Color.fromARGB(255, 79, 112, 229)
-                  )
-                ]
-              ),
-              onTap: addSurgeryTextField
-            )
-          ) :
-          Container()
-      ]
-    );
-  }
-  /** 건강 상태 입력 네번째 단계 끝 */
-
-  /** 건강 상태 입력 다섯번째 단계 */
-  
-  List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 달'];
+List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 달'];
   List<String> smokingAmountList = [
     '선택안함',
     '0.5 갑 이상 1 갑 미만',
@@ -1516,24 +1165,24 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           etcChecked = true;
       }
     });
-  }
+  } 
 
-  bool checkFifthStep() {
-    return smokingChecked && drinkingChecked && etcChecked ? true : false;
-  }
+  /** 건강 상태 직접 입력시 위젯 끝 */
 
-  Widget FifthStep(BuildContext context) {
+  Widget FourthStep(BuildContext context) {
     return Column(
       children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('흡연 여부'),
               Icon(
-                Icons.check_circle,
+                smokingChecked ? Icons.check_circle : Icons.check_circle_outlined,
                 color: smokingChecked ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -1559,7 +1208,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           isSmoker = value!;
                           checkSmoker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('비흡연')
                   ]
@@ -1582,7 +1232,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           isSmoker = value!;
                           checkSmoker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('흡연중')
                   ]
@@ -1595,12 +1246,14 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
         Container(
           margin: EdgeInsets.only(top: vh * 0.01),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('음주 여부'),
               Icon(
-                Icons.check_circle,
+                drinkingChecked ? Icons.check_circle : Icons.check_circle_outlined,
                 color: drinkingChecked ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -1626,7 +1279,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           isDrinker = value!;
                           checkDrinker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('해당 없음')
                   ]
@@ -1649,7 +1303,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           isDrinker = value!;
                           checkDrinker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('해당 있음')
                   ]
@@ -1659,20 +1314,322 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           )
         ),
         isDrinker == true ? DrinkingField() : Container(),
+      ]
+    );
+  }
+  /** 건강 상태 입력 네번째 단계 끝 */
+
+  /** 건강 상태 입력 다섯번째 단계 */
+  
+  TextEditingController drugsTextEditController = TextEditingController();
+  List<TextEditingController> surgeryControllerList = [];
+  final drugsNode = FocusNode();
+  final List<FocusNode>surgeryNodeList = [];
+  List<TextField> surgeryTextFieldList = [];
+  List<DateTime> surgeryDateList = [];
+  List<String> surgeryDateStringList = [];
+
+  bool? drugsExists = null;
+  bool drugsChecked = true;
+  bool? surgeryExists = null;
+  bool surgeryChecked = true;
+
+  void checkDrugs() {
+    setState(() {
+      if (drugsExists == false)
+        drugsChecked = true;
+      else if (drugsExists == true) {
+        if (drugsTextEditController.text.isEmpty) 
+          drugsChecked = false;
+        else
+          drugsChecked = true;
+      }
+    });
+  }
+
+  void checkSurgery() {
+    setState(() {
+      if (surgeryExists == false)
+        surgeryChecked = true;
+      else if (surgeryExists == true) {
+        surgeryChecked = true;
+        if (surgeryControllerList.length == 0) {
+          surgeryChecked = false;
+        }
+        for (TextEditingController controller in surgeryControllerList) {
+          if (controller.text.isEmpty) {
+            surgeryChecked = false;
+          }
+        }
+      }
+    });
+  }
+
+  bool checkFourthStep() {
+      return smokingChecked && drinkingChecked ? true : false;
+  }
+
+  Widget DrugsField() {
+    return drugsExists == true ? Container(
+      margin: EdgeInsets.only(top: vh * 0.01),
+      child: TextField(
+        controller: drugsTextEditController,
+        focusNode: drugsNode,
+        maxLines: 6,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.0
+            )
+          )
+        ),
+        onTapOutside: (event) {
+          drugsNode.unfocus();
+        },
+      )
+    ) : Container();
+  }
+
+  double getSurgeryFieldHeight() {
+    if (drugsExists == true) {
+      if (surgeryTextFieldList.length > 3)
+        return vh * 0.18;
+      else 
+        return 40.0 * surgeryTextFieldList.length;
+    } else {
+      if (surgeryTextFieldList.length > 8)
+        return vh * 0.39;
+      else
+        return 40.0 * surgeryTextFieldList.length;
+    }
+  }
+
+  Widget SurgeryAllField() {
+    return surgeryTextFieldList.length > 0 ?
+      Container(
+        height: getSurgeryFieldHeight(),
+        width: vw * 0.9,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              for (int i = 0; i < surgeryTextFieldList.length; i++) 
+                Container(
+                  height: 30.0,
+                  margin: EdgeInsets.only(top: vh * 0.01),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: vw * 0.4,
+                        child: surgeryTextFieldList[i]
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.0
+                          ),
+                          borderRadius: BorderRadius.circular(6.0)
+                        ),
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0)
+                            ),
+                          ),
+                          child: Text(surgeryDateStringList[i]),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: surgeryDateList[i],
+                              firstDate: DateTime(DateTime.now().year - 1),
+                              lastDate: DateTime.now()
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                surgeryDateList[i] = selectedDate;
+                                surgeryDateStringList[i] = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+                              });
+                            }
+                          }
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: InkWell(
+                          child: Icon(
+                            Icons.remove_circle,
+                            color: Colors.redAccent,
+                            size: 20
+                          ),
+                          onTap: () {
+                            setState(() {
+                              TextEditingController removeController = surgeryControllerList.removeAt(i);
+                              FocusNode removeNode = surgeryNodeList.removeAt(i);
+                              surgeryDateList.removeAt(i);
+                              surgeryDateStringList.removeAt(i);
+                              surgeryTextFieldList.removeAt(i);
+                              removeController.dispose();
+                              removeNode.dispose();
+                            });
+                          }
+                        )
+                      )
+                    ]
+                  )
+                )
+            ]
+          )
+        )
+      )
+      : Container();
+  }
+
+  void addSurgeryTextField() {
+    setState(() {
+      surgeryControllerList.add(
+        new TextEditingController()
+      );
+      checkSurgery();
+      surgeryControllerList[surgeryControllerList.length - 1].addListener(checkSurgery);
+      surgeryNodeList.add(
+        new FocusNode()
+      );
+      surgeryTextFieldList.add(
+        new TextField(
+          controller: surgeryControllerList[surgeryControllerList.length - 1],
+          focusNode: surgeryNodeList[surgeryNodeList.length - 1],
+          onTap: () {
+            setState(() {
+              offset = 1;
+            });
+          },
+          onTapOutside: (event) {
+            for (int i = 0; i < surgeryNodeList.length; i++) {
+              surgeryNodeList[i].unfocus();
+              bodyScrollController.animateTo(
+                0,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut
+              );
+              setState(() {
+                offset = 0;
+              });
+            }
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6.0),
+              borderSide: BorderSide(
+                width: 1.0,
+                color: Colors.grey
+              ),
+            ),
+            hintText: '수술명',
+            contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0)
+          )
+        )
+      );
+      surgeryDateList.add(
+        new DateTime.now()
+      );
+      DateTime lastSurgery = surgeryDateList[surgeryDateList.length - 1];
+      surgeryDateStringList.add(
+        '${lastSurgery.year}-${lastSurgery.month.toString().padLeft(2, '0')}-${lastSurgery.day.toString().padLeft(2, '0')}'
+      );
+    });
+  }
+
+  bool checkFifthStep() {
+    return drugsChecked && etcChecked ? true : false;
+  }
+
+  Widget FifthStep(BuildContext context) {
+    return Column(
+      children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('기타 특이사항'),
+              Text('복용중인 약'),
               Icon(
-                Icons.check_circle,
-                color: etcChecked ? Colors.green : Colors.grey,
-                size: 14
+                drugsChecked ? Icons.check_circle : Icons.check_circle_outlined,
+                color: drugsChecked ? Colors.green : Colors.grey,
+                size: 18
               )
             ]
           )
         ),
         Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Column(
+            children: [
+              Container(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Radio<bool> (
+                          value: false,
+                          groupValue: drugsExists,
+                          onChanged: (value) {
+                            setState(() {
+                              drugsExists = value!;
+                              checkDrugs();
+                            });
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
+                        ),
+                        Text('해당 없음')
+                      ]
+                    ),
+                    Row(
+                      children: [
+                        Radio<bool> (
+                          value: true,
+                          groupValue: drugsExists,
+                          onChanged: (value) {
+                            setState(() {
+                              drugsExists = value!;
+                              checkDrugs();
+                            });
+                          },
+                          activeColor: Color.fromARGB(255, 79, 112, 229)
+                        ),
+                        Text('해당 있음')
+                      ],
+                    ),
+                    DrugsField()
+                  ]
+                )
+              ),
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('기타 특이사항'),
+              Icon(
+                etcChecked ? Icons.check_circle : Icons.check_circle_outlined,
+                color: etcChecked ? Colors.green : Colors.grey,
+                size: 18
+              )
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
           child: Column(
             children: [
               GestureDetector(
@@ -1692,7 +1649,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                           etcExists = value!;
                           checkEtc();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('특이사항 없음')
                   ]
@@ -1717,7 +1675,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                             checkEtc();
                           });
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('특이사항 있음')
                   ]
@@ -1756,17 +1715,18 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           ),
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero
+              borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
             actionsPadding: EdgeInsets.only(bottom: 5.0),
-            title: Text('건강 정보 입력 취소'),
-            content: Text('건강 정보 입력을 취소하시겠습니까?'),
+            title: Text('문진표 수정'),
+            content: Text('문진표 수정을 취소하시겠습니까?'),
             actions: [
               TextButton(
                 child: Text(
                   '취소',
                   style: TextStyle(
-                    color: Colors.red
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
@@ -1777,7 +1737,8 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                 child: Text(
                   '확인',
                   style: TextStyle(
-                    color: Colors.blueAccent
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
@@ -1803,17 +1764,18 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
           ),
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero
+              borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
             actionsPadding: EdgeInsets.only(bottom: 5.0),
-            title: Text('건강 정보 제출'),
-            content: Text('건강 정보를 제출하시겠습니까?'),
+            title: Text('문진표 수정'),
+            content: Text('문진표를 제출하시겠습니까?'),
             actions: [
               TextButton(
                 child: Text(
                   '취소',
                   style: TextStyle(
-                    color: Colors.red
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
@@ -1822,15 +1784,16 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
               ),
               TextButton(
                 child: Text(
-                  '확인',
+                  '제출',
                   style: TextStyle(
-                    color: Colors.blueAccent
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
                   Map<String, dynamic> questionnaire = {
                     'name': nameTextEditController.text,
-                    'age': int.parse(ageTextEditController.text),
+                    'birthday': ageTextEditController.text,
                     'familyRelations': relationText,
                     'phoneNum': telTextEditController.text,
                     'address': addressTextEditController.text+' '+detailAddressTextEditController.text,
@@ -1846,10 +1809,73 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
                   .then((value) {
                     if (value == '문진표 수정 완료') {
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle
+                            ),
+                            child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                              ),
+                              actionsPadding: EdgeInsets.only(bottom: 5.0),
+                              title: Text('문진표 수정'),
+                              content: Text('문진표를 수정하였습니다'),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold
+                                    )
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  }
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      );
                     }
                     else {
-                      print('문진표 작성 실패');
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle
+                            ),
+                            child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                              ),
+                              actionsPadding: EdgeInsets.only(bottom: 5.0),
+                              title: Text('문진표 수정'),
+                              content: Text('문진표 수정을 실패하였습니다'),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold
+                                    )
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      );
                     }
                   });
                 }
@@ -1908,68 +1934,66 @@ class _UserEditPageState extends State<UserEditPage> with SingleTickerProviderSt
   /** 앱 UI */
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: TextButton(
-            child: Text(
-              currentStep > 0 ? '이전' : '취소',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 15,
-                fontWeight: FontWeight.bold
-             )
-            ),
-            onPressed: currentStep > 0 ? () {
-              setState(() {
-                currentStep--;
-              });
-            } : cancleAddAlert
-          ),
-          title: Text(
-            '건강 정보 입력',
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: TextButton(
+          child: Text(
+            currentStep > 0 ? '이전' : '취소',
             style: TextStyle(
-              color: Colors.black
+              color: Colors.red,
+              fontSize: 15,
+              fontWeight: FontWeight.bold
             )
           ),
-          actions: [
-            TextButton(
-              child: Text(
-                getNextButtonText(),
-                style: TextStyle(
-                  color: checkCurrentStep() ? Colors.blueAccent : Colors.grey,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold
-                )
-              ),
-              onPressed: checkCurrentStep() ? 
-                () {
-                  if (currentStep == 3)
-                    completeAddAlert();
-                  else {
-                    setState(() {
-                      currentStep++;
-                    });
-                  }
-                }
-                : null
-            )
-          ],
-          bottom: PreferredSize(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                border: Border.all(width: 0.3, color: Colors.grey)
-              )
-            ),
-            preferredSize: Size.fromHeight(0.3),
+          onPressed: currentStep > 0 ? () {
+            setState(() {
+              currentStep--;
+            });
+          } : cancleAddAlert
+        ),
+        title: Text(
+          '문진표 수정',
+          style: TextStyle(
+            color: Colors.black
           )
         ),
-        body: BodyWidget()
-      )
+        centerTitle: true,
+        actions: [
+          TextButton(
+            child: Text(
+              getNextButtonText(),
+              style: TextStyle(
+                color: checkCurrentStep() ? Colors.blueAccent : Colors.grey,
+                fontSize: 15,
+                fontWeight: FontWeight.bold
+              )
+            ),
+            onPressed: checkCurrentStep() ? 
+              () {
+                if (currentStep == 3)
+                  completeAddAlert();
+                else {
+                  setState(() {
+                    currentStep++;
+                  });
+                }
+              }
+              : null
+          )
+        ],
+        bottom: PreferredSize(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              border: Border.all(width: 0.3, color: Colors.grey)
+            )
+          ),
+          preferredSize: Size.fromHeight(0.3),
+        )
+      ),
+      body: BodyWidget()
     );
   }
 }

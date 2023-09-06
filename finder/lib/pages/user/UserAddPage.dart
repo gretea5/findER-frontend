@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpostal/kpostal.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import '../../components/componentsExport.dart';
 import '../../models/modelsExport.dart';
 
@@ -16,7 +17,9 @@ class UserAddPage extends StatefulWidget {
   State<UserAddPage> createState() => _UserAddPageState();
 }
 
-class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStateMixin{
+class _UserAddPageState 
+extends State<UserAddPage> 
+with SingleTickerProviderStateMixin, WidgetsBindingObserver{
 
   late SpringBootApiService api;
 
@@ -69,11 +72,72 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
     otherEmailTextEditController.addListener(checkOtherEmailField);
 
     /** 건강 정보 간접 입력시 이벤트 리스너 끝 */
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('didChangeAppLifecycleState: ${state.toString()}');
+    if (state == AppLifecycleState.inactive) {
+      if (countTimer != null && countTimer!.isActive) {
+        countTimer!.cancel();
+      }
+      if (cancelTimer != null && cancelTimer!.isActive) {
+        cancelTimer!.cancel();
+      }
+      if (requestWaiting) {
+        api.unlinkQuestionnaire(
+          otherUserEmail: otherEmailTextEditController.text
+        ).then((value) {
+          if (value == '문진표 연동 요청 취소 완료') {
+            print('unlink successed');
+            setState(() {
+              requestWaiting = false;
+              requestSent = true;
+              requestCanceled = true;
+              remainMinutes = 2;
+              remainSeconds = 59;
+            });
+          }
+        });
+      }
+    }
+    if (state == AppLifecycleState.detached) {
+      rotationController.dispose();
+      if (countTimer != null && countTimer!.isActive)
+        countTimer!.cancel();
+      if (cancelTimer != null && cancelTimer!.isActive)
+        cancelTimer!.cancel();
+      if (requestWaiting) {
+        api.unlinkQuestionnaire(
+          otherUserEmail: otherEmailTextEditController.text
+        ).then((value) {
+          if (value == '문진표 연동 취소 완료') {
+            print('unlink successed');
+          }
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
     rotationController.dispose();
+    if (countTimer != null && countTimer!.isActive)
+      countTimer!.cancel();
+    if (cancelTimer != null && cancelTimer!.isActive)
+      cancelTimer!.cancel();
+    if (requestWaiting) {
+      api.unlinkQuestionnaire(
+        otherUserEmail: otherEmailTextEditController.text
+      ).then((value) {
+        if (value == '문진표 연동 취소 완료') {
+          print('unlink success');
+        }
+      });
+    }
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -232,7 +296,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     });
                   },
                   child: Container(
-                    width: vw >= 400 ? vw * 0.7 : vw * 0.6,
+                    width: 250,
                     height: vh * 0.15,
                     decoration: BoxDecoration(
                       color: addDirectly == true ? Color.fromARGB(255, 79, 112, 229) : Colors.transparent,
@@ -246,26 +310,24 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     ),
                     padding: EdgeInsets.symmetric(horizontal: vw > 390 ? vw * 0.035 : vw * 0.015),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        addDirectly == true
-                          ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 25
-                          )
-                          : Icon(
-                            Icons.circle_outlined,
-                            color: Color.fromARGB(255, 139, 139, 139),
-                            size: 25
-                          ),
-                        Text(
-                          '직접 추가하기',
-                          style: TextStyle(
-                            color: addDirectly == true ? Colors.white : Color.fromARGB(255, 139, 139, 139),
-                            fontSize: vw > 390 ? 35 : 25,
-                            fontWeight: FontWeight.bold
+                        Icon(
+                          Icons.post_add_outlined,
+                          color: addDirectly == true 
+                          ? Colors.white 
+                          : Color.fromARGB(255, 139, 139, 139),
+                          size: 50
+                        ),
+                        Container(
+                          child: Text(
+                            '작성하기',
+                            style: TextStyle(
+                              color: addDirectly == true ? Colors.white : Color.fromARGB(255, 139, 139, 139),
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold
+                            )
                           )
                         )
                       ]
@@ -282,7 +344,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     });
                   },
                   child: Container(
-                    width: vw >= 400 ? vw * 0.7 : vw * 0.6,
+                    width: 250,
                     height: vh * 0.15,
                     margin: EdgeInsets.only(top: 75.0),
                     decoration: BoxDecoration(
@@ -297,26 +359,24 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                     ),
                     padding: EdgeInsets.symmetric(horizontal: vw > 390 ? vw * 0.035 : vw * 0.015),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        addDirectly == false
-                          ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 25
-                          )
-                          : Icon(
-                            Icons.circle_outlined,
-                            color: Color.fromARGB(255, 139, 139, 139),
-                            size: 25
-                          ),
-                        Text(
-                          '검색하여 추가',
-                          style: TextStyle(
-                            color: addDirectly == false ? Colors.white : Color.fromARGB(255, 139, 139, 139),
-                            fontSize: vw > 390 ? 35 : 25,
-                            fontWeight: FontWeight.bold
+                        Icon(
+                          Icons.link_sharp,
+                          color: addDirectly == false
+                          ? Colors.white
+                          : Color.fromARGB(255, 139, 139, 139),
+                          size: 50
+                        ),
+                        Container(
+                          child: Text(
+                            '연동하기',
+                            style: TextStyle(
+                              color: addDirectly == false ? Colors.white : Color.fromARGB(255, 139, 139, 139),
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold
+                            )
                           )
                         )
                       ]
@@ -342,6 +402,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   TextEditingController addressTextEditController = TextEditingController();
   TextEditingController detailAddressTextEditController = TextEditingController();
 
+  final relationNode = FocusNode();
   final nameNode = FocusNode();
   final ageNode = FocusNode();
   final telNode = FocusNode();
@@ -350,6 +411,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   bool nameIsEmpty = true; // 이름 입력 여부
   bool relationChecked = false; // 관계 체크 여부
+  bool relationAlerted = false;
   bool ageIsEmpty = true;
   bool telIsEmpty = true;
   bool addressIsEmpty = true;
@@ -388,6 +450,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
     )
   ];
 
+  List<String> relationList = ['선택안함', '본인', '배우자', '부', '모', '자녀', '기타'];
   String relationText = '선택안함';
 
   void checkNameField() {
@@ -404,7 +467,12 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
 
   void checkTelField() {
     setState(() {
-      telIsEmpty = !telTextEditController.text.isEmpty && telTextEditController.text.length == 11 ? false : true;
+      telIsEmpty = 
+      !telTextEditController.text.isEmpty 
+      && telTextEditController.text.length == 11 
+      && RegExp(r'^010\d{8}$').hasMatch(telTextEditController.text)
+      ? false 
+      : true;
     });
   }
   
@@ -459,116 +527,119 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                '이름'
-              ),
-              Icon(
-                Icons.check_circle,
-                color: !nameIsEmpty ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          height: 40.0,
-          child: TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 0.0
-              )
-            ),
-            controller: nameTextEditController,
-            style: TextStyle(color: Colors.black),
-            focusNode: nameNode,
-            onTapOutside: (event) {
-              nameNode.unfocus();
-            },
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.03),
-          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+                width: vw * 0.25,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('관계'),
                         Icon(
-                          Icons.check_circle,
+                          relationChecked ? Icons.check_circle : Icons.check_circle_outlined,
                           color: relationChecked ? Colors.green : Colors.grey,
-                          size: 14
-                        )
+                          size: 18
+                        ),
                       ]
                     ),
                     Container(
-                      width: 150.0,
                       child: DropdownButton(
+                        focusNode: relationNode,
                         isExpanded: true,
                         value: relationText,
                         underline: Container(
                           height: 1,
                           color: Colors.grey
                         ),
-                        items:
-                          ['선택안함', '본인', '배우자', '자녀', '부', '모'].map<DropdownMenuItem<String?>>((String? i) {
-                            return DropdownMenuItem<String?>(
-                              value: i,
-                              child: Text({'본인': '본인', '배우자': '배우자', '자녀': '자녀', '부': '부', '모': '모'}[i] ?? '선택안함')
+                        onTap: () {
+                          if (!relationAlerted)
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                                    ),
+                                    actionsPadding: EdgeInsets.only(bottom: 5.0),
+                                    title: Text('문진표 작성'),
+                                    content: Text('문진표 수정 시 가족 관계는 수정할 수 없습니다\n한 번 더 확인해주십시오'),
+                                    actions: [
+                                      TextButton(
+                                        child: Text(
+                                          '확인',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            relationAlerted = true;
+                                          });
+                                          Navigator.pop(context);
+                                        }
+                                      )
+                                    ]
+                                  )
+                                );
+                              }
                             );
-                          }).toList(),
+                        },
+                        items: relationList.map<DropdownMenuItem<String>>((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(item)
+                          );
+                        }).toList(),
                         onChanged: (event) {
                           setState(() {
                             relationText = event!;
-                            event == '선택안함' ? relationChecked = false : relationChecked = true;
+                            relationChecked = !(event == '선택안함');
                           });
                         }
                       )
                     )
                   ]
-                )
+                ),
               ),
               Container(
-                margin: EdgeInsets.only(left: vw * 0.075),
+                width: vw * 0.60,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('나이'),
+                        Text('이름'),
                         Icon(
-                          Icons.check_circle,
-                          color: !ageIsEmpty ? Colors.green : Colors.grey,
-                          size: 14
+                          !nameIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !nameIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
                         )
                       ]
                     ),
                     Container(
-                      width: 150.0,
                       height: 40.0,
                       child: TextField(
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
-                            vertical: 0
-                          ),
+                            vertical: 0.0
+                          )
                         ),
-                        keyboardType: TextInputType.number,
-                        controller: ageTextEditController,
-                        focusNode: ageNode,
+                        controller: nameTextEditController,
+                        style: TextStyle(color: Colors.black),
+                        focusNode: nameNode,
                         onTapOutside: (event) {
-                          ageNode.unfocus();
-                        }
+                          nameNode.unfocus();
+                        },
                       )
                     )
                   ]
@@ -579,57 +650,115 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         ),
         Container(
           margin: EdgeInsets.only(top: vh * 0.015),
-          child: Column(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Text('전화번호'),
-                  Icon(
-                    Icons.check_circle,
-                    color: !telIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
-                  )
-                ]
+              Container(
+                width: vw * 0.25,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('생년월일'),
+                        Icon(
+                          !ageIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !ageIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
+                        )
+                      ],
+                    ),
+                    Container(
+                      height: 40.0,
+                      child: TextField(
+                        controller: ageTextEditController,
+                        focusNode: ageNode,
+                        onTap: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(DateTime.now().year - 120),
+                            lastDate: DateTime.now(),
+                            locale: const Locale('ko')
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              ageTextEditController.text = '${selectedDate.year.toString().substring(2)}${selectedDate.month.toString().padLeft(2, '0')}${selectedDate.day.toString().padLeft(2, '0')}';
+                            });
+                          }
+                        }
+                      )
+                    )
+                  ]
+                )
               ),
               Container(
-                height: 40.0,
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0
+                width: vw * 0.60,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('전화번호'),
+                        Icon(
+                          !telIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
+                          color: !telIsEmpty ? Colors.green : Colors.grey,
+                          size: 18
+                        )
+                      ]
                     ),
-                    hintText: '(-)를 제외하고 입력하십시오',
-                    counterText: '',
-                  ),
-                  controller: telTextEditController,
-                  focusNode: telNode,
-                  onTapOutside: (event) {
-                    telNode.unfocus();
-                  },
-                  maxLength: 11,
-                  keyboardType: TextInputType.number
+                    Container(
+                      height: 40.0,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 0
+                          ),
+                          hintText: '(-)를 제외하고 입력하십시오',
+                          counterText: '',
+                        ),
+                        controller: telTextEditController,
+                        focusNode: telNode,
+                        onTapOutside: (event) {
+                          telNode.unfocus();
+                        },
+                        maxLength: 11,
+                        keyboardType: TextInputType.number
+                      )
+                    )
+                  ]
                 )
-              )
-            ]
-          )
+              ),
+            ],
+          ),
         ),
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('주소'),
                   Icon(
-                    Icons.check_circle,
+                    !addressIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
                     color: !addressIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
               Container(
+                height: 40.0,
                 child: TextField(
                   controller: addressTextEditController,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0.0
+                    )
+                  ),
                   focusNode: addressNode,
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(
@@ -656,14 +785,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('상세주소(없으면 \'없음\')'),
+                  Text('상세주소'),
                   Icon(
-                    Icons.check_circle,
+                    !detailAddressIsEmpty ? Icons.check_circle : Icons.check_circle_outlined,
                     color: !detailAddressIsEmpty ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -672,6 +801,12 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                 child: TextField(
                   controller: detailAddressTextEditController,
                   focusNode: detailAddressNode,
+                  decoration: InputDecoration(
+                    hintText: '없으면 \'없음\' 을 입력하십시오',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0.0
+                    )
+                  ),
                   onTapOutside: (event) {
                     detailAddressNode.unfocus();
                   }
@@ -685,12 +820,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('성별'),
                   Icon(
-                    Icons.check_circle,
+                    sexChecked ? Icons.check_circle : Icons.check_circle_outlined,
                     color: sexChecked ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -726,12 +863,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('상대방의 이메일 입력'),
               Icon(
-                Icons.check_circle,
+                checkSecondStep() ? Icons.check_circle : Icons.check_circle_outlined,
                 color: checkSecondStep() ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -924,14 +1063,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('혈액형'),
                   Icon(
-                    Icons.check_circle,
+                    bloodCheckedAll() ? Icons.check_circle : Icons.check_circle_outlined,
                     color: bloodCheckedAll() ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -1014,12 +1153,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('알러지 정보 입력'),
                   Icon(
-                    Icons.check_circle,
+                    allergyChecked ? Icons.check_circle : Icons.check_circle_outlined,
                     color: allergyChecked ? Colors.green : Colors.grey,
-                    size: 14
+                    size: 18
                   )
                 ]
               ),
@@ -1091,12 +1232,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('상대방과의 관계를 입력하십시오'),
               Icon(
-                Icons.check_circle,
+                otherRelationChecked ? Icons.check_circle : Icons.check_circle_outlined,
                 color: otherRelationChecked ? Colors.green : Colors.grey,
-                size: 14,
+                size: 18,
               )
             ]
           )
@@ -1201,655 +1344,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   /** 건강 상태 입력 네번째 단계 */
 
   /** 건강 상태 직접 입력시 위젯 */
-  TextEditingController drugsTextEditController = TextEditingController();
-  List<TextEditingController> surgeryControllerList = [];
-  final drugsNode = FocusNode();
-  final List<FocusNode>surgeryNodeList = [];
-  List<TextField> surgeryTextFieldList = [];
-  List<DateTime> surgeryDateList = [];
-  List<String> surgeryDateStringList = [];
 
-  bool? drugsExists = null;
-  bool drugsChecked = false;
-  bool? surgeryExists = null;
-  bool surgeryChecked = false;
-
-  void checkDrugs() {
-    setState(() {
-      if (drugsExists == false)
-        drugsChecked = true;
-      else if (drugsExists == true) {
-        if (drugsTextEditController.text.isEmpty) 
-          drugsChecked = false;
-        else
-          drugsChecked = true;
-      }
-    });
-  }
-
-  void checkSurgery() {
-    setState(() {
-      if (surgeryExists == false)
-        surgeryChecked = true;
-      else if (surgeryExists == true) {
-        surgeryChecked = true;
-        if (surgeryControllerList.length == 0) {
-          surgeryChecked = false;
-        }
-        for (TextEditingController controller in surgeryControllerList) {
-          if (controller.text.isEmpty) {
-            surgeryChecked = false;
-          }
-        }
-      }
-    });
-  }
-
-  bool checkFourthStep() {
-    if (addDirectly == true)
-      return drugsChecked && surgeryChecked ? true : false;
-    else
-      return responseSuccessed != null ? true : false;
-  }
-
-  Widget DrugsField() {
-    return drugsExists == true ? Container(
-      margin: EdgeInsets.only(top: vh * 0.01),
-      child: TextField(
-        controller: drugsTextEditController,
-        focusNode: drugsNode,
-        maxLines: 6,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(10),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.grey,
-              width: 1.0
-            )
-          )
-        ),
-        onTapOutside: (event) {
-          drugsNode.unfocus();
-        },
-      )
-    ) : Container();
-  }
-
-  double getSurgeryFieldHeight() {
-    if (drugsExists == true) {
-      if (surgeryTextFieldList.length > 3)
-        return vh * 0.18;
-      else 
-        return 40.0 * surgeryTextFieldList.length;
-    } else {
-      if (surgeryTextFieldList.length > 8)
-        return vh * 0.39;
-      else
-        return 40.0 * surgeryTextFieldList.length;
-    }
-  }
-
-  Widget SurgeryAllField() {
-    return surgeryTextFieldList.length > 0 ?
-      Container(
-        height: getSurgeryFieldHeight(),
-        width: vw * 0.9,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              for (int i = 0; i < surgeryTextFieldList.length; i++) 
-                Container(
-                  height: 30.0,
-                  margin: EdgeInsets.only(top: vh * 0.01),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: vw * 0.4,
-                        child: surgeryTextFieldList[i]
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1.0
-                          ),
-                          borderRadius: BorderRadius.circular(6.0)
-                        ),
-                        margin: EdgeInsets.only(left: vw * 0.05),
-                        child: TextButton(
-                          style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0)
-                            ),
-                          ),
-                          child: Text(surgeryDateStringList[i]),
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              initialDate: surgeryDateList[i],
-                              firstDate: DateTime(DateTime.now().year - 1),
-                              lastDate: DateTime.now()
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                surgeryDateList[i] = selectedDate;
-                                surgeryDateStringList[i] = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2, '0')}';
-                              });
-                            }
-                          }
-                        )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: vw * 0.05),
-                        child: InkWell(
-                          child: Icon(
-                            Icons.remove_circle,
-                            color: Colors.redAccent,
-                            size: 20
-                          ),
-                          onTap: () {
-                            setState(() {
-                              TextEditingController removeController = surgeryControllerList.removeAt(i);
-                              FocusNode removeNode = surgeryNodeList.removeAt(i);
-                              surgeryDateList.removeAt(i);
-                              surgeryDateStringList.removeAt(i);
-                              surgeryTextFieldList.removeAt(i);
-                              removeController.dispose();
-                              removeNode.dispose();
-                            });
-                          }
-                        )
-                      )
-                    ]
-                  )
-                )
-            ]
-          )
-        )
-      )
-      : Container();
-  }
-
-  void addSurgeryTextField() {
-    setState(() {
-      surgeryControllerList.add(
-        new TextEditingController()
-      );
-      checkSurgery();
-      surgeryControllerList[surgeryControllerList.length - 1].addListener(checkSurgery);
-      surgeryNodeList.add(
-        new FocusNode()
-      );
-      surgeryTextFieldList.add(
-        new TextField(
-          controller: surgeryControllerList[surgeryControllerList.length - 1],
-          focusNode: surgeryNodeList[surgeryNodeList.length - 1],
-          onTap: () {
-            setState(() {
-              offset = 1;
-            });
-          },
-          onTapOutside: (event) {
-            for (int i = 0; i < surgeryNodeList.length; i++) {
-              surgeryNodeList[i].unfocus();
-              bodyScrollController.animateTo(
-                0,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOut
-              );
-              setState(() {
-                offset = 0;
-              });
-            }
-          },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6.0),
-              borderSide: BorderSide(
-                width: 1.0,
-                color: Colors.grey
-              ),
-            ),
-            hintText: '수술명',
-            contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0)
-          )
-        )
-      );
-      surgeryDateList.add(
-        new DateTime.now()
-      );
-      DateTime lastSurgery = surgeryDateList[surgeryDateList.length - 1];
-      surgeryDateStringList.add(
-        '${lastSurgery.year}-${lastSurgery.month.toString().padLeft(2, '0')}-${lastSurgery.day.toString().padLeft(2, '0')}'
-      );
-    });
-  }
-
-  /** 건강 상태 직접 입력시 위젯 끝 */
-
-  /** 검색 후 추가시 위젯 */
-
-  bool requestSent = false; //요청하기 버튼을 누르면 true로 바뀜
-  bool? responseSuccessed; //백에 요청 성공하면 true, 아니면 false
-  bool requestWaiting = false; //백에서 응답이 오면 true, 아니면 false
-  bool timeOuted = false;
-  bool requestCanceled = false;
-
-  late AnimationController rotationController;
-
-  late Timer countTimer;
-
-  int remainMinutes = 2;
-  int remainSeconds = 59;
-
-  void resetCount() {
-    setState(() {
-      remainMinutes = 2;
-      remainSeconds = 59;
-    });
-  }
-
-  void countResponse() {
-    setState(() {
-      if (remainSeconds > 0)
-        remainSeconds--;
-      else if (remainMinutes > 0) {
-        remainMinutes--;
-        remainSeconds = 59;
-      }
-    });
-  }
-
-  Widget getRequestStateIcon() {
-    if (requestWaiting)
-      return Container(
-        width: 150,
-        height: 150,
-        margin: EdgeInsets.only(top: vh * 0.07),
-        child: Stack(
-          children: [
-            Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                child: CircularProgressIndicator(
-                  value: rotationController.value,
-                  color: Color.fromARGB(255, 79, 112, 229),
-                  semanticsLabel: 'A',
-                  strokeWidth: 10.0
-                ),
-              ),
-            ),
-            Center(
-              child: Text(
-                '${remainMinutes}:${remainSeconds.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                )
-              )
-            )
-          ]
-        ),
-      );
-    if (requestSent == false) {
-      return Container(
-        width: 150,
-        height: 150,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            width: 1,
-            color: Color.fromARGB(255, 79, 112, 229)
-          ),
-          color: Color.fromARGB(255, 79, 112, 229)
-        ),
-        margin: EdgeInsets.only(top: vh * 0.07),
-        child: Icon(
-          Icons.group_add_outlined,
-          size: 100,
-          color: Colors.white
-        )
-      );
-    }
-    else {
-      if (responseSuccessed == true)
-        return Container(
-          width: 150,
-          height: 150,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 1,
-              color: Colors.green
-            ),
-            color: Colors.green
-          ),
-          margin: EdgeInsets.only(top: vh * 0.07),
-          child: Icon(
-            Icons.done_all_outlined,
-            size: 100,
-            color: Colors.white
-          )
-        );
-      else
-      return Container(
-        width: 150,
-          height: 150,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 1,
-              color: Colors.red
-            ),
-            color: Colors.red
-          ),
-          margin: EdgeInsets.only(top: vh * 0.07),
-          child: Icon(
-            Icons.priority_high_outlined,
-            size: 100,
-            color: Colors.white
-          )
-      );
-    }
-  }
-
-  String getRequestStateText() {
-    if (requestWaiting)
-      return '요청을 전송중입니다\n';
-    else {
-      if (!requestSent)
-        return '아래 버튼을 눌러 요청을 전송하십시오\n상대방도 요청하면 문진표가 연동됩니다';
-      if (requestCanceled)
-        return '요청을 취소하였습니다\n';
-      if (timeOuted)
-        return '상대방의 요청이 없습니다\n확인 후 다시 시도하십시오';
-      if (responseSuccessed == true)
-        return '상대방과 연동되었습니다\n이제 상대방의 문진표를 조회할 수 있습니다';
-      else
-        return '요청을 실패하였습니다\n잠시 후 다시 시도하십시오';
-    }
-  }
-
-  /** 검색 후 추가시 위젯 끝 */
-
-  Widget FourthStep(BuildContext context) {
-    return addDirectly == true
-    ? Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.02),
-          child: Row(
-            children: [
-              Text('복용중인 약'),
-              Icon(
-                Icons.check_circle,
-                color: drugsChecked ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Column(
-            children: [
-              Container(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Radio<bool> (
-                          value: false,
-                          groupValue: drugsExists,
-                          onChanged: (value) {
-                            setState(() {
-                              drugsExists = value!;
-                              checkDrugs();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 없음')
-                      ]
-                    ),
-                    Row(
-                      children: [
-                        Radio<bool> (
-                          value: true,
-                          groupValue: drugsExists,
-                          onChanged: (value) {
-                            setState(() {
-                              drugsExists = value!;
-                              checkDrugs();
-                            });
-                          },
-                          activeColor: Color.fromARGB(255, 79, 112, 229)
-                        ),
-                        Text('해당 있음')
-                      ],
-                    ),
-                    DrugsField()
-                  ]
-                )
-              ),
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Row(
-            children: [
-              Text('수술 이력 (최근 1년 이내)'),
-              Icon(
-                Icons.check_circle,
-                color: surgeryChecked == true ? Colors.green : Colors.grey,
-                size: 14
-              )
-            ]
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.01),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: false,
-                    groupValue: surgeryExists,
-                    onChanged: (value) {
-                      setState(() {
-                        surgeryExists = value!;
-                        surgeryChecked = true;
-                      });
-                    },
-                    activeColor: Color.fromARGB(255, 79, 112, 229)
-                  ),
-                  Text('해당 없음')
-                ]
-              ),
-              Row(
-                children: [
-                  Radio<bool> (
-                    value: true,
-                    groupValue: surgeryExists,
-                    onChanged: (value) {
-                      setState(() {
-                        surgeryExists = value!;
-                        checkSurgery();
-                      });
-                    },
-                    activeColor: Color.fromARGB(255, 79, 112, 229)
-                  ),
-                  Text('해당 있음')
-                ]
-              ),
-            ]
-          )
-        ),
-        surgeryExists == true ?
-          Container(
-            child: SurgeryAllField()
-          ) :
-          Container(),
-        surgeryExists == true ?
-          Container(
-            margin: EdgeInsets.only(top: 15.0),
-            height: 35.0,
-            width: vw * 0.812,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(Radius.elliptical(7.5,7.5)),
-              border: Border.all(
-                color: Color.fromARGB(255, 79, 112, 229),
-                width: 2.0,
-              )
-            ),
-            child: InkWell(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.add,
-                    weight: 1000,
-                    size: 25,
-                    color: Color.fromARGB(255, 79, 112, 229)
-                  )
-                ]
-              ),
-              onTap: addSurgeryTextField
-            )
-          ) :
-          Container()
-      ]
-    )
-    : Column(
-      children: [
-        getRequestStateIcon(),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.05),
-          child: Text(
-            getRequestStateText(),
-            style: TextStyle(
-              fontSize: vw >= 300 ? 20 : 17,
-              fontWeight: FontWeight.bold
-            )
-          )
-        ),
-        Container(
-          margin: EdgeInsets.only(top: vh * 0.05),
-          child: InkWell(
-            child: Container(
-              width: 100,
-              height: 45,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0)),
-                color: !requestWaiting ? Color.fromARGB(255, 79, 112, 229) : Colors.red
-              ),
-              child: Text(
-                !requestWaiting ? '요청하기' : '취소하기',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16
-                )
-              )
-            ),
-            onTap: !requestWaiting
-            ? () {
-              api.requestLink(otherUserEmail: otherEmailTextEditController.text, familyRelations: otherPosition)
-              .then((value) {
-                if (value == '문진표 연동 요청 완료') {
-                  setState(() {
-                    countTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-                      if (remainMinutes == 0 && remainSeconds == 0) {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        timeOuted = true;
-                        countTimer.cancel();
-                        resetCount();
-                      } else {
-                        countResponse();
-                      }
-                    });
-                    requestWaiting = true;
-                    requestCanceled = false;
-                    requestSent = true;
-                  });
-                  api.waitLinkingResponse(otherUserEmail: otherEmailTextEditController.text)
-                  .then((value) {
-                    if (value == '문진표 연동 완료') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else if (value == '문진표 연동 요청 취소') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        requestCanceled = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else if (value == '문진표 연동 실패') {
-                      setState(() {
-                        requestWaiting = false;
-                        responseSuccessed = false;
-                        timeOuted = true;
-                        countTimer.cancel();
-                        resetCount();
-                      });
-                    } else {
-                      setState(() {
-                        requestWaiting = false;
-                        requestCanceled = false;
-                        requestSent = true;
-                        responseSuccessed =false;
-                        resetCount();
-                      });
-                    }
-                  });
-                } else {
-                  setState(() {
-                    requestWaiting = false;
-                    requestCanceled = false;
-                    requestSent = true;
-                    responseSuccessed = false;
-                    resetCount();
-                  });
-                }
-              });
-            }
-            : () {
-              api.unlinkQuestionnaire(otherUserEmail: otherEmailTextEditController.text)
-              .then((value) {
-                setState(() {
-                  countTimer.cancel();
-                  resetCount();
-                  requestWaiting = false;
-                  requestCanceled = true;
-                  responseSuccessed = false;
-                });
-              });
-            }
-          )
-        )
-      ]
-    );
-  }
-  /** 건강 상태 입력 네번째 단계 끝 */
-
-  /** 건강 상태 입력 다섯번째 단계 */
-  
   List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 달'];
   List<String> smokingAmountList = [
     '선택안함',
@@ -2060,14 +1555,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
               width: 1.0,
               color: Colors.blue
             ),
-            borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0))
+            borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0))
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               width: 1.0,
               color: Colors.grey
             ),
-            borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0))
+            borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0))
           ),
           contentPadding: EdgeInsets.all(7.5)
         ),
@@ -2135,26 +1630,253 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
     });
   }
 
-  bool checkFifthStep() {
-    if (addDirectly == true)
-      return smokingChecked && drinkingChecked && etcChecked ? true : false;
-    else
-      return true;
+  /** 건강 상태 직접 입력시 위젯 끝 */
+
+  /** 검색 후 추가시 위젯 */
+
+  bool requestSent = false; //요청하기 버튼을 누르면 true로 바뀜
+  bool? responseSuccessed; //백에 요청 성공하면 true, 아니면 false
+  bool requestWaiting = false; //백에서 응답이 오면 true, 아니면 false
+  bool timeOuted = false;
+  bool requestCanceled = false;
+
+  late AnimationController rotationController;
+
+  Timer? countTimer;
+
+  int remainMinutes = 2;
+  int remainSeconds = 59;
+
+  void resetCount() {
+    setState(() {
+      remainMinutes = 2;
+      remainSeconds = 59;
+    });
   }
 
-  Widget FifthStep(BuildContext context) {
+  void countResponse() {
+    setState(() {
+      if (remainSeconds > 0)
+        remainSeconds--;
+      else if (remainMinutes > 0) {
+        remainMinutes--;
+        remainSeconds = 59;
+      }
+    });
+  }
+
+  Widget getRequestStateIcon() {
+    if (requestWaiting)
+      return Container(
+        width: 150,
+        height: 150,
+        margin: EdgeInsets.only(top: vh * 0.07),
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                width: 150,
+                height: 150,
+                child: CircularProgressIndicator(
+                  value: rotationController.value,
+                  color: Color.fromARGB(255, 79, 112, 229),
+                  semanticsLabel: 'A',
+                  strokeWidth: 10.0
+                ),
+              ),
+            ),
+            Center(
+              child: Text(
+                '${remainMinutes}:${remainSeconds.toString().padLeft(2, '0')}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                )
+              )
+            )
+          ]
+        ),
+      );
+    if (requestSent == false) {
+      return Container(
+        width: 150,
+        height: 150,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            width: 1,
+            color: Color.fromARGB(255, 79, 112, 229)
+          ),
+          color: Color.fromARGB(255, 79, 112, 229)
+        ),
+        margin: EdgeInsets.only(top: vh * 0.07),
+        child: Icon(
+          Icons.group_add_outlined,
+          size: 100,
+          color: Colors.white
+        )
+      );
+    }
+    else {
+      if (responseSuccessed == true)
+        return Container(
+          width: 150,
+          height: 150,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width: 1,
+              color: Colors.green
+            ),
+            color: Colors.green
+          ),
+          margin: EdgeInsets.only(top: vh * 0.07),
+          child: Icon(
+            Icons.done_all_outlined,
+            size: 100,
+            color: Colors.white
+          )
+        );
+      else
+      return Container(
+        width: 150,
+          height: 150,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width: 1,
+              color: Colors.red
+            ),
+            color: Colors.red
+          ),
+          margin: EdgeInsets.only(top: vh * 0.07),
+          child: Icon(
+            Icons.priority_high_outlined,
+            size: 100,
+            color: Colors.white
+          )
+      );
+    }
+  }
+
+  String getRequestStateText() {
+    if (requestWaiting)
+      return '요청을 전송중입니다\n';
+    else {
+      if (!requestSent)
+        return '아래 버튼을 눌러 요청을 전송하십시오\n상대방도 요청하면 문진표가 연동됩니다';
+      if (requestCanceled)
+        return '요청을 취소하였습니다\n';
+      if (timeOuted)
+        return '상대방의 요청이 없습니다\n확인 후 다시 시도하십시오';
+      if (responseSuccessed == true)
+        return '상대방과 연동되었습니다\n이제 상대방의 문진표를 조회할 수 있습니다';
+      else
+        return '요청을 실패하였습니다\n잠시 후 다시 시도하십시오';
+    }
+  }
+
+  Timer? cancelTimer;
+  bool cancelTimerEnded = false;
+  bool cancelDialogShowing = false;
+
+  void startTimer() {
+    cancelTimer = Timer(Duration(seconds: 2), () {
+      setState(() {
+        cancelTimerEnded = true;
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle
+              ),
+              child: CancelAlertDialog()
+            );
+          }
+        );
+      });
+    });
+  }
+
+  Widget CancelAlertDialog() {
+    if (!cancelTimerEnded)
+      startTimer();
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+      ),
+      actionsPadding: EdgeInsets.only(bottom: 5.0),
+      title: Text('연동 요청 취소'),
+      content: Text('연동 요청을 취소하시겠습니까?'),
+      actions: [
+        TextButton(
+          child: Text(
+            '확인',
+            style: TextStyle(
+              color: cancelTimerEnded ? Colors.red : Colors.grey,
+              fontWeight: FontWeight.bold
+            )
+          ),
+          onPressed: cancelTimerEnded 
+          ? () {
+            api.unlinkQuestionnaire(otherUserEmail: otherEmailTextEditController.text)
+            .then((value) {
+              setState(() {
+                countTimer?.cancel();
+                resetCount();
+                requestWaiting = false;
+                responseSuccessed = false;
+                requestCanceled = true;
+                cancelDialogShowing = false;
+              });
+              Navigator.pop(context);
+            });
+          }
+          : () {
+
+          }
+        ),
+        TextButton(
+          child: Text(
+            '취소',
+            style: TextStyle(
+              color: Colors.black
+            )
+          ),
+          onPressed: () {
+            cancelTimer?.cancel();
+            setState(() {
+              cancelDialogShowing = false;
+            });
+            Navigator.pop(context);
+          }
+        )
+      ]
+    );
+  }
+
+  /** 검색 후 추가시 위젯 끝 */
+
+  Widget FourthStep(BuildContext context) {
     return addDirectly == true
     ? Column(
       children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('흡연 여부'),
               Icon(
-                Icons.check_circle,
+                smokingChecked ? Icons.check_circle : Icons.check_circle_outlined,
                 color: smokingChecked ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -2180,7 +1902,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                           isSmoker = value!;
                           checkSmoker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('비흡연')
                   ]
@@ -2203,7 +1926,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                           isSmoker = value!;
                           checkSmoker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('흡연중')
                   ]
@@ -2216,12 +1940,14 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         Container(
           margin: EdgeInsets.only(top: vh * 0.01),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('음주 여부'),
               Icon(
-                Icons.check_circle,
+                drinkingChecked ? Icons.check_circle : Icons.check_circle_outlined,
                 color: drinkingChecked ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -2247,7 +1973,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                           isDrinker = value!;
                           checkDrinker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('해당 없음')
                   ]
@@ -2270,7 +1997,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                           isDrinker = value!;
                           checkDrinker();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('해당 있음')
                   ]
@@ -2280,15 +2008,518 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           )
         ),
         isDrinker == true ? DrinkingField() : Container(),
+      ]
+    )
+    : Column(
+      children: [
+        getRequestStateIcon(),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.05),
+          child: Text(
+            getRequestStateText(),
+            style: TextStyle(
+              fontSize: vw >= 300 ? 20 : 17,
+              fontWeight: FontWeight.bold
+            )
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.05),
+          child: responseSuccessed != true
+          ? InkWell(
+            child: Container(
+              width: 100,
+              height: 45,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.elliptical(10.0, 10.0)),
+                color: !requestWaiting ? Color.fromARGB(255, 79, 112, 229) : Colors.red
+              ),
+              child: Text(
+                !requestWaiting ? '요청하기' : '취소하기',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16
+                )
+              )
+            ),
+            onTap: !requestWaiting
+            ? () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle
+                    ),
+                    child: AlertDialog(
+                      actionsPadding: EdgeInsets.only(bottom: 5.0),
+                      title: Text('문진표 연동'),
+                      content: Text('문진표 연동을 요청하시겠습니까?\n상대방과 연동 대기중에 화면을 나가면\n요청이 취소됩니다'),
+                      actions: [
+                        TextButton(
+                          child: Text(
+                            '요청',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 79, 112, 229),
+                              fontWeight: FontWeight.bold
+                            )
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            api.requestLink(otherUserEmail: otherEmailTextEditController.text, familyRelations: otherPosition)
+                            .then((value) {
+                              if (value == '문진표 연동 요청 완료') {
+                                setState(() {
+                                  countTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+                                    if (remainMinutes == 0 && remainSeconds == 0) {
+                                      requestWaiting = false;
+                                      responseSuccessed = false;
+                                      timeOuted = true;
+                                      countTimer?.cancel();
+                                      resetCount();
+                                    } else {
+                                      countResponse();
+                                    }
+                                  });
+                                });
+                                setState(() {
+                                  requestWaiting = true;
+                                  requestCanceled = false;
+                                  responseSuccessed = null;
+                                  requestSent = true;
+                                });
+                                api.waitLinkingResponse(otherUserEmail: otherEmailTextEditController.text)
+                                .then((value) {
+                                  if (cancelDialogShowing) {
+                                    setState(() {
+                                      cancelDialogShowing = false;
+                                      cancelTimer?.cancel();
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                  if (value == '문진표 연동 완료') {
+                                    setState(() {
+                                      requestWaiting = false;
+                                      responseSuccessed = true;
+                                      countTimer?.cancel();
+                                      resetCount();
+                                    });
+                                  } else if (value == '문진표 연동 요청 취소') {
+                                    setState(() {
+                                      requestWaiting = false;
+                                      responseSuccessed = false;
+                                      requestCanceled = true;
+                                      countTimer?.cancel();
+                                      resetCount();
+                                    });
+                                  } else if (value == '문진표 연동 실패') {
+                                    setState(() {
+                                      requestWaiting = false;
+                                      responseSuccessed = false;
+                                      timeOuted = true;
+                                      countTimer?.cancel();
+                                      resetCount();
+                                    });
+                                  } else {
+                                    setState(() {
+                                      requestWaiting = false;
+                                      requestCanceled = false;
+                                      responseSuccessed =false;
+                                      requestSent = true;
+                                      resetCount();
+                                    });
+                                  }
+                                });
+                              } else {
+                                setState(() {
+                                  requestWaiting = false;
+                                  requestCanceled = false;
+                                  responseSuccessed = false;
+                                  requestSent = true;
+                                  resetCount();
+                                });
+                              }
+                            });
+                          }
+                        ),
+                        TextButton(
+                          child: Text(
+                            '취소',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            )
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }
+                        )
+                      ]
+                    )
+                  );
+                }
+              );
+            }
+            : () {
+              setState(() {
+                cancelTimerEnded = false;
+                cancelDialogShowing = true;
+              });
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle
+                    ),
+                    child: CancelAlertDialog()
+                  );
+                }
+              );
+            },
+            onDoubleTap: () {
+
+            }
+          )
+          : null
+        )
+      ]
+    );
+  }
+  /** 건강 상태 입력 네번째 단계 끝 */
+
+  /** 건강 상태 입력 다섯번째 단계 */
+
+  TextEditingController drugsTextEditController = TextEditingController();
+  List<TextEditingController> surgeryControllerList = [];
+  final drugsNode = FocusNode();
+  final List<FocusNode>surgeryNodeList = [];
+  List<TextField> surgeryTextFieldList = [];
+  List<DateTime> surgeryDateList = [];
+  List<String> surgeryDateStringList = [];
+
+  bool? drugsExists = null;
+  bool drugsChecked = false;
+  bool? surgeryExists = null;
+  bool surgeryChecked = false;
+
+  void checkDrugs() {
+    setState(() {
+      if (drugsExists == false)
+        drugsChecked = true;
+      else if (drugsExists == true) {
+        if (drugsTextEditController.text.isEmpty) 
+          drugsChecked = false;
+        else
+          drugsChecked = true;
+      }
+    });
+  }
+
+  void checkSurgery() {
+    setState(() {
+      if (surgeryExists == false)
+        surgeryChecked = true;
+      else if (surgeryExists == true) {
+        surgeryChecked = true;
+        if (surgeryControllerList.length == 0) {
+          surgeryChecked = false;
+        }
+        for (TextEditingController controller in surgeryControllerList) {
+          if (controller.text.isEmpty) {
+            surgeryChecked = false;
+          }
+        }
+      }
+    });
+  }
+
+  bool checkFourthStep() {
+    if (addDirectly == true)
+      // return drugsChecked && surgeryChecked ? true : false;
+      return smokingChecked && drinkingChecked ? true : false;
+    else
+      return responseSuccessed != null ? true : false;
+  }
+
+  Widget DrugsField() {
+    return drugsExists == true ? Container(
+      margin: EdgeInsets.only(top: vh * 0.01),
+      child: TextField(
+        controller: drugsTextEditController,
+        focusNode: drugsNode,
+        maxLines: 6,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.0
+            )
+          )
+        ),
+        onTapOutside: (event) {
+          drugsNode.unfocus();
+        },
+      )
+    ) : Container();
+  }
+
+  double getSurgeryFieldHeight() {
+    if (drugsExists == true) {
+      if (surgeryTextFieldList.length > 3)
+        return vh * 0.18;
+      else 
+        return 40.0 * surgeryTextFieldList.length;
+    } else {
+      if (surgeryTextFieldList.length > 8)
+        return vh * 0.39;
+      else
+        return 40.0 * surgeryTextFieldList.length;
+    }
+  }
+
+  Widget SurgeryAllField() {
+    return surgeryTextFieldList.length > 0 ?
+      Container(
+        height: getSurgeryFieldHeight(),
+        width: vw * 0.9,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              for (int i = 0; i < surgeryTextFieldList.length; i++) 
+                Container(
+                  height: 30.0,
+                  margin: EdgeInsets.only(top: vh * 0.01),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: vw * 0.4,
+                        child: surgeryTextFieldList[i]
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.0
+                          ),
+                          borderRadius: BorderRadius.circular(6.0)
+                        ),
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0)
+                            ),
+                          ),
+                          child: Text(surgeryDateStringList[i]),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: surgeryDateList[i],
+                              firstDate: DateTime(DateTime.now().year - 1),
+                              lastDate: DateTime.now()
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                surgeryDateList[i] = selectedDate;
+                                surgeryDateStringList[i] = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+                              });
+                            }
+                          }
+                        )
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: vw * 0.05),
+                        child: InkWell(
+                          child: Icon(
+                            Icons.remove_circle,
+                            color: Colors.redAccent,
+                            size: 20
+                          ),
+                          onTap: () {
+                            setState(() {
+                              TextEditingController removeController = surgeryControllerList.removeAt(i);
+                              FocusNode removeNode = surgeryNodeList.removeAt(i);
+                              surgeryDateList.removeAt(i);
+                              surgeryDateStringList.removeAt(i);
+                              surgeryTextFieldList.removeAt(i);
+                              removeController.dispose();
+                              removeNode.dispose();
+                            });
+                          }
+                        )
+                      )
+                    ]
+                  )
+                )
+            ]
+          )
+        )
+      )
+      : Container();
+  }
+
+  void addSurgeryTextField() {
+    setState(() {
+      surgeryControllerList.add(
+        new TextEditingController()
+      );
+      checkSurgery();
+      surgeryControllerList[surgeryControllerList.length - 1].addListener(checkSurgery);
+      surgeryNodeList.add(
+        new FocusNode()
+      );
+      surgeryTextFieldList.add(
+        new TextField(
+          controller: surgeryControllerList[surgeryControllerList.length - 1],
+          focusNode: surgeryNodeList[surgeryNodeList.length - 1],
+          onTap: () {
+            setState(() {
+              offset = 1;
+            });
+          },
+          onTapOutside: (event) {
+            for (int i = 0; i < surgeryNodeList.length; i++) {
+              surgeryNodeList[i].unfocus();
+              bodyScrollController.animateTo(
+                0,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut
+              );
+              setState(() {
+                offset = 0;
+              });
+            }
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6.0),
+              borderSide: BorderSide(
+                width: 1.0,
+                color: Colors.grey
+              ),
+            ),
+            hintText: '수술명',
+            contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0)
+          )
+        )
+      );
+      surgeryDateList.add(
+        new DateTime.now()
+      );
+      DateTime lastSurgery = surgeryDateList[surgeryDateList.length - 1];
+      surgeryDateStringList.add(
+        '${lastSurgery.year}-${lastSurgery.month.toString().padLeft(2, '0')}-${lastSurgery.day.toString().padLeft(2, '0')}'
+      );
+    });
+  }
+  
+
+  bool checkFifthStep() {
+    if (addDirectly == true)
+      return drugsChecked && etcChecked ? true : false;
+    else {
+      return true;
+    }
+  }
+
+  Widget FifthStep(BuildContext context) {
+    return addDirectly == true
+    ? Column(
+      children: [
         Container(
           margin: EdgeInsets.only(top: vh * 0.02),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('복용중인 약'),
+              Icon(
+                Icons.check_circle,
+                color: drugsChecked ? Colors.green : Colors.grey,
+                size: 18
+              )
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.01),
+          child: Column(
+            children: [
+              Container(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          drugsExists = false;
+                          checkDrugs();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio<bool> (
+                            value: false,
+                            groupValue: drugsExists,
+                            onChanged: (value) {
+                              setState(() {
+                                drugsExists = value!;
+                                checkDrugs();
+                              });
+                            },
+                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                          ),
+                          Text('해당 없음')
+                        ]
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          drugsExists = true;
+                          checkDrugs();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio<bool> (
+                            value: true,
+                            groupValue: drugsExists,
+                            onChanged: (value) {
+                              setState(() {
+                                drugsExists = value!;
+                                checkDrugs();
+                              });
+                            },
+                            activeColor: Color.fromARGB(255, 79, 112, 229)
+                          ),
+                          Text('해당 있음')
+                        ],
+                      ),
+                    ),
+                    DrugsField()
+                  ]
+                )
+              ),
+            ]
+          )
+        ),
+        Container(
+          margin: EdgeInsets.only(top: vh * 0.02),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('기타 특이사항'),
               Icon(
                 Icons.check_circle,
                 color: etcChecked ? Colors.green : Colors.grey,
-                size: 14
+                size: 18
               )
             ]
           )
@@ -2313,7 +2544,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                           etcExists = value!;
                           checkEtc();
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('특이사항 없음')
                   ]
@@ -2338,7 +2570,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                             checkEtc();
                           });
                         });
-                      }
+                      },
+                      activeColor: Color.fromARGB(255, 79, 112, 229)
                     ),
                     Text('특이사항 있음')
                   ]
@@ -2382,32 +2615,34 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           ),
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero
+              borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
             actionsPadding: EdgeInsets.only(bottom: 5.0),
-            title: Text('건강 정보 입력 취소'),
-            content: Text('건강 정보 입력을 취소하시겠습니까?'),
+            title: Text('문진표 추가'),
+            content: Text('문진표 추가를 취소하시겠습니까?'),
             actions: [
               TextButton(
                 child: Text(
-                  '취소',
+                  '',
                   style: TextStyle(
-                    color: Colors.red
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
+                  Navigator.pop(context);
                   Navigator.pop(context);
                 }
               ),
               TextButton(
                 child: Text(
-                  '확인',
+                  '취소',
                   style: TextStyle(
-                    color: Colors.blueAccent
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
                   Navigator.pop(context);
                 }
               )
@@ -2429,34 +2664,24 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
           ),
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero
+              borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
             actionsPadding: EdgeInsets.only(bottom: 5.0),
-            title: Text('건강 정보 제출'),
-            content: Text('건강 정보를 제출하시겠습니까?'),
+            title: Text('문진표 작성'),
+            content: Text('문진표를 제출하시겠습니까?'),
             actions: [
-              TextButton(
-                child: Text(
-                  '취소',
-                  style: TextStyle(
-                    color: Colors.red
-                  )
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }
-              ),
               TextButton(
                 child: Text(
                   '확인',
                   style: TextStyle(
-                    color: Colors.blueAccent
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold
                   )
                 ),
                 onPressed: () {
                   Map<String, dynamic> questionnaire = {
                     'name': nameTextEditController.text,
-                    'age': int.parse(ageTextEditController.text),
+                    'birthday': ageTextEditController.text,
                     'familyRelations': relationText,
                     'phoneNum': telTextEditController.text,
                     'address': addressTextEditController.text+' '+detailAddressTextEditController.text,
@@ -2471,12 +2696,88 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                   api.writeQuestionnaire(questionnaire).then((value) {
                     if (value == '문진표 작성 완료') {
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle
+                            ),
+                            child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                              ),
+                              actionsPadding: EdgeInsets.only(bottom: 5.0),
+                              title: Text('문진표 작성'),
+                              content: Text('문진표 작성이 완료되었습니다'),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold
+                                    )
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  }
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      );
                     }
                     else {
-                      print('문진표 작성 실패');
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle
+                            ),
+                            child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                              ),
+                              actionsPadding: EdgeInsets.only(bottom: 5.0),
+                              title: Text('문진표 작성'),
+                              content: Text('문진표 작성이 실패하였습니다'),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold
+                                    )
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      );
                     }
                   });
+                }
+              ),
+              TextButton(
+                child: Text(
+                  '취소',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
                 }
               )
             ]
@@ -2493,6 +2794,15 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
       return '완료';
     else
       return '다음';
+  }
+
+  String getTitleText() {
+    if (currentStep == 0 || addDirectly == null)
+      return '문진표 추가';
+    else if (addDirectly == true)
+      return '문진표 작성';
+    else
+      return '문진표 연동';
   }
 
   /** 건강 정보 직접 추가시 위젯 */
@@ -2512,7 +2822,7 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
         controller: bodyScrollController,
         child: Container(
           margin: EdgeInsets.symmetric(
-            vertical: 5.0, horizontal: vw * 0.05
+            vertical: 5.0, horizontal: 20
           ),
           width: vw,
           height: vh,
@@ -2535,9 +2845,15 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
   /** 앱 UI */
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        if (currentStep == 4 && responseSuccessed == null) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -2548,16 +2864,20 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                 color: Colors.red,
                 fontSize: 15,
                 fontWeight: FontWeight.bold
-             )
+              )
             ),
-            onPressed: currentStep > 0 ? () {
-              setState(() {
-                currentStep--;
-              });
-            } : cancleAddAlert
+            onPressed: currentStep > 0 
+            ? !requestWaiting
+              ? () {
+                setState(() {
+                  currentStep--;
+                });
+              }
+              : null
+            : cancleAddAlert
           ),
           title: Text(
-            '건강 정보 입력',
+            getTitleText(),
             style: TextStyle(
               color: Colors.black
             )
@@ -2578,7 +2898,8 @@ class _UserAddPageState extends State<UserAddPage> with SingleTickerProviderStat
                   if (addDirectly == true && currentStep == 4)
                     completeAddAlert();
                   else if (addDirectly == false && currentStep == 3) {
-                    Navigator.pop(context);
+                    if (responseSuccessed != null)
+                      Navigator.pop(context);
                   }
                   else {
                     setState(() {
