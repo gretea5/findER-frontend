@@ -29,7 +29,7 @@ class _SegmentedControlContentState extends State<SegmentedControlContent> {
           selectedColor: themeColor,
           borderColor: Colors.white,
           children: {
-            0: Text('병원 정보'),
+            0: Text('응급실 정보'),
             1: Text('병상 추이'),
           },
           onValueChanged: (int val) {

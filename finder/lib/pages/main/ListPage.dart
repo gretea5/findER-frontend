@@ -107,7 +107,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
           elevation: 0,
           centerTitle: true,
           title: Text(
-            "병원 찾기",
+            "응급실 찾기",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -183,7 +183,8 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => DetailPage(
-                                          hospitalId: getHospitalSnapshot.data![index].hospitalId,
+                                          //hospitalId: getHospitalSnapshot.data![index].hospitalId,
+                                          hospitalId: 406,
                                           name: getHospitalSnapshot.data![index].name,
                                         ),
                                         fullscreenDialog: true,
@@ -207,6 +208,7 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
                                       distance: getHospitalSnapshot.data![index].distance,
                                       arrivalTime: getHospitalSnapshot.data![index].arrivalTime,
                                       vh: vh,
+                                      vw: vw,
                                     ),
                                   ),
                                 );

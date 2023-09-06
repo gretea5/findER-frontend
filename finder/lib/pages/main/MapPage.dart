@@ -61,7 +61,7 @@ class _MapPageState extends State<MapPage> {
             elevation: 0,
             centerTitle: true,
             title: Text(
-              "병원 찾기",
+              "응급실 찾기",
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -257,6 +257,7 @@ class _MapPageState extends State<MapPage> {
                       ]
                     );
                   }
+
                   return Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor)
