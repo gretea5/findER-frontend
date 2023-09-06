@@ -86,8 +86,7 @@ class _HospitalPreviewState extends State<HospitalPreview> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
-                                //hospitalId: widget.hospitalId, 
-                                hospitalId: 406,
+                                hospitalId: widget.hospitalId, 
                                 name: snapshot.data!.name
                               ),
                               fullscreenDialog: true,
