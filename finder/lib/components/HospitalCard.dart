@@ -70,8 +70,7 @@ class HospitalCard extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => DetailPage(
-                      //hospitalId: hospitalId,
-                      hospitalId: 406,
+                      hospitalId: hospitalId,
                       name: name,
                     ),
                     fullscreenDialog: true,
