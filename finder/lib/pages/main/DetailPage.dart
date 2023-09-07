@@ -215,6 +215,27 @@ class _DetailPageState extends State<DetailPage> {
                                     SizedBox(
                                       width: 5,
                                     ),
+                                    getHospitalDetailSnapshot.data!.simpleAddress.length > 25 
+                                    ?
+                                    Column(
+                                      children: [
+                                        Text(
+                                          "${getHospitalDetailSnapshot.data!.simpleAddress.substring(0, 25)}",
+                                          style: TextStyle(
+                                            color: elementColor,
+                                            fontSize: fontSize
+                                          ),
+                                        ),
+                                        Text(
+                                          "${getHospitalDetailSnapshot.data!.simpleAddress.substring(25)}",
+                                          style: TextStyle(
+                                            color: elementColor,
+                                            fontSize: fontSize
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                    :
                                     Text(
                                       "${getHospitalDetailSnapshot.data!.simpleAddress}",
                                       style: TextStyle(
