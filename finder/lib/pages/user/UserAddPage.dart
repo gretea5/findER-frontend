@@ -565,6 +565,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                     ),
+                                    backgroundColor: Colors.white,
                                     actionsPadding: EdgeInsets.only(bottom: 5.0),
                                     title: Text('문진표 작성'),
                                     content: Text('문진표 수정 시 가족 관계는 수정할 수 없습니다\n한 번 더 확인해주십시오'),
@@ -2051,6 +2052,10 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                       shape: BoxShape.rectangle
                     ),
                     child: AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
+                      ),
+                      backgroundColor: Colors.white,
                       actionsPadding: EdgeInsets.only(bottom: 5.0),
                       title: Text('문진표 연동'),
                       content: Text('문진표 연동을 요청하시겠습니까?\n상대방과 연동 대기중에 화면을 나가면\n요청이 취소됩니다'),
@@ -2615,6 +2620,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
+            backgroundColor: Colors.white,
             actionsPadding: EdgeInsets.only(bottom: 5.0),
             title: Text('문진표 추가'),
             content: Text('문진표 추가를 취소하시겠습니까?'),
@@ -2664,6 +2670,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
+            backgroundColor: Colors.white,
             actionsPadding: EdgeInsets.only(bottom: 5.0),
             title: Text('문진표 작성'),
             content: Text('문진표를 제출하시겠습니까?'),
@@ -2705,6 +2712,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                               ),
+                              backgroundColor: Colors.white,
                               actionsPadding: EdgeInsets.only(bottom: 5.0),
                               title: Text('문진표 작성'),
                               content: Text('문진표 작성이 완료되었습니다'),
@@ -2741,6 +2749,7 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                               ),
+                              backgroundColor: Colors.white,
                               actionsPadding: EdgeInsets.only(bottom: 5.0),
                               title: Text('문진표 작성'),
                               content: Text('문진표 작성이 실패하였습니다'),
@@ -2843,6 +2852,10 @@ with SingleTickerProviderStateMixin, WidgetsBindingObserver{
   /** 앱 UI */
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark
+    ));
+
     return WillPopScope(
       onWillPop: () async {
         if (currentStep == 4 && responseSuccessed == null) {

@@ -1,4 +1,5 @@
 import 'package:finder/api/SpringBootApiService.dart';
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -98,7 +99,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   bool checkAll() {
     return !nameIsEmpty && emailChecked && !pwIsEmpty && !pwAgainIsEmpty;
-    //return !nameIsEmpty && !emailIsEmpty && emailEnable && !pwIsEmpty && !pwAgainIsEmpty;
   }
 
   Widget SignUpFirstStep() {
@@ -117,7 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "이름", 
                   style: TextStyle(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     fontWeight: FontWeight.bold
                     )
                   ),
@@ -142,14 +142,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -168,7 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "이메일",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     fontWeight: FontWeight.bold
                   )
                 ),
@@ -197,14 +197,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -226,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0)),
-                      color: Color.fromARGB(255, 79, 112, 229)
+                      color: themeColor
                     ),
                     child: Text(
                       '중복확인',
@@ -252,6 +252,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                 ),
+                                backgroundColor: Colors.white,
                                 actionsPadding: EdgeInsets.only(bottom: 5.0),
                                 title: Text('이메일 중복 확인'),
                                 content: Text('사용 가능한 이메일입니다'),
@@ -267,6 +268,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     onPressed: () {
                                       setState(() {
                                         emailEnable = true;
+                                        checkEmail();
                                       });
                                       Navigator.pop(context);
                                     }
@@ -288,6 +290,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                 ),
+                                backgroundColor: Colors.white,
                                 actionsPadding: EdgeInsets.only(bottom: 5.0),
                                 title: Text('이메일 중복 확인'),
                                 content: Text('이미 존재하는 이메일입니다'),
@@ -303,6 +306,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     onPressed: () {
                                       setState(() {
                                         emailEnable = false;
+                                        checkEmail();
                                       });
                                       Navigator.pop(context);
                                     }
@@ -340,7 +344,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "비밀번호",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     fontWeight: FontWeight.bold
                   )
                 ),
@@ -369,14 +373,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -395,7 +399,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Text(
                   "비밀번호 확인",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     fontWeight: FontWeight.bold
                   )
                 ),
@@ -424,14 +428,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0
                   ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color.fromARGB(255, 79, 112, 229),
+                    color: themeColor,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(5),
@@ -580,6 +584,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                   ),
+                                  backgroundColor: Colors.white,
                                   actionsPadding: EdgeInsets.only(bottom: 5.0),
                                   title: Text('회원가입'),
                                   content: Text('회원가입이 성공했습니다'),
@@ -614,6 +619,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                   ),
+                                  backgroundColor: Colors.white,
                                   actionsPadding: EdgeInsets.only(bottom: 5.0),
                                   title: Text('회원가입'),
                                   content: Text('회원가입이 실패했습니다'),

@@ -1,6 +1,7 @@
 import 'package:finder/api/SpringBootApiService.dart';
 import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_octicons/flutter_octicons.dart';
 
 class LoginPage extends StatefulWidget {
@@ -58,6 +59,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var vh = MediaQuery.of(context).size.height;
     var vw = MediaQuery.of(context).size.width;
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle.light.copyWith(
+        statusBarBrightness: Brightness.light,
+        statusBarColor: themeColor
+      )
+    );
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -251,6 +259,7 @@ class _LoginPageState extends State<LoginPage> {
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                                         ),
+                                        backgroundColor: Colors.white,
                                         actionsPadding: EdgeInsets.only(bottom: 5.0),
                                         title: Text('로그인 실패'),
                                         content: Text('이메일과 비밀번호를 다시 확인하십시오'),
@@ -272,6 +281,12 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   }
                                 );
+                                else {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/map'
+                                  );
+                                }
                             });
                           }    
                           else {
@@ -286,6 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.elliptical(12, 9)),
                                     ),
+                                    backgroundColor: Colors.white,
                                     actionsPadding: EdgeInsets.only(bottom: 5.0),
                                     title: Text('로그인 실패'),
                                     content: Text(getLoginFailedReason()),

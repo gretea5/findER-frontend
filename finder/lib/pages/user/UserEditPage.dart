@@ -1714,6 +1714,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
+            backgroundColor: Colors.white,
             actionsPadding: EdgeInsets.only(bottom: 5.0),
             title: Text('문진표 수정'),
             content: Text('문진표 수정을 취소하시겠습니까?'),
@@ -1763,6 +1764,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
             ),
+            backgroundColor: Colors.white,
             actionsPadding: EdgeInsets.only(bottom: 5.0),
             title: Text('문진표 수정'),
             content: Text('문진표를 제출하시겠습니까?'),
@@ -1817,6 +1819,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                               ),
+                              backgroundColor: Colors.white,
                               actionsPadding: EdgeInsets.only(bottom: 5.0),
                               title: Text('문진표 수정'),
                               content: Text('문진표를 수정하였습니다'),
@@ -1852,6 +1855,7 @@ List<String> smokingDurationList = ['선택안함', '하루', '일주일', '한 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                               ),
+                              backgroundColor: Colors.white,
                               actionsPadding: EdgeInsets.only(bottom: 5.0),
                               title: Text('문진표 수정'),
                               content: Text('문진표 수정을 실패하였습니다'),

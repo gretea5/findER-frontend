@@ -62,6 +62,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
           ),
+          backgroundColor: Colors.white,
           title: Text('문진표 편집'),
           content: Text('연동된 문진표는 수정할 수 없습니다'),
           actionsPadding: EdgeInsets.only(bottom: 5.0),
@@ -93,6 +94,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
           ),
+          backgroundColor: Colors.white,
           title: Text('문진표 편집'),
           content: Text('상대방과의 연동을 취소하시겠습니까?'),
           actionsPadding: EdgeInsets.only(bottom: 5.0),
@@ -138,6 +140,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
           ),
+          backgroundColor: Colors.white,
           title: Text('문진표 편집'),
           content: Text('문진표를 수정하시겠습니까?'),
           actionsPadding: EdgeInsets.only(bottom: 5.0),
@@ -198,6 +201,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
           ),
+          backgroundColor: Colors.white,
           title: Text('문진표 편집'),
           content: Text('문진표를 삭제하시겠습니까?\n문진표를 삭제하면 연동된 정보들이 해제됩니다'),
           actionsPadding: EdgeInsets.only(bottom: 5.0),
@@ -225,6 +229,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
                           ),
+                          backgroundColor: Colors.white,
                           actionsPadding: EdgeInsets.only(bottom: 5.0),
                           title: Text('문진표 편집'),
                           content: Text(
@@ -287,6 +292,7 @@ class _UserDetailPageState extends State<UserDetailPage>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(12, 9))
           ),
+          backgroundColor: Colors.white,
           title: Text('문진표 편집'),
           content: Text('문진표를 편집하시겠습니까?'),
           actionsPadding: EdgeInsets.only(bottom: 5.0),

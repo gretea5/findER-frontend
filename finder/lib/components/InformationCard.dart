@@ -1,3 +1,4 @@
+import 'package:finder/styles/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/modelsExport.dart';
@@ -81,7 +82,7 @@ class InformationCard extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.elliptical(5.0, 5.0)),
                         border: Border.all(
                           width: 1.5,
-                          color: Color.fromARGB(255, 79, 112, 229)
+                          color: themeColor
                         ),
                         color: Colors.white,
                       ),
