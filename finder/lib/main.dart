@@ -27,6 +27,12 @@ class MyApp extends StatelessWidget {
     ]);
 
     return MaterialApp(
+      builder: (context, child) {
+        return  MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+          child: child!,
+        );
+      },
       debugShowCheckedModeBanner: false, 
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
