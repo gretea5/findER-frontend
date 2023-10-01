@@ -19,13 +19,13 @@
 
 ## 🔖 목차
 
-- [개발배경 및 목적](https://github.com/capstone-aloha/aloharoom-frontend#-%EA%B0%9C%EC%9A%94)
-- [개발환경 및 개발언어](https://github.com/capstone-aloha/aloharoom-frontend#-%EC%8B%A4%ED%96%89-%EB%B0%8F-%EC%84%A4%EC%B9%98-%EB%B0%A9%EB%B2%95)
-- [시스템 구성 및 아키텍처](https://github.com/capstone-aloha/aloharoom-frontend#-%EC%8B%A4%ED%96%89-%EB%B0%8F-%EC%84%A4%EC%B9%98-%EB%B0%A9%EB%B2%95)
+- [개발배경 및 목적](https://github.com/gretea5/findER-frontend#-%EA%B0%9C%EB%B0%9C%EB%B0%B0%EA%B2%BD-%EB%B0%8F-%EB%AA%A9%EC%A0%81)
+- [개발환경 및 개발언어](https://github.com/gretea5/findER-frontend#-%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-%EB%B0%8F-%EA%B0%9C%EB%B0%9C%EC%96%B8%EC%96%B4)
+- [시스템 구성 및 아키텍처](https://github.com/gretea5/findER-frontend#-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EA%B5%AC%EC%84%B1-%EB%B0%8F-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
 - [프로젝트 주요 기능](https://github.com/capstone-aloha/aloharoom-frontend#%EB%B0%A9-%EA%B5%AC%ED%95%98%EA%B8%B0-%ED%95%84%ED%84%B0%EB%A7%81)
-- [기대효과 및 활용분야](https://github.com/capstone-aloha/aloharoom-frontend#%EB%B0%A9-%EA%B5%AC%ED%95%98%EA%B8%B0-%ED%95%84%ED%84%B0%EB%A7%81)
-- [팀 정보](https://github.com/capstone-aloha/aloharoom-frontend#%EB%B0%A9-%EA%B5%AC%ED%95%98%EA%B8%B0-%ED%95%84%ED%84%B0%EB%A7%81)
-- [시연영상](https://github.com/capstone-aloha/aloharoom-frontend#%EB%B0%A9-%EA%B5%AC%ED%95%98%EA%B8%B0-%ED%95%84%ED%84%B0%EB%A7%81)
+- [기대효과 및 활용분야](https://github.com/gretea5/findER-frontend#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
+- [팀 정보](https://github.com/gretea5/findER-frontend#-%ED%8C%80-%EC%A0%95%EB%B3%B4)
+- [시연영상](https://github.com/gretea5/findER-frontend#%EF%B8%8F-%EC%8B%9C%EC%97%B0%EC%98%81%EC%83%81)
 
 
 ## 📍 개발배경 및 목적
