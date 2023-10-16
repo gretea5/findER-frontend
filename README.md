@@ -217,7 +217,7 @@
 </div>
 
 ## 🖻 시스템 구조도
-<img width="895" alt="image" src="https://github.com/malalove/findER-backend/assets/120379834/9b0f0a2c-8605-4a19-be7a-4d76d3c5e4df">
+<img width="895" alt="image" src="https://github.com/gretea5/findER-frontend/assets/120379834/f94a9594-c195-48fc-bfc4-a8fd02e64f2d">
 
 > 백엔드 애플리케이션 : 모바일 애플리케이션의 백엔드 애플리케이션 <br>
 > 트래커 애플리케이션 : 1분 간격으로 전국 400여 개의 응급실의 실시간 병상 수를 갱신하기 위한 별도의 애플리케이션
