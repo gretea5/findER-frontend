@@ -53,7 +53,7 @@
   <summary><b>화면 보기</b></summary>
   <br>
   <div>
-  <img width="325" height="720" alt="" src=https://github.com/wingunkh/tmp/assets/58140360/4a89e085-ea65-4fc6-b2da-df18a5092f94>
+  <img width="325" height="720" alt="" src="https://github-production-user-asset-6210df.s3.amazonaws.com/120379834/281963820-c3d78076-d0bc-49bb-8d50-1fdbe855fb8f.png">
   <br><br>
   </div>
 </details>
@@ -65,7 +65,7 @@
   <img 
     width="325" 
     height="720" alt="" 
-    src=https://github.com/wingunkh/tmp/assets/58140360/d242fac0-876a-4f7f-8dd6-e0db0d470b28>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/e685a776-cbbc-4e65-8f90-36dfc40df6bc">
     <br><br>
   </div>
 </details>
@@ -78,7 +78,7 @@
     width="325" 
     height="720" 
     alt=""
-    src=https://github.com/wingunkh/tmp/assets/58140360/41d36817-6757-4e14-9091-917242507e35>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/633431e6-621b-4ddf-acb0-aa9e47d6e7a8">
   <br><br>
   </div>
 </details>
@@ -92,7 +92,7 @@
     width="325" 
     height="720" 
     alt=""
-    src=https://github.com/wingunkh/tmp/assets/58140360/0d8a2ef1-a26d-4c90-b38b-8644682774e5>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/6a974298-75fa-4514-a69e-029b8fe2fff8">
     <br><br>
   </div>
 </details>
@@ -105,7 +105,7 @@
     width="325" 
     height="720" 
     alt=""
-    src=https://github.com/wingunkh/tmp/assets/58140360/5874eaba-37ee-4988-90c6-6cfd5fd5093d>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/ce09642c-0746-4329-8d83-3f0f4cb53439">
   <br><br>
 </details>
 
@@ -117,7 +117,7 @@
     width="325" 
     height="720" 
     alt=""
-    src=https://github.com/wingunkh/tmp/assets/58140360/cf5eae1f-8869-4eea-9bdf-d5b6b39ccae5>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/229ba0a3-3528-48e4-a853-6365156849df">
   <br><br>
 </details>
 
@@ -130,7 +130,7 @@
     width="325" 
     height="720" 
     alt=""
-    src=https://github.com/wingunkh/tmp/assets/58140360/602255af-7424-4a5c-a9c3-10e7a25f8b13>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/c9653656-5634-42e9-91b7-99d5032d7f6e">
   <br><br>
 </details>
 
@@ -140,7 +140,7 @@
   <br>
   <img 
     width="325" height="720" alt=""
-  src=https://github.com/wingunkh/tmp/assets/58140360/bcae936e-35a6-4261-960c-b8002831d778>
+    src="https://github.com/gretea5/findER-frontend/assets/120379834/e76a8915-4b0a-4197-80ae-1c578dd3c059">
   <br><br>
 </details>
 
